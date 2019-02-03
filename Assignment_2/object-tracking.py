@@ -1,20 +1,25 @@
 import numpy as np
 import cv2 as cv
+from numpy.distutils.fcompiler import none
+
+image = none
 
 
-def show_unfiltered(img):
+def show_unfiltered(image):
     cv.namedWindow("Unfiltered video")  # creates unfiltered video from webcam
-    cv.imshow("Unfiltered video", img)  # sHows the unfiltered video
+    cv.imshow("Unfiltered video", image)  # sHows the unfiltered video
 
 
-def show_hsv_values():
-    if cv.EVENT_LBUTTONDBLCLK:
-        print("test")
+def show_hsv_values(event, x, y, flags, params):
+    if event is cv.EVENT_LBUTTONDOWN:
+        print("x: ", x, "y: ", y)
+        pass
+        # print("Pixel location: X: ", x, ", Y: ", y, ",HSV value: ", cv.cvtColor(image[x, y], cv.COLOR_BGR2HSV))
 
 
-def show_hsv(img):
+def show_hsv(image):
     cv.namedWindow("HSV")  # Creatues window for HSV conversion
-    cv.imshow("HSV", cv.cvtColor(img, cv.COLOR_BGR2HSV))
+    cv.imshow("HSV", cv.cvtColor(image, cv.COLOR_BGR2HSV))
     cv.setMouseCallback("HSV", show_hsv_values)
 
     # print(click)
@@ -27,10 +32,10 @@ def show_cam():
     capture = cv.VideoCapture(0)
 
     while True:
-        status, img = capture.read()  # Reads in the capture
-        show_unfiltered(img)
-        show_hsv(img)
-        # cv.imshow("HSV", cv.cvtColor(img, cv.COLOR_BGR2HSV))    # shows video filtered by hsv
+        status, image = capture.read()  # Reads in the capture
+        show_unfiltered(image)
+        show_hsv(image)
+        # cv.imshow("HSV", cv.cvtColor(image, cv.COLOR_BGR2HSV))    # shows video filtered by hsv
         k = cv.waitKey(1)
         if k == 27:
             break
