@@ -10,17 +10,17 @@ def show_unfiltered(image):
     cv.imshow("Unfiltered video", image)  # sHows the unfiltered video
 
 
-def show_hsv_values(event, x, y, flags, params):
-    if event is cv.EVENT_LBUTTONDOWN:
-        print("x: ", x, "y: ", y)
-        pass
-        # print("Pixel location: X: ", x, ", Y: ", y, ",HSV value: ", cv.cvtColor(image[x, y], cv.COLOR_BGR2HSV))
+def show_hsv_values(event, x, y, flags, params): # Method for mouse clicks on HSV image
+    if event is cv.EVENT_LBUTTONDOWN:   # Enters if Left button is clicked
+        print("HSV value of location x:", x, "y:", y, "Hue:", params[y, x][0],  # Prints location and HSV values
+              "Saturation:", params[y, x][1], "Value:", params[y, x][2])
 
 
 def show_hsv(image):
+    param = cv.cvtColor(image, cv.COLOR_BGR2HSV) # Converts the image from BGR to HSV
     cv.namedWindow("HSV")  # Creatues window for HSV conversion
-    cv.imshow("HSV", cv.cvtColor(image, cv.COLOR_BGR2HSV))
-    cv.setMouseCallback("HSV", show_hsv_values)
+    cv.imshow("HSV", param) # Shows the image
+    cv.setMouseCallback("HSV", show_hsv_values, param)  # Passes in HSV image during mouse click
 
     # print(click)
     # if click:
