@@ -3,7 +3,8 @@ import cv2 as cv
 from numpy.distutils.fcompiler import none
 
 image = none
-values = []  # rgb max, rgb min
+trackbar_values = {'Red Min': 0, 'Red Max': 0, 'Blue Min': 0, 'Blue Max': 0, 'Green Min': 0,
+                   'Green Max': 0}  # RBG Min/Max
 
 
 def show_unfiltered(image):
@@ -18,6 +19,7 @@ def show_hsv_values(event, x, y, flags, params):  # Method for mouse clicks on H
 
 
 def show_hsv(image):
+
     param = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Converts the image from BGR to HSV
     cv.namedWindow("HSV")  # Creatues window for HSV conversion
     cv.imshow("HSV", param)  # Shows the image
@@ -43,24 +45,31 @@ def show_cam():
 #     values[position]
 
 
-def nothing(input):
+def set_trackbar_values(input):
     pass
 
-
 def create_trackbar(image):
+    image = np.zeros((np.size(image,0), np.size(image,1)))
     cv.namedWindow("Track Bar")
-    trackbar_values = []
     max_slider_value = 255
     min_slider_value = 0
-    color_titles = ['Red Min', 'Red Max', 'Green Min', 'Green Max', 'Blue Min', 'Blue Max'] # List to loop through and set trackbar values
-    cv.createTrackbar('Red Min', 'Track Bar', min_slider_value, max_slider_value, nothing)  # TODO add call back value
-    cv.createTrackbar('Red Max', 'Track Bar', min_slider_value, max_slider_value, nothing)  # TODO add call back value
-    cv.createTrackbar('Green Min', 'Track Bar', min_slider_value, max_slider_value, nothing)  # TODO add call back value
-    cv.createTrackbar('Green Max', 'Track Bar', min_slider_value, max_slider_value, nothing)  # TODO add call back value
-    cv.createTrackbar('Blue Min', 'Track Bar', min_slider_value, max_slider_value, nothing)  # TODO add call back value
-    cv.createTrackbar('Blue Max', 'Track Bar', min_slider_value, max_slider_value, nothing)  # TODO add call back value
+    color_titles = ['Red', 'Red Max', 'Green Min', 'Green Max', 'Blue Min',
+                    'Blue Max']  # List to loop through and set trackbar values
+    cv.createTrackbar('Red Min', 'Track Bar', min_slider_value, max_slider_value,
+                      set_trackbar_values)  # TODO add call back value
+    cv.createTrackbar('Red Max', 'Track Bar', min_slider_value, max_slider_value,
+                      set_trackbar_values)  # TODO add call back value
+    cv.createTrackbar('Green Min', 'Track Bar', min_slider_value, max_slider_value,
+                      set_trackbar_values)  # TODO add call back value
+    cv.createTrackbar('Green Max', 'Track Bar', min_slider_value, max_slider_value,
+                      set_trackbar_values)  # TODO add call back value
+    cv.createTrackbar('Blue Min', 'Track Bar', min_slider_value, max_slider_value,
+                      set_trackbar_values)  # TODO add call back value
+    cv.createTrackbar('Blue Max', 'Track Bar', min_slider_value, max_slider_value,
+                      set_trackbar_values)  # TODO add call back value
     for title in color_titles:
-        trackbar_values.append(cv.getTrackbarPos(title, 'Track Bar'))
+        trackbar_values.update(title=cv.getTrackbarPos(title, 'Track Bar'))
+
     cv.imshow('Track Bar', image)
 
 
