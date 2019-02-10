@@ -9,32 +9,36 @@ trackbar_values = {'Red Min': 0, 'Red Max': 0, 'Blue Min': 0, 'Blue Max': 0, 'Gr
 
 def show_unfiltered(image):
     cv.namedWindow("Unfiltered video")  # creates unfiltered video from webcam
+    cv.moveWindow("Unfiltered video", 0,20)
+
     cv.imshow("Unfiltered video", image)  # sHows the unfiltered video
 
 
 def show_hsv_values(event, x, y, flags, params):  # Method for mouse clicks on HSV image
+
     if event is cv.EVENT_LBUTTONDOWN:  # Enters if Left button is clicked
         print("HSV value of location x:", x, "y:", y, "Hue:", params[y, x][0],  # Prints location and HSV values
               "Saturation:", params[y, x][1], "Value:", params[y, x][2])
 
 
 def show_hsv(image):
-
     param = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Converts the image from BGR to HSV
     cv.namedWindow("HSV")  # Creatues window for HSV conversion
+    cv.moveWindow("HSV", 643,20)
     cv.imshow("HSV", param)  # Shows the image
     cv.setMouseCallback("HSV", show_hsv_values, param)  # Passes in HSV image during mouse click
+
 
 
 def show_cam():
     # Screen capture code provided by Hunter Lloyd https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/View
     capture = cv.VideoCapture(0)
-
     while True:
         status, image = capture.read()  # Reads in the capture
         show_unfiltered(image)
-        show_hsv(image)
         create_trackbar(image)
+        show_hsv(image)
+
         k = cv.waitKey(1)
         if k == 27:
             break
@@ -48,9 +52,11 @@ def show_cam():
 def set_trackbar_values(input):
     pass
 
+
 def create_trackbar(image):
-    image = np.zeros((np.size(image,0), np.size(image,1)))
     cv.namedWindow("Track Bar")
+    cv.moveWindow("Track Bar", 0,663)
+
     max_slider_value = 255
     min_slider_value = 0
     color_titles = ['Red', 'Red Max', 'Green Min', 'Green Max', 'Blue Min',
@@ -67,11 +73,13 @@ def create_trackbar(image):
                       set_trackbar_values)  # TODO add call back value
     cv.createTrackbar('Blue Max', 'Track Bar', min_slider_value, max_slider_value,
                       set_trackbar_values)  # TODO add call back value
-    for title in color_titles:
-        trackbar_values.update(title=cv.getTrackbarPos(title, 'Track Bar'))
-
+    red_min = cv.getTrackbarPos('Red Min', 'Track Bar')
+    red_max = cv.getTrackbarPos('Red Max', 'Track Bar')
+    green_min = cv.getTrackbarPos('Green Min', 'Track Bar')
+    green_max = cv.getTrackbarPos('Green Max', 'Track Bar')
+    blue_min = cv.getTrackbarPos('Blue Min', 'Track Bar')
+    blue_max = cv.getTrackbarPos('Blue Max', 'Track Bar')
     cv.imshow('Track Bar', image)
-
 
 # TODO Us the OpenCV inRange method to find the values between the scalars from HSV image and the result will go to a grayscale image (make it a binary image, white/black).
 
