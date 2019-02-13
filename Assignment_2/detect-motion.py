@@ -60,9 +60,12 @@ def show_cam():
         cv.imshow("Threshold", image_threshold)
 
         # Parts of Find contours code sourced from https://docs.opencv.org/3.1.0/d4/d73/tutorial_py_contours_begin.html
-        contour_image, contours = cv.findContours(image_threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE, )
-        print(contours)
-        contour_image = cv.drawContours(image_threshold, contours, -1, (0, 255, 0), 3)
+        contour_image = image_threshold
+        contours, hierarchy = cv.findContours(image_threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE, )
+        # Draw counters helped from user Mahm00d source: https://stackoverflow.com/questions/34961349/draw-contours-in-opencv-around-recognized-polygon
+        cv.drawContours(contour_image, contours, -1, (0, 255, 0), 3)
+        if contours:
+            print(contours)
         cv.namedWindow("Contours")
         cv.imshow("Contours", contour_image)
         show_unfiltered(image)
