@@ -56,27 +56,27 @@ def set_trackbar_values(val):
 
 
 def create_trackbar(hsv):
-    cv.namedWindow('Track Bar')
-    cv.moveWindow('Track Bar', 0, 663)
+    cv.namedWindow("HSV")
+    cv.moveWindow("HSV", 0, 663)
 
-    cv.createTrackbar('Hue Min', 'Track Bar', 0, 180,
+    cv.createTrackbar('Hue Min', "HSV", 0, 180,
                       set_trackbar_values)
-    cv.createTrackbar('Hue Max', 'Track Bar', 0, 180, set_trackbar_values)
-    cv.createTrackbar('Saturation Min', 'Track Bar', 0, 255,
+    cv.createTrackbar('Hue Max', "HSV", 0, 180, set_trackbar_values)
+    cv.createTrackbar('Saturation Min', "HSV", 0, 255,
                       set_trackbar_values)  # TODO add call back value
-    cv.createTrackbar('Saturation Max', 'Track Bar', 0, 255,
+    cv.createTrackbar('Saturation Max', "HSV", 0, 255,
                       set_trackbar_values)  # TODO add call back value
-    cv.createTrackbar('Value Min', 'Track Bar', 0, 255,
+    cv.createTrackbar('Value Min', "HSV", 0, 255,
                       set_trackbar_values)  # TODO add call back value
-    cv.createTrackbar('Value Max', 'Track Bar', 0, 255,
+    cv.createTrackbar('Value Max', "HSV", 0, 255,
                       set_trackbar_values)
 
-    hue_min = cv.getTrackbarPos('Hue Min', 'Track Bar')
-    hue_max = cv.getTrackbarPos('Hue Max', 'Track Bar')
-    saturation_min = cv.getTrackbarPos('Saturation Min', 'Track Bar')
-    saturation_max = cv.getTrackbarPos('Saturation Max', 'Track Bar')
-    value_min = cv.getTrackbarPos('Value Min', 'Track Bar')
-    value_max = cv.getTrackbarPos('Value Max', 'Track Bar')
+    hue_min = cv.getTrackbarPos('Hue Min', "HSV")
+    hue_max = cv.getTrackbarPos('Hue Max', "HSV")
+    saturation_min = cv.getTrackbarPos('Saturation Min', "HSV")
+    saturation_max = cv.getTrackbarPos('Saturation Max', "HSV")
+    value_min = cv.getTrackbarPos('Value Min', "HSV")
+    value_max = cv.getTrackbarPos('Value Max', "HSV")
     kernel = np.ones((5, 5), np.uint8)  # dialates
     minS = np.array([hue_min, saturation_min, value_min])
     maxS = np.array([hue_max, saturation_max, value_max])
