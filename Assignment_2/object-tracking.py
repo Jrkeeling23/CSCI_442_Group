@@ -54,23 +54,25 @@ def show_cam():
 def set_trackbar_values(val):
     pass
 
-
+### Creates trackbar for hsv values to detect object
 def create_trackbar(hsv):
     cv.namedWindow("HSV")
-    cv.moveWindow("HSV", 0, 663)
+    cv.moveWindow("HSV", 0, 663)  # move window to a desirable spot
 
+    # trackbars for max and mins for each hsv channel
     cv.createTrackbar('Hue Min', "HSV", 0, 180,
                       set_trackbar_values)
     cv.createTrackbar('Hue Max', "HSV", 0, 180, set_trackbar_values)
     cv.createTrackbar('Saturation Min', "HSV", 0, 255,
-                      set_trackbar_values)  # TODO add call back value
+                      set_trackbar_values)
     cv.createTrackbar('Saturation Max', "HSV", 0, 255,
-                      set_trackbar_values)  # TODO add call back value
+                      set_trackbar_values)
     cv.createTrackbar('Value Min', "HSV", 0, 255,
-                      set_trackbar_values)  # TODO add call back value
+                      set_trackbar_values)
     cv.createTrackbar('Value Max', "HSV", 0, 255,
                       set_trackbar_values)
 
+    # obtain the min and max positions of the sliders
     hue_min = cv.getTrackbarPos('Hue Min', "HSV")
     hue_max = cv.getTrackbarPos('Hue Max', "HSV")
     saturation_min = cv.getTrackbarPos('Saturation Min', "HSV")
@@ -78,20 +80,13 @@ def create_trackbar(hsv):
     value_min = cv.getTrackbarPos('Value Min', "HSV")
     value_max = cv.getTrackbarPos('Value Max', "HSV")
     kernel = np.ones((5, 5), np.uint8)  # dialates
+    # create arrays to hold as a scalar for min and max
     minS = np.array([hue_min, saturation_min, value_min])
     maxS = np.array([hue_max, saturation_max, value_max])
     mask = cv.inRange(hsv, minS, maxS)
     mask = cv.dilate(mask, kernel, iterations=1)
    # cv.imshow('HSV', hsv)  # Shows the image
     cv.imshow("Mask", mask)
-
-
-# TODO Us the OpenCV inRange method to find the values between the scalars from HSV image and the result will go to a grayscale image (make it a binary image, white/black).
-
-# TODO Dilate, erode the grayscale image to get a better representation of the object you are tracking.
-
-# TODO Display the original image and the binary image where everything is black except for the object you are tracking. The tracked object will be white.
-
 
 show_cam()
 cv.destroyAllWindows()
