@@ -33,7 +33,7 @@ def show_cam():
         cv.imshow('Blurred Image', blurred)
         cv.namedWindow('Running Average')
 
-        cv.accumulateWeighted(image, running_average,
+        cv.accumulateWeighted(blurred, running_average,
                               .320)  # Gets the weighted accumulate average between the float32 image and the standard image
         cv.imshow('Running Average', running_average)
 
@@ -51,25 +51,38 @@ def show_cam():
         cv.namedWindow('Grey Scale Abs Diff')
         cv.imshow('Grey Scale Abs Diff', image_difference)
 
-        return_val, image_threshold = cv.threshold(image_difference, 30, 255,
+        return_val, image_threshold = cv.threshold(image_difference, 25, 255,
                                                    cv.THRESH_BINARY)  # Thresholds the image above a threshold value above 30. Binary used for following contour conversion
         threshold_blurred = cv.GaussianBlur(image_threshold, (7, 7), 0)  # Blurs the Threshold image
-        return_val, image_threshold = cv.threshold(threshold_blurred, 200, 255,
+        return_val, image_threshold = cv.threshold(threshold_blurred, 50, 255,
                                                    cv.THRESH_BINARY)  # Thresholds the blurred image again with a threshold value above 200
         cv.namedWindow("Threshold")
         cv.imshow("Threshold", image_threshold)
 
         # Parts of Find contours code sourced from https://docs.opencv.org/3.1.0/d4/d73/tutorial_py_contours_begin.html
         contour_image = image_threshold
-        contours, hierarchy = cv.findContours(image_threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE, )
+        contours, hierarchy = cv.findContours(image_threshold.copy(), cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE, ) #RETR_EXTERNAL
         # Draw counters helped from user Mahm00d source: https://stackoverflow.com/questions/34961349/draw-contours-in-opencv-around-recognized-polygon
-        cv.drawContours(contour_image, contours, -1, (0, 255, 0), 3) # Draws the contours
-        if contours:
-            print(contours)
-        cv.namedWindow("Contours")
-        cv.imshow("Contours", contour_image)
-        show_unfiltered(image)
-        show_hsv(image)
+        cv.drawContours(contour_image, contours, -1, (0, 255, 0), 3)  # Draws the contours
+        # if contours:
+        #     print(contours)
+        for c in contours:
+            if cv.contourArea(c)<10000:
+                continue
+            (x,y,w,h) = cv.boundingRect(c)
+            cv.rectangle(image,(x,y), (x+w,y+h), (0,0,255),3)
+
+        param = cv.cvtColor(image.copy(), cv.COLOR_BGR2HSV)  # Converts the image from BGR to HSV
+        cv.namedWindow("HSV")  # Creatues window for HSV conversion
+        cv.moveWindow("HSV", 643, 20)
+        cv.imshow("HSV", param)  # Shows the image
+
+        cv.namedWindow("Unfiltered video")  # creates unfiltered video from webcam
+        cv.moveWindow("Unfiltered video", 0, 20)
+        cv.imshow("Unfiltered video", image)  # sHows the unfiltered video
+
+        # show_unfiltered(image)
+        # show_hsv(image)
 
         k = cv.waitKey(1)
         if k == 27:
@@ -80,6 +93,10 @@ def show_cam():
 # def set_slider_value(position):
 #     values[position]
 
+def draw_keypoints(vis, keypoints, color=(0,0,255)):
+    for kp in keypoints:
+        x,y = kp.pt
+        cv.circle(vis,(int(x), int(y),2,color))
 
 show_cam()
 cv.destroyAllWindows()
