@@ -23,6 +23,11 @@ def show_cam():
     running_average = np.float32(image)
     while True:
         status, image = capture.read()  # Reads in the capture
+        hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Converts the image from BGR to HSV
+        cv.namedWindow("HSV")  # Creatues window for HSV conversion
+        cv.moveWindow("HSV", 643, 20)
+        cv.imshow("HSV", hsv)  # Shows the image
+
         cv.namedWindow('Grey Blank Image')
         grey_scale = cv.cvtColor(image, cv.COLOR_BGR2GRAY)  # Converts image to grey scale
         cv.imshow('Grey Blank Image', grey_scale)  # Shows grey scale
@@ -72,10 +77,7 @@ def show_cam():
             (x,y,w,h) = cv.boundingRect(c)
             cv.rectangle(image,(x,y), (x+w,y+h), (0,0,255),3)
 
-        param = cv.cvtColor(image.copy(), cv.COLOR_BGR2HSV)  # Converts the image from BGR to HSV
-        cv.namedWindow("HSV")  # Creatues window for HSV conversion
-        cv.moveWindow("HSV", 643, 20)
-        cv.imshow("HSV", param)  # Shows the image
+
 
         cv.namedWindow("Unfiltered video")  # creates unfiltered video from webcam
         cv.moveWindow("Unfiltered video", 0, 20)
