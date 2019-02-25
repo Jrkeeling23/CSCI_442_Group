@@ -14,7 +14,8 @@ def get_keypoints(image):
     # image = cv.dilate(image, kernel, 1)
     params = cv.SimpleBlobDetector_Params()
     params.filterByArea = True
-    params.minArea = 500
+    params.blobColor = 0
+    params.minArea = 300
     params.filterByCircularity = True
     blob_detection = cv.SimpleBlobDetector_create(params)  # Creates the blob detector
     return blob_detection.detect(
@@ -54,9 +55,11 @@ print(len(num_blue))
 cv.putText(original_image, "Blue: " + str(len(num_blue)), (10, 50), cv.FONT_HERSHEY_PLAIN, 2, [255, 255, 255])
 cv.putText(original_image, "Green: " + str(len(num_green)), (200, 50), cv.FONT_HERSHEY_PLAIN, 2, [255, 255, 255])
 cv.putText(original_image, "Yellow: " + str(len(num_yellow)), (10, 100), cv.FONT_HERSHEY_PLAIN, 2, [255, 255, 255])
+cv.putText(original_image, "Brown: " + str(len(num_brown)), (200, 100), cv.FONT_HERSHEY_PLAIN, 2, [255, 255, 255])
+cv.putText(original_image, "Orange: " + str(len(num_orange)), (10, 150), cv.FONT_HERSHEY_PLAIN, 2, [255, 255, 255])
 
 cv.imshow("Candy Image original", original_image)
 
-cv.imshow("Candy Image", orange_image)
+# cv.imshow("Candy Image", orange_image)
 
 cv.waitKey(0)
