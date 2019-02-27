@@ -24,7 +24,7 @@ def show_hsv_values(event, x, y, flags, params):  # Method for mouse clicks on H
 def show_hsv(image):
     param = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Converts the image from BGR to HSV
     cv.namedWindow("HSV")  # Creatues window for HSV conversion
-    cv.moveWindow("HSV", 643, 20)
+    # cv.moveWindow("HSV", 643, 20)
     create_trackbar(param)
     cv.imshow("HSV", param)  # Shows the image
     cv.setMouseCallback("HSV", show_hsv_values, param)  # Passes in HSV image during mouse click
@@ -35,7 +35,8 @@ def show_cam():
     # Screen capture code provided by Hunter Lloyd https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/View
     capture = cv.VideoCapture(0)
     while True:
-        status, image = capture.read()  # Reads in the capture
+        # status, image = capture.read()  # Reads in the capture
+        image = cv.imread("imagesWOvideo/one.jpg")
         show_unfiltered(image)
         create_trackbar(image)
         show_hsv(image)
@@ -57,7 +58,7 @@ def set_trackbar_values(val):
 
 def create_trackbar(hsv):
     cv.namedWindow("HSV")
-    cv.moveWindow("HSV", 0, 663)
+    # cv.moveWindow("HSV", 0, 663)
 
     cv.createTrackbar('Hue Min', "HSV", 0, 180,
                       set_trackbar_values)
@@ -91,7 +92,6 @@ def create_trackbar(hsv):
 # TODO Dilate, erode the grayscale image to get a better representation of the object you are tracking.
 
 # TODO Display the original image and the binary image where everything is black except for the object you are tracking. The tracked object will be white.
-
 
 show_cam()
 cv.destroyAllWindows()
