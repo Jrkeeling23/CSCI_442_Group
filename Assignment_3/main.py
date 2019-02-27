@@ -23,7 +23,7 @@ def get_circles(image, lower, upper):
             cv.circle(new_image, center, radius, (255,0,255), 3)
     return new_image, count 
 
-original_image = cv.imread("imagesWOvideo/one.jpg")
+original_image = cv.imread("imagesWOvideo/four.jpg")
 # initial code helped from source: https://thecodacus.com/opencv-object-tracking-colour-detection-python/
 image = cv.GaussianBlur(original_image, (7, 7), 0)  # Blurs the image
 image = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Converts the image to HSV
@@ -34,9 +34,9 @@ green_upper = np.array([84, 255, 255])
 blue_lower = np.array([84, 80, 40])
 blue_upper = np.array([166, 255, 255])
 yellow_lower = np.array([25, 0, 0])
-yellow_upper = np.array([65, 255, 255])
-orange_lower = np.array([10, 100, 20])
-orange_upper = np.array([25, 255, 255])
+yellow_upper = np.array([30, 255, 255])
+orange_lower = np.array([20, 0, 0])
+orange_upper = np.array([30, 255, 255])
 brown_lower = np.array([10, 0, 0])
 brown_upper = np.array([20, 255, 255])
 red_lower = np.array([0, 0, 0])
@@ -61,6 +61,6 @@ cv.putText(original_image, "Red: " + str(num_red), (200, 150), cv.FONT_HERSHEY_P
 
 # Shows images.
 cv.imshow("Candy Image original", original_image)
-cv.imshow("Candy Image", green_image)
+# cv.imshow("Candy Image", orange_image)
 
 cv.waitKey(0)
