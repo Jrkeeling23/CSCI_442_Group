@@ -35,12 +35,12 @@ blue_lower = np.array([84, 80, 40])
 blue_upper = np.array([166, 255, 255])
 yellow_lower = np.array([25, 0, 0])
 yellow_upper = np.array([30, 255, 255])
-orange_lower = np.array([20, 0, 0])
-orange_upper = np.array([30, 255, 255])
+orange_lower = np.array([7, 0, 0])
+orange_upper = np.array([10, 255, 255])
 brown_lower = np.array([10, 0, 0])
 brown_upper = np.array([20, 255, 255])
-red_lower = np.array([0, 0, 0])
-red_upper = np.array([118, 255, 255])
+red_lower = np.array([111, 104, 155])
+red_upper = np.array([180, 180, 246])
 
 # Runs the method for getting the circles and circle count for given color range.
 green_image, num_green = get_circles(image, green_lower, green_upper)
@@ -61,6 +61,6 @@ cv.putText(original_image, "Red: " + str(num_red), (200, 150), cv.FONT_HERSHEY_P
 
 # Shows images.
 cv.imshow("Candy Image original", original_image)
-# cv.imshow("Candy Image", orange_image)
+cv.imshow("Candy Image", red_image)
 
 cv.waitKey(0)
