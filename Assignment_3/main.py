@@ -3,11 +3,17 @@ import numpy as np
 
 
 def get_image_range(image, lower, upper):
+    kernel = np.ones((10, 10), np.uint8)
     new_image = cv.inRange(image, lower, upper)  # Shows colors in the color range set above
     new_image = cv.GaussianBlur(new_image, (5, 5), 0)  # Blurs the image in case of color range discrepancies.
-    # new_image = cv.Canny(image, 100, 200)
     # Circle code sourced from https://docs.opencv.org/3.4/d4/d70/tutorial_hough_circle.html
-    circles = cv.HoughCircles(new_image, cv.HOUGH_GRADIENT, 1, new_image.shape[0]/8, param1 = 100, param2=20, minRadius=1, maxRadius=30)
+    new_image = cv.erode(new_image, kernel, 1)
+    new_image = cv.dilate(new_image, kernel, 1)
+
+    # new_image = cv.Canny(image, 100, 200)
+
+    circles = cv.HoughCircles(new_image, cv.HOUGH_GRADIENT, 5, 55, param1 = 800, param2=50, minRadius=10, maxRadius=30)
+    count = 0
     if circles is not None:
         circles = np.uint16(np.around(circles))
         count = 0
@@ -35,7 +41,7 @@ def get_image_range(image, lower, upper):
 #         cv.bitwise_not(image))  # Blob detection doesn't work with a black background.  bitwise_not fixes this.
 
 
-original_image = cv.imread("imagesWOvideo/two.jpg")
+original_image = cv.imread("imagesWOvideo/four.jpg")
 # initial code helped from source: https://thecodacus.com/opencv-object-tracking-colour-detection-python/
 image = cv.GaussianBlur(original_image, (7, 7), 0)  # Blurs the image
 image = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Converts the image to HSV
