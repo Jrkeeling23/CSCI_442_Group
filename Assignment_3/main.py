@@ -11,7 +11,7 @@ def get_circles(image, lower, upper):
 
     # Circle code sourced from https://docs.opencv.org/3.4/d4/d70/tutorial_hough_circle.html
     # circles = cv.HoughCircles(new_image, cv.HOUGH_GRADIENT, 5, 55, param1 = 800, param2=50, minRadius=10, maxRadius=30)  # Gets the circles from the image
-    circles = cv.HoughCircles(new_image, cv.HOUGH_GRADIENT, 5, 55, param1 = 50, param2=50, minRadius=10, maxRadius=30)  # Gets the circles from the image
+    circles = cv.HoughCircles(new_image, cv.HOUGH_GRADIENT, 7, 55, param1 = 400, param2=50, minRadius=10, maxRadius=30)  # Gets the circles from the image
 
     count = 0 # a counter that keeps track of the circles of the color range
     if circles is not None: # Loops through the circles and marks the centers.  Marking the centers is likely not needed.  The loop is needed to count the colors
