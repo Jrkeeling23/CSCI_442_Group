@@ -29,7 +29,7 @@ def get_circles(image, lower, upper):
             cv.circle(new_image, center, radius, (255,0,255), 3)
     return new_image, count 
 
-original_image = cv.imread("imagesWOvideo/four.jpg")
+original_image = cv.imread("imagesWOvideo/one.jpg")
 cv.imshow("orig", original_image)
 # initial code helped from source: https://thecodacus.com/opencv-object-tracking-colour-detection-python/
 image = cv.GaussianBlur(original_image, (7, 7), 0)  # Blurs the image

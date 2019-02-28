@@ -58,11 +58,11 @@ def set_trackbar_values(val):
 ### Creates trackbar for hsv values to detect object
 def create_trackbar(hsv):
     cv.namedWindow("HSV")
-<<<<<<< HEAD
+
     cv.moveWindow("HSV", 0, 663)  # move window to a desirable spot
-=======
+
     # cv.moveWindow("HSV", 0, 663)
->>>>>>> trackbar_assignment_3
+
 
     # trackbars for max and mins for each hsv channel
     cv.createTrackbar('Hue Min', "HSV", 0, 180,
@@ -93,8 +93,7 @@ def create_trackbar(hsv):
    # cv.imshow('HSV', hsv)  # Shows the image
     cv.imshow("Mask", mask)
 
-<<<<<<< HEAD
-=======
+
 
 # TODO Us the OpenCV inRange method to find the values between the scalars from HSV image and the result will go to a grayscale image (make it a binary image, white/black).
 
@@ -102,6 +101,6 @@ def create_trackbar(hsv):
 
 # TODO Display the original image and the binary image where everything is black except for the object you are tracking. The tracked object will be white.
 
->>>>>>> trackbar_assignment_3
+
 show_cam()
 cv.destroyAllWindows()
