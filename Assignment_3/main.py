@@ -87,7 +87,7 @@ original_image = cv.imread("imagesWOvideo/candyBigSmallerTiny.jpg")
 cv.imshow("orig", original_image)
 
 blur = cv.GaussianBlur(original_image.copy(), (5, 5), cv.BORDER_DEFAULT)
-hsv = cv.cvtColor(blur, cv.COLOR_RGB2HSV)
+hsv = cv.cvtColor(blur, cv.COLOR_BGR2HSV)
 
 h, s, v = cv.split(hsv)
 k = 4
@@ -95,7 +95,7 @@ h = simplicity(h, k, 1)
 s = simplicity(s, k, 1)
 v = simplicity(v, k, 1)
 hsv_simple = [h, s, v]
-image_simple = cv.cvtColor(cv.merge(hsv_simple), cv.COLOR_HSV2RGB)
+image_simple = cv.cvtColor(cv.merge(hsv_simple), cv.COLOR_HSV2BGR)
 test = cv.cvtColor(image_simple, cv.COLOR_RGB2GRAY)
 cv.imshow("simplified", image_simple)
 
