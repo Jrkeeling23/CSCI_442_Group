@@ -34,40 +34,40 @@ def get_circles(image, lower, upper):
 
 
 def testing(img):
-    green_lower = np.array([65, 0, 0])
-    green_upper = np.array([84, 255, 255])
-    blue_lower = np.array([85, 80, 40])
-    blue_upper = np.array([166, 255, 255])
-    yellow_lower = np.array([25, 0, 0])
-    yellow_upper = np.array([30, 255, 255])
-    orange_lower = np.array([0, 63, 215])
-    orange_upper = np.array([21, 255, 255])
-    brown_lower = np.array([60, 0, 52])
-    brown_upper = np.array([133, 75, 156])
-    red_lower = np.array([111, 104, 155])
-    red_upper = np.array([180, 180, 246])
-
-    image = cv.GaussianBlur(original_image, (5, 5), 50)  # Blurs the image
-    image1 = cv.GaussianBlur(original_image, (15, 15), 150)  # Blurs the image
-
-    v = np.median(image)
-    lower1 = int(max(0, (1.0 - .33) * v))
-    upper1 = int(min(255, (1.0 - .33) * v))
+    image1 = cv.GaussianBlur(img, (3, 3), cv.BORDER_DEFAULT)  # Blurs the image
+    image2 = cv.GaussianBlur(img, (15, 15), cv.BORDER_DEFAULT)  # Blurs the image
 
     v = np.median(image1)
-    lower2 = int(max(0, (1.0 - .33) * v))
-    upper2 = int(min(255, (1.0 - .33) * v))
+    lower1 = int(max(0, (1.0 - .67) * v))
+    upper1 = int(min(255, (1.0 - .67) * v))
 
-    img1 = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-    img2 = cv.cvtColor(image1, cv.COLOR_BGR2GRAY)
-    test = cv.findContours(img1, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    image = cv.Canny(img1, lower1, upper1)
-    image1 = cv.Canny(img2, lower2, upper2)
-    test = cv.compare(image, image1, 1)
-    _, num = get_circles(image, lower1, upper1)
-    cv.putText(test, "circles" + str(num), (200, 50), cv.FONT_HERSHEY_PLAIN, 2, [255, 255, 255])
-    cv.imshow("wow", image)
-    cv.imshow("wwwww", test)
+    v = np.median(image2)
+    lower2 = int(max(0, (1.0 - .7) * v))
+    upper2 = int(min(255, (1.0 - .7) * v))
+
+    image1 = cv.cvtColor(image2, cv.COLOR_BGR2GRAY)
+    image2 = cv.cvtColor(image2, cv.COLOR_BGR2GRAY)
+    # test = cv.findContours(image1, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    image1 = cv.Canny(image1, lower1, upper1)
+    image2 = cv.Canny(image2, lower2, upper2)
+
+    kernel_dilate = np.ones((3, 3), np.uint8)
+    kernel_erode = np.ones((3, 3), np.uint8)
+
+    dilate = cv.dilate(image2, kernel_dilate, iterations=1)
+    image2 = cv.erode(dilate, kernel_erode, iterations=1)
+
+    compare = cv.compare(image2, image1, 3)
+    add = cv.add(image1,image2)
+    add= cv.add(add, compare)
+
+
+
+
+    cv.imshow("wow", image1)
+    cv.imshow("wwwww", image2)
+    cv.imshow("compare", add)
+    return image2
 
 
 def simplicity(img, channels, depth=3):
@@ -99,21 +99,25 @@ def get_simplified(img):
 
 original_image = cv.imread("imagesWOvideo/candyBigSmallerTiny.jpg")
 cv.imshow("orig", original_image)
+gray = cv.cvtColor(original_image, cv.COLOR_RGB2GRAY)
 
 simplified = get_simplified(original_image)
+test = testing(simplified)
+cv.imshow("pastel", simplified)
 
-blur_simple = cv.GaussianBlur(simplified, (13, 13), 3)
 v = np.median(simplified)
 
 kernel_dilate = np.ones((3, 3), np.uint8)
 kernel_erode = np.ones((5, 5), np.uint8)
 
-# dilate = cv.dilate(test_edge, kernel_dilate, iterations=1)
-# erode = cv.erode(dilate, kernel_erode, iterations=1)
-
+dilate = cv.dilate(simplified, kernel_dilate, iterations=1)
+erode = cv.erode(dilate, kernel_erode, iterations=1)
+simplified = cv.cvtColor(erode, cv.COLOR_RGB2GRAY)
+simplified_test = cv.equalizeHist(simplified)
+simplified = cv.bitwise_and(simplified_test, test)
 cv.imshow("simplified", simplified)
 
-testing(original_image)
+
 # initial code helped from source: https://thecodacus.com/opencv-object-tracking-colour-detection-python/
 image = cv.GaussianBlur(original_image, (7, 7), 0)  # Blurs the image
 image = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Converts the image to HSV
@@ -137,8 +141,14 @@ green_image, num_green = get_circles(image, green_lower, green_upper)
 blue_image, num_blue = get_circles(image, blue_lower, blue_upper)
 yellow_image, num_yellow = get_circles(image, yellow_lower, yellow_upper)
 orange_image, num_orange = get_circles(image, orange_lower, orange_upper)
-brown_image, num_brown = get_circles(image, brown_lower, brown_upper)
+brown_image, num_brown = get_circles(image, brown_lower-15, brown_upper)
 red_image, num_red = get_circles(image, red_lower, red_upper)
+together = cv.add(green_image,blue_image)
+together = cv.add(together,yellow_image)
+together = cv.add(together,orange_image)
+together =cv.add(together,red_image)
+together = cv.add(together,blue_image)
+together = cv.add(together , gray)
 
 # The following adds text to the original image.
 cv.putText(original_image, "Blue: " + str(num_blue), (10, 50), cv.FONT_HERSHEY_PLAIN, 2, [255, 255, 255])
@@ -150,6 +160,8 @@ cv.putText(original_image, "Red: " + str(num_red), (200, 150), cv.FONT_HERSHEY_P
 
 # Shows images.
 cv.imshow("Candy Image original", original_image)
-cv.imshow("Candy Image", brown_image)
+cv.imshow("Candy Image", together)
 
 cv.waitKey(0)
+
+

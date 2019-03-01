@@ -9,7 +9,7 @@ trackbar_values = {'Red Min': 0, 'Red Max': 0, 'Blue Min': 0, 'Blue Max': 0, 'Gr
 
 def show_unfiltered(image):
     cv.namedWindow("Unfiltered video")  # creates unfiltered video from webcam
-    cv.moveWindow("Unfiltered video", 0, 20)
+    # cv.moveWindow("Unfiltered video", 0, 20)
 
     cv.imshow("Unfiltered video", image)  # sHows the unfiltered video
 
@@ -36,7 +36,8 @@ def show_cam():
     capture = cv.VideoCapture(0)
     while True:
         # status, image = capture.read()  # Reads in the capture
-        image = cv.imread("imagesWOvideo/one.jpg")
+       # image = cv.imread("imagesWOvideo/one.jpg")
+        image = cv.imread("imagesWOvideo/pastel_screenshot_01.03.2019.png")
         show_unfiltered(image)
         create_trackbar(image)
         show_hsv(image)
@@ -59,15 +60,27 @@ def set_trackbar_values(val):
 def create_trackbar(hsv):
     cv.namedWindow("HSV")
 
-    cv.moveWindow("HSV", 0, 663)  # move window to a desirable spot
+    #cv.135Window("HSV", 0, 663)  # move window to a desirable spot
 
     # cv.moveWindow("HSV", 0, 663)
 
 
     # trackbars for max and mins for each hsv channel
-    cv.createTrackbar('Hue Min', "HSV", 0, 180,
+    # cv.createTrackbar('Hue Min', "HSV", 0, 180,
+    #                   set_trackbar_values)
+    # cv.createTrackbar('Hue Max', "HSV", 0, 180, set_trackbar_values)
+    # cv.createTrackbar('Saturation Min', "HSV", 0, 255,
+    #                   set_trackbar_values)
+    # cv.createTrackbar('Saturation Max', "HSV", 0, 255,
+    #                   set_trackbar_values)
+    # cv.createTrackbar('Value Min', "HSV", 0, 255,
+    #                   set_trackbar_values)
+    # cv.createTrackbar('Value Max', "HSV", 0, 255,
+    #                   set_trackbar_values)
+
+    cv.createTrackbar('Hue Min', "HSV", 0, 255,
                       set_trackbar_values)
-    cv.createTrackbar('Hue Max', "HSV", 0, 180, set_trackbar_values)
+    cv.createTrackbar('Hue Max', "HSV", 0, 255, set_trackbar_values)
     cv.createTrackbar('Saturation Min', "HSV", 0, 255,
                       set_trackbar_values)
     cv.createTrackbar('Saturation Max', "HSV", 0, 255,
