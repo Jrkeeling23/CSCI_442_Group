@@ -37,7 +37,6 @@ def get_circles(image, lower, upper):
     return new_image, count
 
 original_image = cv.imread("stitchedImages/candyBigSmallerTiny.jpg")
-cv.imshow("orig", original_image)
 # initial code helped from source: https://thecodacus.com/opencv-object-tracking-colour-detection-python/
 image = cv.GaussianBlur(original_image, (7, 7), 0)  # Blurs the image
 image = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Converts the image to HSV
