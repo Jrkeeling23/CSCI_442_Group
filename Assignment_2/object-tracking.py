@@ -77,6 +77,9 @@ def create_trackbar(hsv):
     cv.createTrackbar('Value Max', "HSV", 0, 255,
                       set_trackbar_values)
 
+
+
+
     # obtain the min and max positions of the sliders
     hue_min = cv.getTrackbarPos('Hue Min', "HSV")
     hue_max = cv.getTrackbarPos('Hue Max', "HSV")
