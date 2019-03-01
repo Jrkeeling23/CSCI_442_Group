@@ -3,19 +3,28 @@ import numpy as np
 
 original_image = None
 
+# Color ranges from "main" file for part 1
 green_lower = np.array([65, 0, 0])
 green_upper = np.array([84, 255, 255])
+
 blue_lower = np.array([85, 80, 40])
 blue_upper = np.array([166, 255, 255])
-yellow_lower = np.array([25, 0, 0])
+
+yellow_lower = np.array([25, 50, 0])
 yellow_upper = np.array([30, 255, 255])
+
 orange_lower = np.array([0, 63, 215])
 orange_upper = np.array([21, 255, 255])
+
 brown_lower = np.array([60, 0, 52])
 brown_upper = np.array([133, 75, 156])
+
+
 red_lower = np.array([111, 104, 155])
 red_upper = np.array([180, 180, 246])
 
+
+# function from main file which finds and draws circles over image.
 def get_circles(image, lower, upper):
     hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
     kernel = np.ones((10, 10), np.uint8)  # Needed for erode and dilate functions
@@ -52,12 +61,13 @@ def show_cam():
     while capture.isOpened():
         ret, image = capture.read()
 
-        if cv.waitKey(15) & 0xFF == ord('q'):
+        if cv.waitKey(5) & 0xFF == ord('q'):
             break
-       # display_detect_line(image)
+        # display_detect_line(image)
 
         hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 
+        # draws the circles for the given frame
         green_image, num_green = get_circles(image, green_lower, green_upper)
         blue_image, num_blue = get_circles(image, blue_lower, blue_upper)
         yellow_image, num_yellow = get_circles(image, yellow_lower, yellow_upper)
@@ -65,6 +75,7 @@ def show_cam():
         brown_image, num_brown = get_circles(image, brown_lower, brown_upper)
         red_image, num_red = get_circles(image, red_lower, red_upper)
 
+        # puts text over frame
         cv.putText(image, "Blue: " + str(num_blue), (10, 50), cv.FONT_HERSHEY_PLAIN, 2, [255, 255, 255])
         cv.putText(image, "Green: " + str(num_green), (200, 50), cv.FONT_HERSHEY_PLAIN, 2, [255, 255, 255])
         cv.putText(image, "Yellow: " + str(num_yellow), (10, 100), cv.FONT_HERSHEY_PLAIN, 2, [255, 255, 255])
@@ -78,19 +89,4 @@ def show_cam():
     cv.destroyAllWindows()
 
 
-def display_detect_line(image):
-    pt1 = len(image)/2
-    pt2 = len(image[0])/2
-    pt1 = (int)(pt1)
-    pt2 = (int) (pt2)
-    print(pt1,pt2)
-    cv.line(image, (pt1, pt2), (pt2, pt1), (0, 255, 0), 3)
-    return
-
-
 show_cam()
-
-
-
-
-
