@@ -94,8 +94,9 @@ k = 4
 h = simplicity(h, k, 1)
 s = simplicity(s, k, 1)
 v = simplicity(v, k, 1)
-hsv = [h, s, v]
-image_simple = cv.cvtColor(cv.merge(hsv), cv.COLOR_HSV2BGR)
+hsv_simple = [h, s, v]
+image_simple = cv.cvtColor(cv.merge(hsv_simple), cv.COLOR_HSV2RGB)
+test = cv.cvtColor(image_simple, cv.COLOR_RGB2GRAY)
 cv.imshow("simplified", image_simple)
 
 #testing(original_image)
