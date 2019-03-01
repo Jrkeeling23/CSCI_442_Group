@@ -83,23 +83,37 @@ def simplicity(img, channels, depth=3):
     return res2
 
 
+def get_simplified(img):
+    blur = cv.GaussianBlur(img, (5, 5), cv.BORDER_DEFAULT)
+    hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+
+    h, s, v = cv.split(hsv)
+    k = 5
+    h = simplicity(h, k, 1)
+    s = simplicity(s, k, 1)
+    v = simplicity(v, k, 1)
+    hsv_simple = [h, s, v]
+    image_simple = cv.cvtColor(cv.merge(hsv_simple), cv.COLOR_HSV2BGR)
+    return image_simple
+
+
 original_image = cv.imread("imagesWOvideo/candyBigSmallerTiny.jpg")
 cv.imshow("orig", original_image)
 
-blur = cv.GaussianBlur(original_image.copy(), (5, 5), cv.BORDER_DEFAULT)
-hsv = cv.cvtColor(blur, cv.COLOR_BGR2HSV)
+simplified = get_simplified(original_image)
 
-h, s, v = cv.split(hsv)
-k = 4
-h = simplicity(h, k, 1)
-s = simplicity(s, k, 1)
-v = simplicity(v, k, 1)
-hsv_simple = [h, s, v]
-image_simple = cv.cvtColor(cv.merge(hsv_simple), cv.COLOR_HSV2BGR)
-test = cv.cvtColor(image_simple, cv.COLOR_RGB2GRAY)
-cv.imshow("simplified", image_simple)
+blur_simple = cv.GaussianBlur(simplified, (13, 13), 3)
+v = np.median(simplified)
 
-#testing(original_image)
+kernel_dilate = np.ones((3, 3), np.uint8)
+kernel_erode = np.ones((5, 5), np.uint8)
+
+# dilate = cv.dilate(test_edge, kernel_dilate, iterations=1)
+# erode = cv.erode(dilate, kernel_erode, iterations=1)
+
+cv.imshow("simplified", simplified)
+
+testing(original_image)
 # initial code helped from source: https://thecodacus.com/opencv-object-tracking-colour-detection-python/
 image = cv.GaussianBlur(original_image, (7, 7), 0)  # Blurs the image
 image = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Converts the image to HSV
