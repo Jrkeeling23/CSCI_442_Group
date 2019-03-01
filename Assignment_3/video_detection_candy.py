@@ -1,3 +1,5 @@
+# Justin Keeling & Alex Harry
+# Assignment 3 Extra credit
 import cv2 as cv
 import numpy as np
 
@@ -18,7 +20,6 @@ orange_upper = np.array([21, 255, 255])
 
 brown_lower = np.array([60, 0, 52])
 brown_upper = np.array([133, 75, 156])
-
 
 red_lower = np.array([111, 104, 155])
 red_upper = np.array([180, 180, 246])
