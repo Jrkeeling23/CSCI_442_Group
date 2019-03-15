@@ -52,15 +52,15 @@ class MoveRobot:
         self.motors -= 800
         self.forward_back_limit()
         self.tango.setTarget(MOTORS, self.motors)
-        time.sleep(2)
-        self.stop()
+        time.sleep(1)
+#        self.stop()
 
     def wheels_backward(self):  # Moves the wheels backwards
         self.motors += 800
         self.forward_back_limit()
         self.tango.setTarget(MOTORS, self.motors)
         time.sleep(2)
-        self.stop()
+#        self.stop()
 
     def turn_limit(self):  # Makes sure turn limits are in control
         if self.turn < 2110:
@@ -69,16 +69,16 @@ class MoveRobot:
             self.turn = 7400
 
     def turn_right(self):  # Turns robot right
-        self.turn += 850
+        self.turn -=1000
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
-        time.sleep(1)
-        self.stop()
+        time.sleep(.25)
+#        self.stop()
 
     def turn_left(self):  # Turns robot left
-        self.turn -= 850
+        self.turn += 1000
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
-        time.sleep(2)
-        self.stop()
+        time.sleep(.25)
+#        self.stop()
 
