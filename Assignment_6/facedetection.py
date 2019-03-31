@@ -24,16 +24,22 @@ class FaceDetection:
         print("head Down")
 
     def __init__(self):
-        # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/View
-        cap = cv.VideoCapture(0)
-        # cv.namedWindow("Video")
-        while True:
-            status, image = cap.read()
+        # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/V$
+        camera = PiCamera()
+        camera.resolution = (640, 480)
+        camera.framerate = 32
+        rawCapture = PiRGBArray(camera, size=(640,480))
+        time.sleep(0.1)
+
+        robot.center_robot()
+
+        for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=Tru$
+            image = frame.array
             self.image_height, self.image_width, _ = image.shape
             self.detect_face(image.copy())
-            # cv.imshow("Video", img)
-            k = cv.waitKey(1)
-            if cv.waitKey(1) & 0xFF == ord('q'):
+
+            k = cv.waitKey(1) & 0xFF
+            if k == ord('q'):
                 break
         cv.destroyAllWindows()
 
