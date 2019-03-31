@@ -9,8 +9,6 @@ trackbar_values = {'Red Min': 0, 'Red Max': 0, 'Blue Min': 0, 'Blue Max': 0, 'Gr
 
 def show_unfiltered(image):
     cv.namedWindow("Unfiltered video")  # creates unfiltered video from webcam
-    # cv.moveWindow("Unfiltered video", 0, 20)
-
     cv.imshow("Unfiltered video", image)  # sHows the unfiltered video
 
 
@@ -39,7 +37,7 @@ def show_cam():
        # image = cv.imread("imagesWOvideo/one.jpg")
         image = cv.imread("imagesWOvideo/pastel_screenshot_01.03.2019.png")
         show_unfiltered(image)
-        create_trackbar(image)
+        #create_trackbar(image)
         show_hsv(image)
 
         k = cv.waitKey(1)

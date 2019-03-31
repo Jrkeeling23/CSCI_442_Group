@@ -62,8 +62,7 @@ def show_cam():
     while capture.isOpened():
         ret, image = capture.read()
 
-        if cv.waitKey(5) & 0xFF == ord('q'):
-            break
+
         # display_detect_line(image)
 
         hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
