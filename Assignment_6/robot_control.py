@@ -1,4 +1,3 @@
-import maestro
 import time
 
 MOTORS = 1
@@ -42,43 +41,68 @@ class MoveRobot:
         self.tango.setTarget(HEADTILT, 1510)
         self.tango.setTarget(BODY, self.body)
 
-    def forward_back_limit(self):  # Checks the limit for the wheels moving forward and backwards
-        if self.motors < 1510:
-            self.motors = 1510
-        elif self.motors > 7900:
-            self.motors = 7900
+#     def forward_back_limit(self):  # Checks the limit for the wheels moving forward and backwards
+#         if self.motors < 1510:
+#             self.motors = 1510
+#         elif self.motors > 7900:
+#             self.motors = 7900
 
-    def wheels_forward(self):  # Moves the wheels forward
-        self.motors -= 800
-        self.forward_back_limit()
-        self.tango.setTarget(MOTORS, self.motors)
-        time.sleep(1)
-#        self.stop()
+#     def wheels_forward(self):  # Moves the wheels forward
+#         self.motors -= 800
+#         self.forward_back_limit()
+#         self.tango.setTarget(MOTORS, self.motors)
+#         time.sleep(1)
+# #        self.stop()
 
-    def wheels_backward(self):  # Moves the wheels backwards
-        self.motors += 800
-        self.forward_back_limit()
-        self.tango.setTarget(MOTORS, self.motors)
-        time.sleep(2)
-#        self.stop()
+#     def wheels_backward(self):  # Moves the wheels backwards
+#         self.motors += 800
+#         self.forward_back_limit()
+#         self.tango.setTarget(MOTORS, self.motors)
+#         time.sleep(2)
+# #        self.stop()
 
-    def turn_limit(self):  # Makes sure turn limits are in control
-        if self.turn < 2110:
-            self.turn = 2110
-        elif self.turn > 7400:
-            self.turn = 7400
+#     def turn_limit(self):  # Makes sure turn limits are in control
+#         if self.turn < 2110:
+#             self.turn = 2110
+#         elif self.turn > 7400:
+#             self.turn = 7400
 
-    def turn_right(self):  # Turns robot right
-        self.turn -=1000
-        self.turn_limit()
-        self.tango.setTarget(TURN, self.turn)
-        time.sleep(.25)
-#        self.stop()
+#     def turn_right(self):  # Turns robot right
+#         self.turn -=1000
+#         self.turn_limit()
+#         self.tango.setTarget(TURN, self.turn)
+#         time.sleep(.25)
+# #        self.stop()
 
-    def turn_left(self):  # Turns robot left
-        self.turn += 1000
-        self.turn_limit()
-        self.tango.setTarget(TURN, self.turn)
-        time.sleep(.25)
-#        self.stop()
+#     def turn_left(self):  # Turns robot left
+#         self.turn += 1000
+#         self.turn_limit()
+#         self.tango.setTarget(TURN, self.turn)
+#         time.sleep(.25)
+# #        self.stop()
 
+    def move_head(self, h_val, v_val):
+        self.tango.setTarget(HEADTURN, self.check_value(h_val))
+        self.tango.setTarget(HEADTILT, self.check_value(v_val))
+
+    def move_wheels(self, move, value)
+        if move == "turn":
+            self.tango.setTarget(TURN, self.check_value_turn(value))
+            self.stop
+        elif move == "move":
+            self.tango.setTarget(MOTORS, self.check_value(value))
+            self.stop
+            
+    def check_value(self, val):
+        if val > 7900:
+            return 7900
+        elif val < 1510:
+            return 1510
+        else: return val
+    
+    def check_value_turn(self, val):
+        if val > 7400:
+            return 7400
+        elif val < 2110:
+            return 2110
+        else: return val
