@@ -11,13 +11,13 @@ class FaceDetection:
     horizontal = 1500
     vertical = 1500
 
-    def headRight(self): # Method to move head right
+    def headRight(self):  # Method to move head right
         print("head Right")
 
-    def headLeft(self): # Method to move head left
+    def headLeft(self):  # Method to move head left
         print("head left")
 
-    def headUp(self):    # Method to move head up
+    def headUp(self):  # Method to move head up
         print("head up")
 
     def headDown(self):  # Method to move head down
@@ -28,12 +28,12 @@ class FaceDetection:
         camera = PiCamera()
         camera.resolution = (640, 480)
         camera.framerate = 32
-        rawCapture = PiRGBArray(camera, size=(640,480))
+        rawCapture = PiRGBArray(camera, size=(640, 480))
         time.sleep(0.1)
 
         robot.center_robot()
 
-        for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=Tru$
+        for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             image = frame.array
             self.image_height, self.image_width, _ = image.shape
             self.detect_face(image.copy())
@@ -46,7 +46,6 @@ class FaceDetection:
     #     eye_cascade = cv.CascadeClassifier('/usr/local/lib/python3.6/dist-packages/cv2/data/haarcascade_eye.xml')
     # ascade = cv.CascadeClassifier('/usr/local/lib/python3.6/dist-packages/cv2/data/haarcascade_smile.xml')
     #
-
 
     def detect_face(self, img):
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3947225/View
