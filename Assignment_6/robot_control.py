@@ -1,5 +1,5 @@
 import time
-
+import maestro
 MOTORS = 1
 TURN = 2
 BODY = 0
@@ -85,24 +85,26 @@ class MoveRobot:
         self.tango.setTarget(HEADTURN, self.check_value(h_val))
         self.tango.setTarget(HEADTILT, self.check_value(v_val))
 
-    def move_wheels(self, move, value)
+    def move_wheels(self, move, value):
         if move == "turn":
             self.tango.setTarget(TURN, self.check_value_turn(value))
             self.stop
         elif move == "move":
             self.tango.setTarget(MOTORS, self.check_value(value))
             self.stop
-            
+
     def check_value(self, val):
         if val > 7900:
             return 7900
         elif val < 1510:
             return 1510
-        else: return val
-    
+        else:
+            return val
+
     def check_value_turn(self, val):
         if val > 7400:
             return 7400
         elif val < 2110:
             return 2110
-        else: return val
+        else:
+            return val
