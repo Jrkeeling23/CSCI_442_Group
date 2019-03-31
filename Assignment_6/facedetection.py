@@ -33,7 +33,7 @@ class FaceDetection:
 
         robot.center_robot()
 
-        for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=Tru$
+        for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
             image = frame.array
             self.image_height, self.image_width, _ = image.shape
             self.detect_face(image.copy())
