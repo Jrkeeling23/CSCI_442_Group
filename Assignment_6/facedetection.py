@@ -13,8 +13,8 @@ class FaceDetection:
     time_start = False
     horizontal = 1500
     vertical = 1500
-    head_increment_horizontal = 200
-    head_increment_vert = 500
+    head_increment_horizontal = 1500
+    head_increment_vert = 1000
     # def headRight(self):  # Method to move head right
     #     print("head Right")
     #
@@ -33,16 +33,20 @@ class FaceDetection:
         camera.resolution = (640, 480)
         camera.framerate = 32
         rawCapture = PiRGBArray(camera, size=(640, 480))
-        time.sleep(0.1)
+
+
         # robot.center_robot()
 
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             image = frame.array
 
             self.image_height, self.image_width, _ = image.shape
+
             self.detect_face(image.copy())
             # cv.imshow('Face Detection', gray)
+
             rawCapture.truncate(0)
+
             k = cv.waitKey(1) & 0xFF
             if k == ord('q'):
                 break
@@ -61,12 +65,13 @@ class FaceDetection:
         face_cascade = cv.CascadeClassifier(
             'haarcascade_frontalface_default.xml')
 
-        faces = face_cascade.detectMultiScale(gray, 1.09, 9)
+        faces = face_cascade.detectMultiScale(gray, 1.09, 10)
         # faces = []
         # faces = face_cascade.detectMultiScale(gray, 1.9, 5)
         # print(faces)
         if len(faces) > 0:
             for (x, y, w, h) in faces:
+                self.center(x,y,w,h)
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 roi_gray = gray[y:y + h, x:x + w]
                 roi_color = img[y:y + h, x:x + w]
@@ -79,9 +84,9 @@ class FaceDetection:
                     print("set wheels to turn robot towards person",
                           self.horizontal)
                 # enters if we are within the time fram of found human
-                if (time.time() - self.time_since_talk) < time_for_human:
-                    self.robot.stop()   # stops the wheels of the robot
-                    self.center(x, y, w, h)
+                # if (time.time() - self.time_since_talk) < time_for_human:
+                #     # self.robot.stop()   # stops the wheels of the robot
+                #     self.center(x, y, w, h)
         elif (time.time() - self.time_since_talk) > time_for_human:  # Enters to search for human face
             # print("face not found.....Set Head location")
             # print("head value: horiz: ", self.horizontal, " vertical: ", self.vertical)
@@ -110,20 +115,13 @@ class FaceDetection:
         cv.imshow('Face Detection', img)
 
     def center(self, x, y, face_w, face_y):
-        left = self.image_width * .7
-        right = self.image_width * .3
-        up = self.image_height * .3
-        down = self.image_height * .7
+        left = self.image_width * .6
+        right = self.image_width * .4
+        up = self.image_height * .4
+        down = self.image_height * .6
         x_center = x + (face_w / 2)
         y_center = y + (face_y / 2)
-        head_inc = 100
-        
-        if face_w < 75:
-            # self.robot.move_wheels("move", 7000)
-            print("Move robot forward.", face_w)
-            # print("stop forward movement")
-        else:
-            self.robot.stop()
+        head_inc = 300
         if x_center > left:
             self.horizontal -= head_inc
         elif x_center < right:
@@ -131,12 +129,20 @@ class FaceDetection:
         if y_center < up:
             self.vertical += head_inc
         elif y_center > down:
-            self.horizontal -= head_inc
+            self.vertical -= head_inc
         self.move_head()
+
+        if face_w < 75:
+            # self.robot.move_wheels("move", 7000)
+            print("Move robot forward.", face_w)
+            # print("stop forward movement")
+        else:
+            self.robot.stop()
+
 
     def move_head(self):
         self.robot.move_head(self.horizontal, self.vertical)
-        time.sleep(1)
+        time.sleep(.5)
         # moves = {"right": self.headRight, "left": self.headLeft, "up": self.headUp,
         #          "down": self.headDown}  # ["right", "left", "up", "down"]
         # moves[movement].__call__()
