@@ -1,4 +1,5 @@
 import robot_control
+import client
 import cv2 as cv
 import time
 from picamera.array import PiRGBArray
@@ -13,8 +14,8 @@ class FaceDetection:
     time_start = False
     horizontal = 1500
     vertical = 1500
-    head_increment_horizontal = 1500
-    head_increment_vert = 1000
+    head_increment_horizontal = 1497
+    head_increment_vert = 1497
     # def headRight(self):  # Method to move head right
     #     print("head Right")
     #
@@ -33,7 +34,6 @@ class FaceDetection:
         camera.resolution = (640, 480)
         camera.framerate = 32
         rawCapture = PiRGBArray(camera, size=(640, 480))
-
 
         # robot.center_robot()
 
@@ -55,6 +55,14 @@ class FaceDetection:
     #     eye_cascade = cv.CascadeClassifier('/usr/local/lib/python3.6/dist-packages/cv2/data/haarcascade_eye.xml')
     # ascade = cv.CascadeClassifier('/usr/local/lib/python3.6/dist-pfackages/cv2/data/haarcascade_smile.xml')
     #
+    def talk(self):
+        print("robot speak")
+        IP = '10.200.48.77'
+        PORT = 5010
+        speak = client.ClientSocket(IP, PORT)
+        #speak.start()
+        time.sleep(1)
+        speak.sendData("Hello Human")   
 
     def detect_face(self, img):
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3947225/View
@@ -71,16 +79,20 @@ class FaceDetection:
         # print(faces)
         if len(faces) > 0:
             for (x, y, w, h) in faces:
-                self.center(x,y,w,h)
+                self.center(x, y, w, h)
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 roi_gray = gray[y:y + h, x:x + w]
                 roi_color = img[y:y + h, x:x + w]
                 # Enters if human hasn't been found before or the time is greater than selected amount to find new human.
+                # cv.imshow('Face Detection', img)
                 if (time.time() - self.time_since_talk) > time_for_human and w > 100 or not self.time_start:
                     self.time_start = True
-                    print("Hello Human")
+                    # print("Hello Human")
+                    self.talk()
+
                     self.time_since_talk = time.time()
-                    # self.robot.move_wheels("turn", self.horizontal) # Centers the robot on the human
+                    self.robot.move_wheels("turn", self.horizontal) # Centers the robot on the human
+                    self.robot.stop()
                     print("set wheels to turn robot towards person",
                           self.horizontal)
                 # enters if we are within the time fram of found human
@@ -88,6 +100,7 @@ class FaceDetection:
                 #     # self.robot.stop()   # stops the wheels of the robot
                 #     self.center(x, y, w, h)
         elif (time.time() - self.time_since_talk) > time_for_human:  # Enters to search for human face
+            # cv.imshow('Face Detection', img)
             # print("face not found.....Set Head location")
             # print("head value: horiz: ", self.horizontal, " vertical: ", self.vertical)
             self.horizontal += self.head_increment_horizontal
@@ -113,12 +126,13 @@ class FaceDetection:
             #     self.vertical = 1510
             self.move_head()
         cv.imshow('Face Detection', img)
+    
 
     def center(self, x, y, face_w, face_y):
-        left = self.image_width * .6
-        right = self.image_width * .4
-        up = self.image_height * .4
-        down = self.image_height * .6
+        left = self.image_width * .55
+        right = self.image_width * .45
+        up = self.image_height * .45
+        down = self.image_height * .55
         x_center = x + (face_w / 2)
         y_center = y + (face_y / 2)
         head_inc = 300
