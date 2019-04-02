@@ -1,8 +1,8 @@
+import robot_control
 import cv2 as cv
 import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-import robot_control
 
 
 class FaceDetection:
@@ -13,8 +13,8 @@ class FaceDetection:
     time_start = False
     horizontal = 1500
     vertical = 1500
-    head_increment = 100
-
+    head_increment_horizontal = 200
+    head_increment_vert = 500
     # def headRight(self):  # Method to move head right
     #     print("head Right")
     #
@@ -38,46 +38,74 @@ class FaceDetection:
 
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             image = frame.array
+
             self.image_height, self.image_width, _ = image.shape
             self.detect_face(image.copy())
-
+            # cv.imshow('Face Detection', gray)
+            rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
             if k == ord('q'):
                 break
         cv.destroyAllWindows()
 
     #     eye_cascade = cv.CascadeClassifier('/usr/local/lib/python3.6/dist-packages/cv2/data/haarcascade_eye.xml')
-    # ascade = cv.CascadeClassifier('/usr/local/lib/python3.6/dist-packages/cv2/data/haarcascade_smile.xml')
+    # ascade = cv.CascadeClassifier('/usr/local/lib/python3.6/dist-pfackages/cv2/data/haarcascade_smile.xml')
     #
 
     def detect_face(self, img):
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3947225/View
-        face_cascade, gray, faces = self.face_vars(img)
-        time_for_human = 10.0 # Variable setting the time between detecting a new human
+        # faces = self.face_vars(img.copy())
+        time_for_human = 10.0  # Variable setting the time between detecting a new human
+        gray = cv.cvtColor(img.copy(), cv.COLOR_BGR2GRAY)
+
+        face_cascade = cv.CascadeClassifier(
+            '/opencv/data/haarcascades/haarcascade_frontalface_default.xml')
+
+        faces = face_cascade.detectMultiScale(gray, 1.09, 9)
+        # faces = []
+        # faces = face_cascade.detectMultiScale(gray, 1.9, 5)
         # print(faces)
         if len(faces) > 0:
             for (x, y, w, h) in faces:
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 roi_gray = gray[y:y + h, x:x + w]
                 roi_color = img[y:y + h, x:x + w]
-                if (time.time() - self.time_since_talk) > time_for_human and w > 100 or not self.time_start: # Enters if human hasn't been found before or the time is greater than selected amount to find new human.
+                # Enters if human hasn't been found before or the time is greater than selected amount to find new human.
+                if (time.time() - self.time_since_talk) > time_for_human and w > 100 or not self.time_start:
                     self.time_start = True
                     print("Hello Human")
                     self.time_since_talk = time.time()
-                    self.robot.move_wheels("turn", self.horizontal) # Centers the robot on the human
-                    # print("set wheels to turn robot towards person", self.horizontal)
-                if (time.time() - self.time_since_talk) < time_for_human:   # enters if we are within the time fram of found human
+                    # self.robot.move_wheels("turn", self.horizontal) # Centers the robot on the human
+                    print("set wheels to turn robot towards person",
+                          self.horizontal)
+                # enters if we are within the time fram of found human
+                if (time.time() - self.time_since_talk) < time_for_human:
                     self.robot.stop()   # stops the wheels of the robot
                     self.center(x, y, w, h)
         elif (time.time() - self.time_since_talk) > time_for_human:  # Enters to search for human face
             # print("face not found.....Set Head location")
             # print("head value: horiz: ", self.horizontal, " vertical: ", self.vertical)
-            self.horizontal += self.head_increment
+            self.horizontal += self.head_increment_horizontal
+            # head_back = False
             if self.horizontal > 7500:
                 self.horizontal = 1510
-                self.vertical += self.head_increment
+                self.vertical += self.head_increment_vert
             if self.vertical > 7500:
                 self.vertical = 1510
+            # if self.horizontal >= 7500:
+            #     self.horizontal = 7500
+            #     head_back = True
+            #     self.vertical += self.head_increment_vert
+            # elif self.horizontal <= 1510:
+            #     self.horizontal = 1510
+            #     self.vertical += self.head_increment_vert
+            #     head_back = False
+            # if head_back:
+            #     self.horizontal -= self.head_increment_horizontal
+            # elif not head_back:
+            #     self.horizontal += self.head_increment_horizontal
+            # if self.vertical > 7500:
+            #     self.vertical = 1510
             self.move_head()
         cv.imshow('Face Detection', img)
 
@@ -88,19 +116,22 @@ class FaceDetection:
         down = self.image_height * .7
         x_center = x + (face_w / 2)
         y_center = y + (face_y / 2)
+        head_inc = 100
+        
         if face_w < 75:
-            self.robot.move_wheels("move", 7000)
-            # print("Move robot forward.", face_w)
+            # self.robot.move_wheels("move", 7000)
+            print("Move robot forward.", face_w)
             # print("stop forward movement")
-        else: self.robot.stop()
+        else:
+            self.robot.stop()
         if x_center > left:
-            self.horizontal -= self.head_increment
+            self.horizontal -= head_inc
         elif x_center < right:
-            self.horizontal += self.head_increment
+            self.horizontal += head_inc
         if y_center < up:
-            self.vertical += self.head_increment
+            self.vertical += head_inc
         elif y_center > down:
-            self.horizontal -= self.head_increment
+            self.horizontal -= head_inc
         self.move_head()
 
     def move_head(self):
@@ -109,15 +140,14 @@ class FaceDetection:
         #          "down": self.headDown}  # ["right", "left", "up", "down"]
         # moves[movement].__call__()
 
-    def face_vars(self, img):
-        face_cascade = cv.CascadeClassifier(
-            '/usr/local/lib/python3.6/dist-packages/cv2/data/haarcascade_frontalface_default.xml')
-        gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, 1.09, 9)
-        # if len(faces) < 1:
-        #     faces = self.search_for_face(face_cascade, gray)
+    # def face_vars(self, img):
+    #     face_cascade = cv.CascadeClassifier(
+    #         '/opencv/data/haarcascades/haarcascade_frontalface_default.xml')
+    #     faces = face_cascade.detectMultiScale(img, 1.09, 9)
+    #     # if len(faces) < 1:
+    #     #     faces = self.search_for_face(face_cascade, gray)
 
-        return face_cascade, gray, faces
+    #     return faces
 
 
 face = FaceDetection()
