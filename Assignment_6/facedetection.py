@@ -59,7 +59,7 @@ class FaceDetection:
         gray = cv.cvtColor(img.copy(), cv.COLOR_BGR2GRAY)
 
         face_cascade = cv.CascadeClassifier(
-            '/opencv/data/haarcascades/haarcascade_frontalface_default.xml')
+            'haarcascade_frontalface_default.xml')
 
         faces = face_cascade.detectMultiScale(gray, 1.09, 9)
         # faces = []
@@ -136,6 +136,7 @@ class FaceDetection:
 
     def move_head(self):
         self.robot.move_head(self.horizontal, self.vertical)
+        time.sleep(1)
         # moves = {"right": self.headRight, "left": self.headLeft, "up": self.headUp,
         #          "down": self.headDown}  # ["right", "left", "up", "down"]
         # moves[movement].__call__()
