@@ -72,7 +72,7 @@ class FaceDetection:
                         self.increment_Movement("left", 2110, 7400, self.turn_inc, 0)
                     elif self.horizontal > 6200:
                         self.increment_Movement("right", 2110, 7400, self.turn_inc, 0)
-                    elif self.turn_value != 6000:
+                    else:
                         self.robot.stop()
                         self.robot_centered = True
         else:
