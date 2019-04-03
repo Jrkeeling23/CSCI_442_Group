@@ -16,6 +16,7 @@ class FaceDetection:
     vertical = 1500
     head_increment_horizontal = 1497
     head_increment_vert = 1497
+
     # def headRight(self):  # Method to move head right
     #     print("head Right")
     #
@@ -60,9 +61,9 @@ class FaceDetection:
         IP = '10.200.48.77'
         PORT = 5010
         speak = client.ClientSocket(IP, PORT)
-        #speak.start()
+        # speak.start()
         time.sleep(1)
-        speak.sendData("Hello Human")   
+        speak.sendData("Hello Human")
 
     def detect_face(self, img):
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3947225/View
@@ -91,7 +92,7 @@ class FaceDetection:
                     self.talk()
 
                     self.time_since_talk = time.time()
-                    self.robot.move_wheels("turn", self.horizontal) # Centers the robot on the human
+                    self.robot.move_wheels("turn", self.horizontal)  # Centers the robot on the human
                     self.robot.stop()
                     print("set wheels to turn robot towards person",
                           self.horizontal)
@@ -126,7 +127,6 @@ class FaceDetection:
             #     self.vertical = 1510
             self.move_head()
         cv.imshow('Face Detection', img)
-    
 
     def center(self, x, y, face_w, face_y):
         left = self.image_width * .55
@@ -152,7 +152,6 @@ class FaceDetection:
             # print("stop forward movement")
         else:
             self.robot.stop()
-
 
     def move_head(self):
         self.robot.move_head(self.horizontal, self.vertical)

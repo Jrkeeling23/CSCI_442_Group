@@ -1,3 +1,4 @@
+import threading
 import time
 import maestro
 
@@ -96,6 +97,8 @@ class MoveRobot:
         elif move == "move":
             self.motors = self.check_value(value)
             self.tango.setTarget(MOTORS, self.motors)
+        time.sleep(1)
+        threading.Thread(target=self.stop())
 
     # Methods to check value boundaries of servos
     def check_value(self, val):
