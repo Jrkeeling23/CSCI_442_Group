@@ -15,7 +15,10 @@ class FaceDetection:
     head_increment_horizontal = 1497
     search_for_face_inc = 1510
     search_for_face_up = True
-
+    wheels_value = 6000
+    wheels_inc = 50
+    turn_inc = 50
+    turn_value = 6000
     face_cascade = cv.CascadeClassifier(
         'haarcascade_frontalface_default.xml')
 
@@ -69,9 +72,17 @@ class FaceDetection:
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 self.time_since_talk = time.time()
                 self.center(x, y, w, h)
+                if self.horizontal < 5800:
+                    self.increment_Movement("left", 2110, 7400, self.turn_inc, 0)
+                elif self.horizontal > 6200:
+                    self.increment_Movement("right", 2110, 7400, self.turn_inc, 0)
+                elif self.turn_value != 6000:
+                    print("Stop wheels")
+
 
         else:  # Enters to search for human face
-            self.search_for_face()
+            # self.search_for_face()
+            self.increment_Movement("head", 1510, 7500, 599, 1198)
 
     def center(self, x, y, face_w, face_y):
         left = self.image_width * .55
@@ -87,20 +98,20 @@ class FaceDetection:
         if x_center > left:
             move_needed = True
             self.horizontal -= head_inc
-            print("move left")
+            # print("move left")
         elif x_center < right:
             move_needed = True
-            print("move right")
+            # print("move right")
 
             self.horizontal += head_inc
         if y_center < up:
             move_needed = True
-            print("move up")
+            # print("move up")
 
             self.vertical += head_inc
         elif y_center > down:
             move_needed = True
-            print("move down")
+            # print("move down")
 
             self.vertical -= head_inc
         if move_needed:
@@ -117,14 +128,22 @@ class FaceDetection:
                 self.horizontal = max
             threading.Thread(target=self.move_head).start()
         else:
-            print("centered")
+            pass
+            #print("centered")
         if face_w < 150:
             # self.robot.move_wheels("move", 7000)
-            threading.Thread(target=self.move_forward).start()
+            # threading.Thread(target=self.move_forward).start()
+            self.increment_Movement("forward", 1510, 7500,self.wheels_inc, 0)
+        elif face_w > 250:
+            self.increment_Movement("backward", 1510, 500, self.wheels_inc, 0)
+        elif self.wheels_value != 6000:
+            self.wheels_value = 6000
+            print("stop wheels ", self.wheels_value)
 
     def move_head(self):
         #        self.robot.move_head(self.horizontal, self.vertical)
         print("horizontal: ", self.horizontal, "vertical: ", self.vertical)
+        pass
 
     # time.sleep(.5)
     # moves = {"right": self.headRight, "left": self.headLeft, "up": self.headUp,
@@ -140,33 +159,86 @@ class FaceDetection:
 
     #     return faces
     def move_forward(self):
-        print("Move robot forward.")
-        time.sleep(1)
+        print("Move robot forward. ", self.wheels_value)
 
-    def search_for_face(self):
-        head_inc_value = 599
-        head_increment_vert = 1198
-        head_max = 7500
-        head_min = 1510
-        self.horizontal = self.search_for_face_inc
-        if self.horizontal > head_max:  # Checks if head has reached farthest right value
-            self.search_for_face_inc = head_max
-            self.search_for_face_up = False  # Sets to false to head the other direction
-            self.horizontal = self.search_for_face_inc  # Sets the face value iin case it is greater than 7500
-            self.vertical += head_increment_vert  # Increments the vertical position
-        elif self.horizontal < head_min:  # Checks if head is in the farthest left postion
-            self.search_for_face_inc = head_min
-            self.search_for_face_up = True  # Sets true to start heading the other way.
-            self.horizontal = self.search_for_face_inc  # Sets incase head is less than 1519
-            self.vertical += head_increment_vert  # Increments the vertical postition
+    def move_backward(self):
+        print("Move robot forward. ", self.wheels_value)
+    def turn_wheels(self):
+        print("turn wheels")
 
-        if self.vertical > head_max:  # Resets to bottom vertical position
-            self.vertical = head_min
-        if self.search_for_face_up:
-            self.search_for_face_inc += head_inc_value
-        else:
-            self.search_for_face_inc -= head_inc_value
-        self.move_head()
+    # def search_for_face(self):
+    #     head_inc_value = 599
+    #     head_increment_vert = 1198
+    #     head_max = 7500
+    #     head_min = 1510
+    #     self.horizontal = self.search_for_face_inc
+    #     if self.horizontal > head_max:  # Checks if head has reached farthest right value
+    #         self.search_for_face_inc = head_max
+    #         self.search_for_face_up = False  # Sets to false to head the other direction
+    #         self.horizontal = self.search_for_face_inc  # Sets the face value iin case it is greater than 7500
+    #         self.vertical += head_increment_vert  # Increments the vertical position
+    #     elif self.horizontal < head_min:  # Checks if head is in the farthest left postion
+    #         self.search_for_face_inc = head_min
+    #         self.search_for_face_up = True  # Sets true to start heading the other way.
+    #         self.horizontal = self.search_for_face_inc  # Sets incase head is less than 1519
+    #         self.vertical += head_increment_vert  # Increments the vertical postition
+    #
+    #     if self.vertical > head_max:  # Resets to bottom vertical position
+    #         self.vertical = head_min
+    #     if self.search_for_face_up:
+    #         self.search_for_face_inc += head_inc_value
+    #     else:
+    #         self.search_for_face_inc -= head_inc_value
+    #     self.move_head()
+
+    def increment_Movement(self, move, min, max, inc1, inc2): # iteratively moves robot.
+        moves = {"head": self.move_head, "forward": self.move_forward, "backward": self.move_backward, "left": self.turn_wheels, "right": self.turn_wheels}
+
+        if move == "head":
+            self.horizontal = self.search_for_face_inc
+            if self.horizontal > max:  # Checks if head has reached farthest right value
+                self.search_for_face_inc = max
+                self.search_for_face_up = False  # Sets to false to head the other direction
+                self.horizontal = self.search_for_face_inc  # Sets the face value iin case it is greater than 7500
+                self.vertical += inc2  # Increments the vertical position
+            elif self.horizontal < min:  # Checks if head is in the farthest left postion
+                self.search_for_face_inc = min
+                self.search_for_face_up = True  # Sets true to start heading the other way.
+                self.horizontal = self.search_for_face_inc  # Sets incase head is less than 1519
+                self.vertical += inc2  # Increments the vertical postition
+
+            if self.vertical > max:  # Resets to bottom vertical position
+                self.vertical = min
+            if self.search_for_face_up:
+                self.search_for_face_inc += inc1
+            else:
+                self.search_for_face_inc -= inc1
+        elif move == "forward":
+            self.wheels_value -= inc1
+            if self.wheels_value > max:
+                self.wheels_value = max
+            elif self.wheels_value < min:
+                self.wheels_value = min
+        elif move == "backward":
+            self.wheels_value += inc1
+            if self.wheels_value > max:
+                self.wheels_value = max
+            elif self.wheels_value < min:
+                self.wheels_value = min
+        elif move == "right":
+            self.turn_value -= inc1
+            if self.turn_value > max:  # Checks if head has reached farthest lef value
+                self.turn_value = max
+            elif self.turn_value < min:  # Checks if head is in the farthest right postion
+                self.turn_value = min
+        elif move == "left":
+            self.turn_value += inc1
+            if self.turn_value > max:  # Checks if head has reached farthest left value
+                self.turn_value = max
+            elif self.turn_value < min:  # Checks if head is in the farthest right postion
+                self.turn_value = min
+
+        moves[move].__call__()
 
 
 threading.Thread(target=FaceDetection).start()
