@@ -51,7 +51,7 @@ class FaceDetection:
         # speak.start()
         time.sleep(1)
         speak.sendData("Hello Human")
-
+    robot_centered = False
     def detect_face(self, img):  # Method to detect the human face
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3947225/View
         time_for_human = 10.0  # Variable setting the time between detecting a new human
@@ -62,16 +62,19 @@ class FaceDetection:
                     time.time() - self.time_since_talk) > time_for_human or not self.time_start:  # Enters if a human is found the first time running a program, or a human hasn't been found for the chosen amount of time.
                 self.time_start = True  # Tracks the first time a human is found running the program
                 self.talk()
+                self.robot_centered = False
             for (x, y, w, h) in faces:  # Loops over faces (should be only one)
                 self.time_since_talk = time.time()  # resets the clock since a human has been found.
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 self.center(x, y, w, h)  # Calls the function to center the face.
-                if self.horizontal < 5800: # Makes robot face the human.
-                    self.increment_Movement("left", 2110, 7400, self.turn_inc, 0)
-                elif self.horizontal > 6200:
-                    self.increment_Movement("right", 2110, 7400, self.turn_inc, 0)
-                elif self.turn_value != 6000:
-                    self.robot.stop()
+                if not robot_control:
+                    if self.horizontal < 5800: # Makes robot face the human.
+                        self.increment_Movement("left", 2110, 7400, self.turn_inc, 0)
+                    elif self.horizontal > 6200:
+                        self.increment_Movement("right", 2110, 7400, self.turn_inc, 0)
+                    elif self.turn_value != 6000:
+                        self.robot.stop()
+                        self.robot_centered = True
         else:
             # Adjust head increments to find a face.
             # self.horizontal += self.head_increment_horizontal
