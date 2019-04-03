@@ -3,6 +3,8 @@ import threading
 import numpy as np
 import cv2 as cv
 import time
+
+
 class FaceDetection:
     image_width = 0
     image_height = 0
@@ -11,7 +13,9 @@ class FaceDetection:
     horizontal = 1500
     vertical = 1500
     head_increment_horizontal = 1497
-    head_increment_vert = 1497
+    search_for_face_inc = 1510
+    search_for_face_up = True
+
     face_cascade = cv.CascadeClassifier(
         'haarcascade_frontalface_default.xml')
 
@@ -35,15 +39,15 @@ class FaceDetection:
     # ascade = cv.CascadeClassifier('/usr/local/lib/python3.6/dist-packages/cv2/data/haarcascade_smile.xml')
     #
 
-        #
-        # def talk(self):
-        #     print("robot speak")
-        #     IP = '10.200.48.77'
-        #     PORT = 5010
-        #     speak = client.ClientSocket(IP, PORT)
-        #     # speak.start()
-        #     time.sleep(1)
-        #     speak.sendData("Hello Human")
+    #
+    # def talk(self):
+    #     print("robot speak")
+    #     IP = '10.200.48.77'
+    #     PORT = 5010
+    #     speak = client.ClientSocket(IP, PORT)
+    #     # speak.start()
+    #     time.sleep(1)
+    #     speak.sendData("Hello Human")
 
     def detect_face(self, img):
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3947225/View
@@ -67,14 +71,7 @@ class FaceDetection:
                 self.center(x, y, w, h)
 
         else:  # Enters to search for human face
-
-            self.horizontal += self.head_increment_horizontal
-            if self.horizontal > 7500:
-                self.horizontal = 1510
-                self.vertical += self.head_increment_vert
-            if self.vertical > 7500:
-                self.vertical = 1510
-            self.move_head()
+            self.search_for_face()
 
     def center(self, x, y, face_w, face_y):
         left = self.image_width * .55
@@ -107,23 +104,32 @@ class FaceDetection:
 
             self.vertical -= head_inc
         if move_needed:
+            min = 1510
+            max = 7500
+            # Verifies values are within bounds.
+            if self.vertical < min:
+                self.vertical = min
+            elif self.vertical > max:
+                self.vertical = max
+            if self.horizontal < min:
+                self.horizontal = min
+            elif self.horizontal > max:
+                self.horizontal = max
             threading.Thread(target=self.move_head).start()
         else:
             print("centered")
-
         if face_w < 150:
             # self.robot.move_wheels("move", 7000)
             threading.Thread(target=self.move_forward).start()
 
-
-
     def move_head(self):
-#        self.robot.move_head(self.horizontal, self.vertical)
-        pass
-        #time.sleep(.5)
-        # moves = {"right": self.headRight, "left": self.headLeft, "up": self.headUp,
-        #          "down": self.headDown}  # ["right", "left", "up", "down"]
-        # moves[movement].__call__()
+        #        self.robot.move_head(self.horizontal, self.vertical)
+        print("horizontal: ", self.horizontal, "vertical: ", self.vertical)
+
+    # time.sleep(.5)
+    # moves = {"right": self.headRight, "left": self.headLeft, "up": self.headUp,
+    #          "down": self.headDown}  # ["right", "left", "up", "down"]
+    # moves[movement].__call__()
 
     # def face_vars(self, img):
     #     face_cascade = cv.CascadeClassifier(
@@ -137,6 +143,30 @@ class FaceDetection:
         print("Move robot forward.")
         time.sleep(1)
 
+    def search_for_face(self):
+        head_inc_value = 599
+        head_increment_vert = 1198
+        head_max = 7500
+        head_min = 1510
+        self.horizontal = self.search_for_face_inc
+        if self.horizontal > head_max:  # Checks if head has reached farthest right value
+            self.search_for_face_inc = head_max
+            self.search_for_face_up = False  # Sets to false to head the other direction
+            self.horizontal = self.search_for_face_inc  # Sets the face value iin case it is greater than 7500
+            self.vertical += head_increment_vert  # Increments the vertical position
+        elif self.horizontal < head_min:  # Checks if head is in the farthest left postion
+            self.search_for_face_inc = head_min
+            self.search_for_face_up = True  # Sets true to start heading the other way.
+            self.horizontal = self.search_for_face_inc  # Sets incase head is less than 1519
+            self.vertical += head_increment_vert  # Increments the vertical postition
+
+        if self.vertical > head_max:  # Resets to bottom vertical position
+            self.vertical = head_min
+        if self.search_for_face_up:
+            self.search_for_face_inc += head_inc_value
+        else:
+            self.search_for_face_inc -= head_inc_value
+        self.move_head()
+
 
 threading.Thread(target=FaceDetection).start()
-

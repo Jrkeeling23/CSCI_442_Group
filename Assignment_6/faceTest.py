@@ -15,8 +15,8 @@ class FaceDetection:
     time_start = False
     horizontal = 1500
     vertical = 1500
-    head_increment_horizontal = 1497
-    head_increment_vert = 1497
+    search_for_face_inc = 1510
+    search_for_face_up = True
     face_cascade = cv.CascadeClassifier(
         'haarcascade_frontalface_default.xml')
 
@@ -64,13 +64,14 @@ class FaceDetection:
 
         else:
             # Adjust head increments to find a face.
-            self.horizontal += self.head_increment_horizontal
-            if self.horizontal > 7500:
-                self.horizontal = 1510
-                self.vertical += self.head_increment_vert
-            if self.vertical > 7500:
-                self.vertical = 1510
-            self.move_head()
+            # self.horizontal += self.head_increment_horizontal
+            # if self.horizontal > 7500:
+            #     self.horizontal = 1510
+            #     self.vertical += self.head_increment_vert
+            # if self.vertical > 7500:
+            #     self.vertical = 1510
+            # self.move_head()
+            self.search_for_face()
 
     def center(self, x, y, face_w, face_y): # Function to center head and move robot towards human.
         # first four variables define what is considered outside of center of image.
@@ -97,6 +98,17 @@ class FaceDetection:
             move_needed = True
             self.vertical -= head_inc
         if move_needed:
+            min = 1510
+            max = 7500
+            # Verifies values are within bounds.
+            if self.vertical < min:
+                self.vertical = min
+            elif self.vertical > max:
+                self.vertical = max
+            if self.horizontal < min:
+                self.horizontal = min
+            elif self.horizontal > max:
+                self.horizontal = max
             threading.Thread(target=self.move_head).start() # moves the head
 
         if face_w < 75: # 75 is the value to decide if the robot needs to move forward or not.
@@ -105,5 +117,29 @@ class FaceDetection:
     def move_head(self):   # function that moves the robot head.
         threading.Thread(target=self.robot.move_head(self.horizontal, self.vertical)).start()
 
+    def search_for_face(self): # Searches for face back and forth.
+        head_inc_value = 599
+        head_increment_vert = 1198
+        head_max = 7500
+        head_min = 1510
+        self.horizontal = self.search_for_face_inc
+        if self.horizontal > head_max:  # Checks if head has reached farthest right value
+            self.search_for_face_inc = head_max
+            self.search_for_face_up = False  # Sets to false to head the other direction
+            self.horizontal = self.search_for_face_inc  # Sets the face value iin case it is greater than 7500
+            self.vertical += head_increment_vert  # Increments the vertical position
+        elif self.horizontal < head_min:  # Checks if head is in the farthest left postion
+            self.search_for_face_inc = head_min
+            self.search_for_face_up = True  # Sets true to start heading the other way.
+            self.horizontal = self.search_for_face_inc  # Sets incase head is less than 1519
+            self.vertical += head_increment_vert  # Increments the vertical postition
+
+        if self.vertical > head_max:  # Resets to bottom vertical position
+            self.vertical = head_min
+        if self.search_for_face_up:
+            self.search_for_face_inc += head_inc_value
+        else:
+            self.search_for_face_inc -= head_inc_value
+        self.move_head()
 
 threading.Thread(target=FaceDetection).start()  # Starts the program on it's own thread.
