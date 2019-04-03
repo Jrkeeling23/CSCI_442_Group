@@ -1,5 +1,5 @@
 import robot_control
-import client
+#import client
 import cv2 as cv
 import time
 from picamera.array import PiRGBArray
@@ -44,13 +44,14 @@ class FaceDetection:
         cv.destroyAllWindows()
 
     def talk(self):  # Method to call the robot talk function
-        print("robot speak")
-        IP = '10.200.48.77'
-        PORT = 5010
-        speak = client.ClientSocket(IP, PORT)
-        # speak.start()
-        time.sleep(1)
-        speak.sendData("Hello Human")
+        # print("robot speak")
+        # IP = '10.200.48.77'
+        # PORT = 5010
+        # speak = client.ClientSocket(IP, PORT)
+        # # speak.start()
+        # time.sleep(1)
+        # speak.sendData("Hello Human")
+        print("hello human")
     robot_centered = False
     def detect_face(self, img):  # Method to detect the human face
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3947225/View
@@ -64,6 +65,7 @@ class FaceDetection:
                 self.talk()
                 self.robot_centered = False
             for (x, y, w, h) in faces:  # Loops over faces (should be only one)
+                time.sleep(.4)
                 self.time_since_talk = time.time()  # resets the clock since a human has been found.
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 self.center(x, y, w, h)  # Calls the function to center the face.
@@ -85,7 +87,7 @@ class FaceDetection:
             #     self.vertical = 1510
             # self.move_head()
            # self.search_for_face()
-            self.increment_Movement("head", 1510, 7500, 599, 1198)
+            self.increment_Movement("head", 1510, 7500, 599, 1497)
 
     def center(self, x, y, face_w, face_y):  # Function to center head and move robot towards human.
         # first four variables define what is considered outside of center of image.
@@ -96,7 +98,7 @@ class FaceDetection:
         # Get the x and y values for the center of the box surrounding the face.
         x_center = x + (face_w / 2)
         y_center = y + (face_y / 2)
-        head_inc = 300  # variable adjust how much the head moves each iteration
+        head_inc = 175  # variable adjust how much the head moves each iteration
         move_needed = False  # Boolean for later function to decide if moving the head is needed.
 
         if x_center > left:  # Checks if robot needs to move head left.
@@ -126,7 +128,8 @@ class FaceDetection:
             threading.Thread(target=self.move_head).start()  # moves the head
 
         if face_w < 75:  # 75 is the value to decide if the robot needs to move forward or not.
-            threading.Thread(target=self.robot.move_wheels("move", 7000)).start()
+            print("move forward")
+            #threading.Thread(target=self.robot.move_wheels("move", 7000)).start()
         elif face_w > 250:
             self.increment_Movement("backward", 1510, 500, self.wheels_inc, 0)
         elif self.wheels_value != 6000:
@@ -162,11 +165,11 @@ class FaceDetection:
     #     self.move_head()
 
     def move_wheels(self):
-        self.robot.move_wheels("move", self.wheels_value)
-
+        #self.robot.move_wheels("move", self.wheels_value)
+        print("move wheels")
     def turn_wheels(self):
-        self.robot.move_wheels("turn", self.turn_value)
-
+        #self.robot.move_wheels("turn", self.turn_value)
+        print("turn wheels")
     def increment_Movement(self, move, min, max, inc1, inc2):  # iteratively moves robot.
         moves = {"head": self.move_head, "forward": self.move_wheels, "backward": self.move_wheels,
                  "left": self.turn_wheels, "right": self.turn_wheels}
@@ -215,7 +218,7 @@ class FaceDetection:
             elif self.turn_value < min:  # Checks if head is in the farthest right postion
                 self.turn_value = min
 
-        moves[move].__call__()
+        threading.Thread(target=moves[move].__call__())
 
 
 threading.Thread(target=FaceDetection).start()  # Starts the program on it's own thread.
