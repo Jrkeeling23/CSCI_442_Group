@@ -1,5 +1,6 @@
-import maestro
+import threading
 import time
+import maestro
 
 MOTORS = 1
 TURN = 2
@@ -19,6 +20,7 @@ class MoveRobot:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
+        self.center_robot()
 
     def stop(self):  # Stops the robot from moving or turning
         if self.motors > 6000:  # Slows the robot down slightly before completely stopping
@@ -52,15 +54,15 @@ class MoveRobot:
         self.motors -= 800
         self.forward_back_limit()
         self.tango.setTarget(MOTORS, self.motors)
-        time.sleep(1)
-#        self.stop()
+        time.sleep(1.4)
+        self.stop()
 
     def wheels_backward(self):  # Moves the wheels backwards
         self.motors += 800
         self.forward_back_limit()
         self.tango.setTarget(MOTORS, self.motors)
-        time.sleep(2)
-#        self.stop()
+        time.sleep(1)
+        self.stop()
 
     def turn_limit(self):  # Makes sure turn limits are in control
         if self.turn < 2110:
@@ -69,16 +71,51 @@ class MoveRobot:
             self.turn = 7400
 
     def turn_right(self):  # Turns robot right
-        self.turn -=1000
+        self.turn -=1500
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
-        time.sleep(.25)
-#        self.stop()
+        time.sleep(.2)
+        self.stop()
+        print("turn right")
 
     def turn_left(self):  # Turns robot left
-        self.turn += 1000
+        self.turn += 1500
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
-        time.sleep(.25)
-#        self.stop()
+        time.sleep(.2)
+        self.stop()
+        print("turn left")
 
+    def move_head(self, h_val, v_val):  # method to move the robot head
+        self.headTilt = self.check_value(v_val)
+        self.headTurn = self.check_value(h_val)
+        self.tango.setTarget(HEADTURN, self.headTurn)
+        self.tango.setTarget(HEADTILT, self.headTilt)
+        time.sleep(.5)
+
+    def move_wheels(self, move, value):  # Method to move the wheels of the robot
+        if move == "turn":
+            self.turn = self.check_value_turn(value)
+            self.tango.setTarget(TURN, self.turn)
+        elif move == "move":
+            self.motors = self.check_value(value)
+            self.tango.setTarget(MOTORS, self.motors)
+        time.sleep(1)
+        threading.Thread(target=self.stop())
+
+    # Methods to check value boundaries of servos
+    def check_value(self, val):
+        if val > 7900:
+            return 7900
+        elif val < 1510:
+            return 1510
+        else:
+            return val
+
+    def check_value_turn(self, val):
+        if val > 7400:
+            return 7400
+        elif val < 2110:
+            return 2110
+        else:
+            return val

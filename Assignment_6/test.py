@@ -1,10 +1,8 @@
-import robot_control
-#import client
+import threading
+
+import numpy as np
 import cv2 as cv
 import time
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-
 
 
 class FaceDetection:
@@ -21,97 +19,100 @@ class FaceDetection:
     wheels_inc = 50
     turn_inc = 50
     turn_value = 6000
-    robot = robot_control.MoveRobot()
     face_cascade = cv.CascadeClassifier(
         'haarcascade_frontalface_default.xml')
 
     def __init__(self):
-        # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/V$
-        camera = PiCamera()
-        camera.resolution = (640, 480)
-        camera.framerate = 32
-        rawCapture = PiRGBArray(camera, size=(640, 480))
+        # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/View
+        cap = cv.VideoCapture(0)
+        # cv.namedWindow("Video")
+        while True:
+            status, image = cap.read()
+            self.image_height, self.image_width, _ = image.shape
 
-        for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-            image = frame.array
-            self.image_height, self.image_width, _ = image.shape  # Gets the image size
             self.detect_face(image)
+            # cv.imshow("Video", img)
             cv.imshow('Face Detection', image)
-            rawCapture.truncate(0)
-            k = cv.waitKey(1) & 0xFF
-            if k == ord('q'):
+            k = cv.waitKey(1)
+            if cv.waitKey(1) & 0xFF == ord('q'):
                 break
         cv.destroyAllWindows()
 
-    def talk(self):  # Method to call the robot talk function
-        # print("robot speak")
-        # IP = '10.200.48.77'
-        # PORT = 5010
-        # speak = client.ClientSocket(IP, PORT)
-        # # speak.start()
-        # time.sleep(1)
-        # speak.sendData("Hello Human")
-        print("hello human")
-    robot_centered = False
-    def detect_face(self, img):  # Method to detect the human face
+    #     eye_cascade = cv.CascadeClassifier('/usr/local/lib/python3.6/dist-packages/cv2/data/haarcascade_eye.xml')
+    # ascade = cv.CascadeClassifier('/usr/local/lib/python3.6/dist-packages/cv2/data/haarcascade_smile.xml')
+    #
+
+    #
+    # def talk(self):
+    #     print("robot speak")
+    #     IP = '10.200.48.77'
+    #     PORT = 5010
+    #     speak = client.ClientSocket(IP, PORT)
+    #     # speak.start()
+    #     time.sleep(1)
+    #     speak.sendData("Hello Human")
+
+    def detect_face(self, img):
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3947225/View
-        time_for_human = 10.0  # Variable setting the time between detecting a new human
+        # faces = self.face_vars(img.copy())
+        time_for_human = 5.0  # Variable setting the time between detecting a new human
         gray = cv.cvtColor(img.copy(), cv.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(gray, 1.09, 10)
-        if len(faces) > 0:  # Enters if a face is found
-            if (
-                    time.time() - self.time_since_talk) > time_for_human or not self.time_start:  # Enters if a human is found the first time running a program, or a human hasn't been found for the chosen amount of time.
-                self.time_start = True  # Tracks the first time a human is found running the program
-                self.talk()
-                self.robot_centered = False
-            for (x, y, w, h) in faces:  # Loops over faces (should be only one)
-                time.sleep(.4)
-                self.time_since_talk = time.time()  # resets the clock since a human has been found.
-                cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                self.center(x, y, w, h)  # Calls the function to center the face.
-                if not robot_control:
-                    if self.horizontal < 5800: # Makes robot face the human.
-                        self.increment_Movement("left", 2110, 7400, self.turn_inc, 0)
-                    elif self.horizontal > 6200:
-                        self.increment_Movement("right", 2110, 7400, self.turn_inc, 0)
-                    else:
-                        self.robot.stop()
-                        self.robot_centered = True
-        else:
-            # Adjust head increments to find a face.
-            # self.horizontal += self.head_increment_horizontal
-            # if self.horizontal > 7500:
-            #     self.horizontal = 1510
-            #     self.vertical += self.head_increment_vert
-            # if self.vertical > 7500:
-            #     self.vertical = 1510
-            # self.move_head()
-           # self.search_for_face()
-            self.increment_Movement("head", 1510, 7500, 599, 1497)
+        # faces = []
+        # faces = face_cascade.detectMultiScale(gray, 1.9, 5)
+        # print(faces)
+        if len(faces) > 0:
+            if (time.time() - self.time_since_talk) > time_for_human or not self.time_start:
+                self.time_start = True
+                print("Hello Human")
+                # self.time_since_talk = time.time()
 
-    def center(self, x, y, face_w, face_y):  # Function to center head and move robot towards human.
-        # first four variables define what is considered outside of center of image.
+            #                    self.talk()
+            for (x, y, w, h) in faces:
+                cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                self.time_since_talk = time.time()
+                self.center(x, y, w, h)
+                if self.horizontal < 5800:
+                    self.increment_Movement("left", 2110, 7400, self.turn_inc, 0)
+                elif self.horizontal > 6200:
+                    self.increment_Movement("right", 2110, 7400, self.turn_inc, 0)
+                elif self.turn_value != 6000:
+                    print("Stop wheels")
+
+
+        else:  # Enters to search for human face
+            # self.search_for_face()
+            self.increment_Movement("head", 1510, 7500, 599, 1198)
+
+    def center(self, x, y, face_w, face_y):
         left = self.image_width * .55
         right = self.image_width * .45
         up = self.image_height * .45
         down = self.image_height * .55
-        # Get the x and y values for the center of the box surrounding the face.
+
         x_center = x + (face_w / 2)
         y_center = y + (face_y / 2)
-        head_inc = 175  # variable adjust how much the head moves each iteration
-        move_needed = False  # Boolean for later function to decide if moving the head is needed.
+        head_inc = 300
+        move_needed = False
 
-        if x_center > left:  # Checks if robot needs to move head left.
+        if x_center > left:
             move_needed = True
             self.horizontal -= head_inc
-        elif x_center < right:  # Checks if robot needs to move head right.
+            # print("move left")
+        elif x_center < right:
             move_needed = True
+            # print("move right")
+
             self.horizontal += head_inc
-        if y_center < up:  # Checks if robot needs to move head up.
+        if y_center < up:
             move_needed = True
+            # print("move up")
+
             self.vertical += head_inc
-        elif y_center > down:  # Checks if robot needs to move head down.
+        elif y_center > down:
             move_needed = True
+            # print("move down")
+
             self.vertical -= head_inc
         if move_needed:
             min = 1510
@@ -125,21 +126,47 @@ class FaceDetection:
                 self.horizontal = min
             elif self.horizontal > max:
                 self.horizontal = max
-            threading.Thread(target=self.move_head).start()  # moves the head
-
-        if face_w < 75:  # 75 is the value to decide if the robot needs to move forward or not.
-            print("move forward")
-            #threading.Thread(target=self.robot.move_wheels("move", 7000)).start()
+            threading.Thread(target=self.move_head).start()
+        else:
+            pass
+            #print("centered")
+        if face_w < 150:
+            # self.robot.move_wheels("move", 7000)
+            # threading.Thread(target=self.move_forward).start()
+            self.increment_Movement("forward", 1510, 7500,self.wheels_inc, 0)
         elif face_w > 250:
             self.increment_Movement("backward", 1510, 500, self.wheels_inc, 0)
         elif self.wheels_value != 6000:
             self.wheels_value = 6000
-            self.robot.stop()
+            print("stop wheels ", self.wheels_value)
 
-    def move_head(self):  # function that moves the robot head.
-        self.robot.move_head(self.horizontal, self.vertical)
+    def move_head(self):
+        #        self.robot.move_head(self.horizontal, self.vertical)
+        print("horizontal: ", self.horizontal, "vertical: ", self.vertical)
+        pass
 
-    # def search_for_face(self): # Searches for face back and forth.
+    # time.sleep(.5)
+    # moves = {"right": self.headRight, "left": self.headLeft, "up": self.headUp,
+    #          "down": self.headDown}  # ["right", "left", "up", "down"]
+    # moves[movement].__call__()
+
+    # def face_vars(self, img):
+    #     face_cascade = cv.CascadeClassifier(
+    #         '/opencv/data/haarcascades/haarcascade_frontalface_default.xml')
+    #     faces = face_cascade.detectMultiScale(img, 1.09, 9)
+    #     # if len(faces) < 1:
+    #     #     faces = self.search_for_face(face_cascade, gray)
+
+    #     return faces
+    def move_forward(self):
+        print("Move robot forward. ", self.wheels_value)
+
+    def move_backward(self):
+        print("Move robot forward. ", self.wheels_value)
+    def turn_wheels(self):
+        print("turn wheels")
+
+    # def search_for_face(self):
     #     head_inc_value = 599
     #     head_increment_vert = 1198
     #     head_max = 7500
@@ -164,15 +191,8 @@ class FaceDetection:
     #         self.search_for_face_inc -= head_inc_value
     #     self.move_head()
 
-    def move_wheels(self):
-        #self.robot.move_wheels("move", self.wheels_value)
-        print("move wheels")
-    def turn_wheels(self):
-        #self.robot.move_wheels("turn", self.turn_value)
-        print("turn wheels")
-    def increment_Movement(self, move, min, max, inc1, inc2):  # iteratively moves robot.
-        moves = {"head": self.move_head, "forward": self.move_wheels, "backward": self.move_wheels,
-                 "left": self.turn_wheels, "right": self.turn_wheels}
+    def increment_Movement(self, move, min, max, inc1, inc2): # iteratively moves robot.
+        moves = {"head": self.move_head, "forward": self.move_forward, "backward": self.move_backward, "left": self.turn_wheels, "right": self.turn_wheels}
 
         if move == "head":
             self.horizontal = self.search_for_face_inc
@@ -221,4 +241,4 @@ class FaceDetection:
         moves[move].__call__()
 
 
-face = FaceDetection()  # Starts the program on it's own thread.
+threading.Thread(target=FaceDetection).start()

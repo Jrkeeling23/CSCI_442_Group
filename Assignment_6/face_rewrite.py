@@ -4,7 +4,7 @@ import cv2 as cv
 import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-
+import threading
 
 
 class FaceDetection:
@@ -14,13 +14,14 @@ class FaceDetection:
     time_start = False
     horizontal = 1500
     vertical = 1500
-    head_increment_horizontal = 1497
+    head_increment_horizontal = 1996
     search_for_face_inc = 1510
     search_for_face_up = True
     wheels_value = 6000
     wheels_inc = 50
     turn_inc = 50
     turn_value = 6000
+    head_increment_vert = 1996
     robot = robot_control.MoveRobot()
     face_cascade = cv.CascadeClassifier(
         'haarcascade_frontalface_default.xml')
@@ -28,8 +29,9 @@ class FaceDetection:
     def __init__(self):
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/V$
         camera = PiCamera()
+        #camera.resolution = (640, 480)
         camera.resolution = (640, 480)
-        camera.framerate = 32
+        camera.framerate = 15
         rawCapture = PiRGBArray(camera, size=(640, 480))
 
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -65,7 +67,6 @@ class FaceDetection:
                 self.talk()
                 self.robot_centered = False
             for (x, y, w, h) in faces:  # Loops over faces (should be only one)
-                time.sleep(.4)
                 self.time_since_talk = time.time()  # resets the clock since a human has been found.
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 self.center(x, y, w, h)  # Calls the function to center the face.
@@ -78,23 +79,25 @@ class FaceDetection:
                         self.robot.stop()
                         self.robot_centered = True
         else:
-            # Adjust head increments to find a face.
-            # self.horizontal += self.head_increment_horizontal
-            # if self.horizontal > 7500:
-            #     self.horizontal = 1510
-            #     self.vertical += self.head_increment_vert
-            # if self.vertical > 7500:
-            #     self.vertical = 1510
-            # self.move_head()
+            # # Adjust head increments to find a face.
+            self.horizontal += self.head_increment_horizontal
+            if self.horizontal > 7500:
+                self.horizontal = 1510
+                self.vertical += self.head_increment_vert
+            if self.vertical > 7500:
+                self.vertical = 1510
+            self.move_head()
+            time.sleep(1)
            # self.search_for_face()
-            self.increment_Movement("head", 1510, 7500, 599, 1497)
+        #    self.increment_Movement("head", 1510, 7500, 1996, 1996)
+        #    time.sleep(.4)
 
     def center(self, x, y, face_w, face_y):  # Function to center head and move robot towards human.
         # first four variables define what is considered outside of center of image.
-        left = self.image_width * .55
-        right = self.image_width * .45
-        up = self.image_height * .45
-        down = self.image_height * .55
+        left = self.image_width * .6
+        right = self.image_width * .4
+        up = self.image_height * .4
+        down = self.image_height * .6
         # Get the x and y values for the center of the box surrounding the face.
         x_center = x + (face_w / 2)
         y_center = y + (face_y / 2)
@@ -218,7 +221,7 @@ class FaceDetection:
             elif self.turn_value < min:  # Checks if head is in the farthest right postion
                 self.turn_value = min
 
-        moves[move].__call__()
+        threading.Thread(target=moves[move].__call__())
 
 
-face = FaceDetection()  # Starts the program on it's own thread.
+threading.Thread(target=FaceDetection).start()  # Starts the program on it's own thread.
