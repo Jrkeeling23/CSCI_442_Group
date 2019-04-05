@@ -31,15 +31,15 @@ class MoveRobot:
             self.motors += int((6000 - self.motors) / 2)
         self.tango.setTarget(MOTORS, self.motors)
         if self.turn > 6000:
-            self.turn -= int((self.turn - 6000) / 2)
+            self.turn -= int((self.turn - 6000))
         elif self.turn < 6000:
-            self.turn += int((6000 - self.turn) / 2)
+            self.turn += int((6000 - self.turn))
         self.tango.setTarget(TURN, self.turn)
         self.motors = 6000
         self.turn = 6000
         self.tango.setTarget(MOTORS, self.motors)  # Completely stops the robot
         self.tango.setTarget(TURN, self.turn)
-        time.sleep(.5)
+        time.sleep(.1)
 
     def center_robot(self):  # Ctenters the robot and tilts the head down
         self.tango.setTarget(HEADTURN, self.headTurn)
