@@ -4,7 +4,7 @@ import cv2 as cv
 import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-import threading
+
 
 
 class FaceDetection:
