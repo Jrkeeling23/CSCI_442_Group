@@ -1,10 +1,12 @@
 import robot_control
-#import client
+import client
 import cv2 as cv
 import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import threading
+import socket, time
+import queue
 
 
 class FaceDetection:
@@ -47,13 +49,20 @@ class FaceDetection:
 
     def talk(self):  # Method to call the robot talk function
         # print("robot speak")
-        # IP = '10.200.48.77'
+        # IP = '10.200.9.122'
         # PORT = 5010
         # speak = client.ClientSocket(IP, PORT)
-        # # speak.start()
+        # speak.start()
         # time.sleep(1)
         # speak.sendData("Hello Human")
-        print("hello human")
+        # print("hello human")
+                    
+
+        IP = '10.200.9.122'
+        PORT = 5010
+        speak = client.ClientSocket(IP, PORT)
+        speak.sendData("hello human")
+
     robot_centered = False
 
     def detect_face(self, img):  # Method to detect the human face
@@ -77,13 +86,13 @@ class FaceDetection:
                 # Calls the function to center the face.
                 move_for = False
                 if not self.robot_centered:
-                    if self.horizontal <= 5800:  # Makes robot face the human.
+                    if self.horizontal <= 5200 and not self.robot_centered:  # Makes robot face the human.
                         # self.increment_Movement(
                        #     "left", 2110, 7400, self.turn_inc, 0)
                         self.robot.turn_right()
                         self.center(x, y, w, h)
 
-                    elif self.horizontal >= 6200:
+                    elif self.horizontal >= 6800 and not self.robot_centered:
                         #    self.increment_Movement(
                      #       "right", 2110, 7400, self.turn_inc, 0)
                         self.robot.turn_left()
@@ -92,9 +101,10 @@ class FaceDetection:
                     else:
                         self.robot_centered = True
                         move_for = True
+                        print("robot centered")
                     if move_for:
 
-                        if w < 45:  # 75 is the value to decide if the robot needs to move forward or not.
+                        if w < 75:  # 75 is the value to decide if the robot needs to move forward or not.
                             print("move forward")
                             self.robot.wheels_forward()
                             #threading.Thread(target=self.robot.move_wheels("move", 7000)).start()
@@ -128,7 +138,7 @@ class FaceDetection:
         # Get the x and y values for the center of the box surrounding the face.
         x_center = x + (face_w / 2)
         y_center = y + (face_y / 2)
-        head_inc = 200  # variable adjust how much the head moves each iteration
+        head_inc = 400  # variable adjust how much the head moves each iteration
         # Boolean for later function to decide if moving the head is needed.
         move_needed = False
 
