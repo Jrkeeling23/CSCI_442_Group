@@ -1,3 +1,6 @@
+# Justin Keeling 
+# Alex Harry
+
 import robot_control
 import client
 import cv2 as cv

@@ -62,9 +62,7 @@ class FaceDetection:
         # faces = face_cascade.detectMultiScale(gray, 1.9, 5)
         # print(faces)
         if len(faces) > 0:
-            if (time.time() - self.time_since_talk) > time_for_human or not self.time_start:
-                self.time_start = True
-                print("Hello Human")
+
                 # self.time_since_talk = time.time()
 
             #                    self.talk()
@@ -78,7 +76,9 @@ class FaceDetection:
                     self.increment_Movement("right", 2110, 7400, self.turn_inc, 0)
                 elif self.turn_value != 6000:
                     print("Stop wheels")
-
+                if (time.time() - self.time_since_talk) > time_for_human or not self.time_start:
+                    self.time_start = True
+                    print("Hello Human")
 
         else:  # Enters to search for human face
             # self.search_for_face()
