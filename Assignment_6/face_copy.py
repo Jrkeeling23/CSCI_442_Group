@@ -16,7 +16,7 @@ class FaceDetection:
     time_start = False
     horizontal = 1500
     vertical = 1500
-    head_increment_horizontal = 1198
+    head_increment_horizontal = 855
     search_for_face_inc = 1510
     search_for_face_up = True
     wheels_value = 6000
@@ -85,14 +85,16 @@ class FaceDetection:
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 # Calls the function to center the face.
                 move_for = False
-                if not self.robot_centered:
-                    if self.horizontal <= 5200 and not self.robot_centered:  # Makes robot face the human.
+                if w > 75:
+                    self.center(x,y,w,h)
+                if not self.robot_centered and w < 75:
+                    if self.horizontal <= 5850 and not self.robot_centered:  # Makes robot face the human.
                         # self.increment_Movement(
                        #     "left", 2110, 7400, self.turn_inc, 0)
                         self.robot.turn_right()
                         self.center(x, y, w, h)
 
-                    elif self.horizontal >= 6800 and not self.robot_centered:
+                    elif self.horizontal >= 6150 and not self.robot_centered:
                         #    self.increment_Movement(
                      #       "right", 2110, 7400, self.turn_inc, 0)
                         self.robot.turn_left()
@@ -112,7 +114,6 @@ class FaceDetection:
                            # self.increment_Movement("backward", 1510, 500, self.wheels_inc, 0)
                             self.robot.wheels_backward()
                         self.center(x, y, w, h)
-
 
         elif (time.time() - self.time_since_talk) > time_for_human:
             # # Adjust head increments to find a face.
@@ -138,7 +139,7 @@ class FaceDetection:
         # Get the x and y values for the center of the box surrounding the face.
         x_center = x + (face_w / 2)
         y_center = y + (face_y / 2)
-        head_inc = 400  # variable adjust how much the head moves each iteration
+        head_inc = 200  # variable adjust how much the head moves each iteration
         # Boolean for later function to decide if moving the head is needed.
         move_needed = False
 

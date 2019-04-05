@@ -74,7 +74,8 @@ class MoveRobot:
         self.turn -=1500
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
-        time.sleep(.2)
+    #    time.sleep(.2)
+        time.sleep(.15)
         self.stop()
         print("turn right")
 
@@ -82,7 +83,8 @@ class MoveRobot:
         self.turn += 1500
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
-        time.sleep(.2)
+        #time.sleep(.2)
+        time.sleep(.15)
         self.stop()
         print("turn left")
 
@@ -91,7 +93,7 @@ class MoveRobot:
         self.headTurn = self.check_value(h_val)
         self.tango.setTarget(HEADTURN, self.headTurn)
         self.tango.setTarget(HEADTILT, self.headTilt)
-        time.sleep(.5)
+        #time.sleep(.5)
 
     def move_wheels(self, move, value):  # Method to move the wheels of the robot
         if move == "turn":
