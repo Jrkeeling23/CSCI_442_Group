@@ -9,8 +9,6 @@ trackbar_values = {'Red Min': 0, 'Red Max': 0, 'Blue Min': 0, 'Blue Max': 0, 'Gr
 
 def show_unfiltered(image):
     cv.namedWindow("Unfiltered video")  # creates unfiltered video from webcam
-    cv.moveWindow("Unfiltered video", 0, 20)
-
     cv.imshow("Unfiltered video", image)  # sHows the unfiltered video
 
 
@@ -24,7 +22,7 @@ def show_hsv_values(event, x, y, flags, params):  # Method for mouse clicks on H
 def show_hsv(image):
     param = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Converts the image from BGR to HSV
     cv.namedWindow("HSV")  # Creatues window for HSV conversion
-    cv.moveWindow("HSV", 643, 20)
+    # cv.moveWindow("HSV", 643, 20)
     create_trackbar(param)
     cv.imshow("HSV", param)  # Shows the image
     cv.setMouseCallback("HSV", show_hsv_values, param)  # Passes in HSV image during mouse click
@@ -35,9 +33,11 @@ def show_cam():
     # Screen capture code provided by Hunter Lloyd https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/View
     capture = cv.VideoCapture(0)
     while True:
-        status, image = capture.read()  # Reads in the capture
+        # status, image = capture.read()  # Reads in the capture
+       # image = cv.imread("imagesWOvideo/one.jpg")
+        image = cv.imread("imagesWOvideo/pastel_screenshot_01.03.2019.png")
         show_unfiltered(image)
-        create_trackbar(image)
+        #create_trackbar(image)
         show_hsv(image)
 
         k = cv.waitKey(1)
@@ -54,23 +54,44 @@ def show_cam():
 def set_trackbar_values(val):
     pass
 
-
+### Creates trackbar for hsv values to detect object
 def create_trackbar(hsv):
     cv.namedWindow("HSV")
-    cv.moveWindow("HSV", 0, 663)
 
-    cv.createTrackbar('Hue Min', "HSV", 0, 180,
+    #cv.135Window("HSV", 0, 663)  # move window to a desirable spot
+
+    # cv.moveWindow("HSV", 0, 663)
+
+
+    # trackbars for max and mins for each hsv channel
+    # cv.createTrackbar('Hue Min', "HSV", 0, 180,
+    #                   set_trackbar_values)
+    # cv.createTrackbar('Hue Max', "HSV", 0, 180, set_trackbar_values)
+    # cv.createTrackbar('Saturation Min', "HSV", 0, 255,
+    #                   set_trackbar_values)
+    # cv.createTrackbar('Saturation Max', "HSV", 0, 255,
+    #                   set_trackbar_values)
+    # cv.createTrackbar('Value Min', "HSV", 0, 255,
+    #                   set_trackbar_values)
+    # cv.createTrackbar('Value Max', "HSV", 0, 255,
+    #                   set_trackbar_values)
+
+    cv.createTrackbar('Hue Min', "HSV", 0, 255,
                       set_trackbar_values)
-    cv.createTrackbar('Hue Max', "HSV", 0, 180, set_trackbar_values)
+    cv.createTrackbar('Hue Max', "HSV", 0, 255, set_trackbar_values)
     cv.createTrackbar('Saturation Min', "HSV", 0, 255,
-                      set_trackbar_values)  # TODO add call back value
+                      set_trackbar_values)
     cv.createTrackbar('Saturation Max', "HSV", 0, 255,
-                      set_trackbar_values)  # TODO add call back value
+                      set_trackbar_values)
     cv.createTrackbar('Value Min', "HSV", 0, 255,
-                      set_trackbar_values)  # TODO add call back value
+                      set_trackbar_values)
     cv.createTrackbar('Value Max', "HSV", 0, 255,
                       set_trackbar_values)
 
+
+
+
+    # obtain the min and max positions of the sliders
     hue_min = cv.getTrackbarPos('Hue Min', "HSV")
     hue_max = cv.getTrackbarPos('Hue Max', "HSV")
     saturation_min = cv.getTrackbarPos('Saturation Min', "HSV")
@@ -78,12 +99,14 @@ def create_trackbar(hsv):
     value_min = cv.getTrackbarPos('Value Min', "HSV")
     value_max = cv.getTrackbarPos('Value Max', "HSV")
     kernel = np.ones((5, 5), np.uint8)  # dialates
+    # create arrays to hold as a scalar for min and max
     minS = np.array([hue_min, saturation_min, value_min])
     maxS = np.array([hue_max, saturation_max, value_max])
     mask = cv.inRange(hsv, minS, maxS)
     mask = cv.dilate(mask, kernel, iterations=1)
    # cv.imshow('HSV', hsv)  # Shows the image
     cv.imshow("Mask", mask)
+
 
 
 # TODO Us the OpenCV inRange method to find the values between the scalars from HSV image and the result will go to a grayscale image (make it a binary image, white/black).

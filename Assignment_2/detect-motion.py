@@ -66,18 +66,17 @@ def show_cam():
 
         # Parts of Find contours code sourced from https://docs.opencv.org/3.1.0/d4/d73/tutorial_py_contours_begin.html
         contour_image = image_threshold
-        contours, hierarchy = cv.findContours(image_threshold.copy(), cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE, ) #RETR_EXTERNAL
+        contours, hierarchy = cv.findContours(image_threshold.copy(), cv.RETR_TREE,
+                                              cv.CHAIN_APPROX_SIMPLE, )  # RETR_EXTERNAL
         # Draw counters helped from user Mahm00d source: https://stackoverflow.com/questions/34961349/draw-contours-in-opencv-around-recognized-polygon
         cv.drawContours(contour_image, contours, -1, (0, 255, 0), 3)  # Draws the contours
         # if contours:
         #     print(contours)
-        for c in contours:
-            if cv.contourArea(c)<10000:
+        for c in contours:  # iterate through to find opposite corners for rectangle.
+            if cv.contourArea(c) < 10000:
                 continue
-            (x,y,w,h) = cv.boundingRect(c)
-            cv.rectangle(image,(x,y), (x+w,y+h), (0,0,255),3)
-
-
+            (x, y, w, h) = cv.boundingRect(c)
+            cv.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 3)  # draws rectangle within thresholds
 
         cv.namedWindow("Unfiltered video")  # creates unfiltered video from webcam
         cv.moveWindow("Unfiltered video", 0, 20)
@@ -90,15 +89,6 @@ def show_cam():
         if k == 27:
             break
 
-
-# TODO Using Sliders create scalers for the min and max values you want to tracka Scalar will be a numpy array (np.array) that takes 3 values for minH, minS, and minV.......then a second scalar to catch the other three Max values create 3 trackbars, createTrackbar with callback methods to set your six variables
-# def set_slider_value(position):
-#     values[position]
-
-def draw_keypoints(vis, keypoints, color=(0,0,255)):
-    for kp in keypoints:
-        x,y = kp.pt
-        cv.circle(vis,(int(x), int(y),2,color))
 
 show_cam()
 cv.destroyAllWindows()
