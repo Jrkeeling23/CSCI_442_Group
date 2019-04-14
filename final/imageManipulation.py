@@ -63,6 +63,17 @@ class ImageManipulation:
                 y_val = pixels[0][max_white_value]
                 x_val = pixels[1][max_white_value]
                 image = cv.circle(image, (x_val, y_val), 2, (0, 0, 255), 10)
+                image = self.draw_rectangle(image)
+                cv.putText(image, 'Highest Middle X: ' + str(x_val), (10, 30), cv.FONT_HERSHEY_DUPLEX, 1,
+                           (0, 0, 0), 1)
+
         except ValueError:
             pass
         return image, x_val, y_val
+
+    def draw_rectangle(self, image):
+        image = cv.rectangle(image, (3,4), (370,42), (0,0,255), 2)
+
+        image = cv.rectangle(image, (4,5), (369,41), (255,255,255), cv.FILLED, 8)
+        return image
+
