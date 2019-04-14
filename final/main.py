@@ -53,11 +53,16 @@ class ImageManipulation:
         return image
 
     def getHighestCoordinate(self, image):
-        pixels = np.where(image == [255, 255, 255])
-        max_white_value = np.max(pixels[0])
-        y_val = pixels[0][max_white_value]
-        x_val = pixels[1][max_white_value]
-        image = cv.circle(image, (x_val, y_val), 1, (0, 0, 255), 10)
+        try:
+            pixels = np.where(image == [255, 255, 255])
+            y_length = len(pixels[0])
+            max_white_value = np.max(pixels[0])
+            if max_white_value < y_length:
+                y_val = pixels[0][max_white_value]
+                x_val = pixels[1][max_white_value]
+                image = cv.circle(image, (x_val, y_val), 1, (0, 0, 255), 10)
+        except ValueError:
+            pass
         return image
 
 
@@ -66,15 +71,14 @@ cap = cv.VideoCapture(0)
 while True:
     status, img = cap.read()
 
-    #img = cv.imread('im2.jpg')
+    # img = cv.imread('im2.jpg')
     cv.imshow("original", img)
     manipulation = ImageManipulation()
     image = manipulation.edge_detection(img.copy())
     image = manipulation.fill_image(image)
     image = manipulation.smooth(image)
     image = manipulation.getHighestCoordinate(image)
-    #
-    # cv.imshow("Video", image)
+    cv.imshow("Video", image)
     k = cv.waitKey(1)
     if k == 27:
         break
