@@ -22,11 +22,15 @@ class ImageManipulation:
         after_edge = row_index >= max_row_index # Sets edges to fill to
         filled_image = np.zeros((height, width))
         filled_image[after_edge] = 255  # fills the image
+# erode code sourced from https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html
+        kernel = np.ones((5,5), np.uint8)
+        filled_image = cv.erode(filled_image, kernel, iterations=1) # Erodes the image to remove small unusable lines for the robot
         return filled_image
 cap = cv.VideoCapture(0)
 
 while True:
     status, img = cap.read()
+    #img = cv.imread('image.png')
     manipulation = ImageManipulation()
     image = manipulation.edge_detection(img.copy())
     image = manipulation.fill_image(image)
