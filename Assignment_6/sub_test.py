@@ -51,7 +51,7 @@ class FaceDetection:
         cv.destroyAllWindows()
 
     def talk(self):  # Method to call the robot talk function                  
-        IP = '10.200.47.148'
+        IP = '10.200.57.202'
         PORT = 5010
         speak = client.ClientSocket(IP, PORT)
         speak.sendData("hello human")
@@ -84,13 +84,13 @@ class FaceDetection:
                     if self.horizontal <= 5850 and not self.robot_centered:  # Makes robot face the human.
                         # self.increment_Movement(
                        #     "left", 2110, 7400, self.turn_inc, 0)
-                        self.robot.turn_right()
+                        threading.Thread(target=self.robot.turn_right()).start()
                         self.center(x, y, w, h)
 
                     elif self.horizontal >= 6150 and not self.robot_centered:
                         #    self.increment_Movement(
                      #       "right", 2110, 7400, self.turn_inc, 0)
-                        self.robot.turn_left()
+                        threading.Thread(target=self.robot.turn_left()).start()
                         self.center(x, y, w, h)
 
                     else:
@@ -101,11 +101,11 @@ class FaceDetection:
 
                         if w < 75:  # 75 is the value to decide if the robot needs to move forward or not.
                             print("move forward")
-                            self.robot.wheels_forward()
+                            threading.Thread(target=self.robot.wheels_forward()).start()
                             #threading.Thread(target=self.robot.move_wheels("move", 7000)).start()
                         elif w > 250:
                            # self.increment_Movement("backward", 1510, 500, self.wheels_inc, 0)
-                            self.robot.wheels_backward()
+                            threading.Thread(target=self.robot.wheels_backward()).start()
                         self.center(x, y, w, h)
 
         elif (time.time() - self.time_since_talk) > time_for_human:
