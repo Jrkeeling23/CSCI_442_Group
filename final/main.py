@@ -14,15 +14,15 @@ class Driver:
 
     def run(self):
         while True:
-            status, img = self.cap.read()
-            # img = cv.imread('im2.jpg')
-            cv.imshow("original", img)
+            #status, img = self.cap.read()
+            img = cv.imread('im2.jpg')
             image = self.manipulation.edge_detection(img.copy())
             image = self.manipulation.fill_image(image)
             image = self.manipulation.smooth(image)
             image, x_coordinate, y_coordinate = self.manipulation.getHighestCoordinate(image)
-            self.move.decide_move(x_coordinate, y_coordinate)
-            cv.imshow("Video", image)
+            #self.move.decide_move(x_coordinate, y_coordinate)
+            overlayed = cv.addWeighted(img, .7, image, 0.4, 0) # Overlays the path on the original image
+            cv.imshow("Paths", overlayed)
 
             k = cv.waitKey(1)
             if k == 27:
