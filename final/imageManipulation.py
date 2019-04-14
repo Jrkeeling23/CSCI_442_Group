@@ -52,7 +52,7 @@ class ImageManipulation:
         image = cv.medianBlur(image, 15)
         return image
 
-    def getHighestCoordinate(self, image):
+    def getHighestCoordinate(self, image, center, height):
         x_val = None
         y_val = None
         try:
@@ -66,6 +66,7 @@ class ImageManipulation:
                 image = self.draw_rectangle(image)
                 cv.putText(image, 'Highest Middle X: ' + str(x_val), (10, 30), cv.FONT_HERSHEY_DUPLEX, 1,
                            (0, 0, 0), 1)
+                cv.line(image, (center, height), (x_val, y_val + 8), (0,0,255), 3)# Draws a line from center of robot to intended point
 
         except ValueError:
             pass
