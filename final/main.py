@@ -5,12 +5,26 @@ import numpy as np
 class ImageManipulation:
 
     def edge_detection(self, img): # Method to get the edges
-        image = img.copy()
-        # sourced from https://docs.opencv.org/3.1.0/d4/d13/tutorial_py_filtering.html
-        kernel = np.ones((3, 5), np.float32) / 25
-        image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-        image = cv.filter2D(image, -1, kernel)  # Blurs the image
-        image = cv.Canny(image, 50, 200, True) # Creates edges
+        # Code sourced for canny from https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/
+        # image = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        img = cv.GaussianBlur(img, (3,3), 0) # Blurs the image to smooth it out.
+        #
+        # kernel = np.ones((3, 11), np.float32)
+        # image = cv.filter2D(img, -1, kernel)  # Blurs the image
+        v = np.median(img)
+        sigma=0.33
+        low = int(max(0,(1.0-sigma) * v))
+        high = int(min(255, (1.0 + sigma) * v))
+        image = cv.Canny(img, low, high)
+        # image = img.copy()
+        # # sourced from https://docs.opencv.org/3.1.0/d4/d13/tutorial_py_filtering.html
+        # # kernel = np.ones((3, 3), np.float32) / 25
+        # image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        # # image = cv.filter2D(image, -1, kernel)  # Blurs the image
+        # image = cv.GaussianBlur(image, (3,3), 0) # Blurs the image to smooth it out.
+        #
+        # image = cv.Canny(image, 20, 120) # Creates edges
+
         return image
 
 
@@ -24,16 +38,24 @@ class ImageManipulation:
         filled_image[after_edge] = 255  # fills the image
 # erode code sourced from https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html
         kernel = np.ones((5,5), np.uint8)
-        filled_image = cv.erode(filled_image, kernel, iterations=1) # Erodes the image to remove small unusable lines for the robot
+        filled_image = cv.erode(filled_image, kernel, iterations=7) # Erodes the image to remove small unusable lines for the robot
         return filled_image
+
+    def smooth(self, image):
+        image = cv.GaussianBlur(image, (33,33), 0) # Blurs the image to smooth it out.
+        return image
+
 cap = cv.VideoCapture(0)
 
 while True:
-    status, img = cap.read()
-    #img = cv.imread('image.png')
+    # status, img = cap.read()
+    img = cv.imread('im2.jpg')
+    cv.imshow("original", img)
+
     manipulation = ImageManipulation()
     image = manipulation.edge_detection(img.copy())
     image = manipulation.fill_image(image)
+    image = manipulation.smooth(image)
     cv.imshow("Video", image)
     k = cv.waitKey(1)
     if k == 27:
