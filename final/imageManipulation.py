@@ -9,7 +9,7 @@ class ImageManipulation:
         # Code optimizes edges without needed to manually adjust params
         img = cv.GaussianBlur(img, (3, 3), 0)  # Blurs the image to smooth it out.
         v = np.median(img)
-        sigma = 0.33
+        sigma = 0.05 # initial was 0.33
         low = int(max(0, (1.0 - sigma) * v))
         high = int(min(255, (1.0 + sigma) * v))
         image = cv.Canny(img, low, high)
