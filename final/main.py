@@ -31,7 +31,6 @@ class ImageManipulation:
         # Code sourced for this method from https://stackoverflow.com/questions/45135950/how-to-fill-an-image-from-bottom-side-until-an-edge-is-detected-using-opencv
         height, width = image.shape[:2]
         max_row_index = height - np.argmax(image[::-1], axis=0)  # Inverts the edges from top to bottom
-
         row_index = np.indices((height, width))[0]
         after_edge = row_index >= max_row_index  # Sets edges to fill to
         filled_image = np.zeros((height, width))
@@ -43,7 +42,7 @@ class ImageManipulation:
 
         filled_image = np.array(filled_image, dtype=np.uint8)
         filled_image = cv.merge((filled_image, filled_image,
-                          filled_image))  # converts the image back from 1 channel to 3 channel sourced from https://stackoverflow.com/questions/14786179/how-to-convert-a-1-channel-image-into-a-3-channel-with-opencv2
+                                 filled_image))  # converts the image back from 1 channel to 3 channel sourced from https://stackoverflow.com/questions/14786179/how-to-convert-a-1-channel-image-into-a-3-channel-with-opencv2
 
         # ret, bw_thresh = cv.threshold(filled_image, 1, 2550, cv.THRESH_BINARY)
         return filled_image
@@ -54,40 +53,28 @@ class ImageManipulation:
         return image
 
     def getHighestCoordinate(self, image):
-        highest_y = None
-        x_val = None
-        x, y, _ = image.shape
-        for row in range(x):
-            for col in range(y):
-                print(image[row,col])
-                if image[row, col] == [255, 255, 255]:
-                    if highest_y is None:
-                        highest_y = col
-                        x_val = row
-                    elif col > highest_y:
-                        highest_y = col
-                        x_val = row
-            #print(image[row, col])
-
-        image = cv.circle(image, (127, 64), 59, (0, 0, 255), 2)
-        # print( x_val, ", ", highest_y)
+        pixels = np.where(image == [255, 255, 255])
+        max_white_value = np.max(pixels[0])
+        y_val = pixels[0][max_white_value]
+        x_val = pixels[1][max_white_value]
+        image = cv.circle(image, (x_val, y_val), 1, (0, 0, 255), 10)
         return image
 
 
 cap = cv.VideoCapture(0)
 
 while True:
-    # status, img = cap.read()
+    status, img = cap.read()
 
-    img = cv.imread('im2.jpg')
+    #img = cv.imread('im2.jpg')
     cv.imshow("original", img)
     manipulation = ImageManipulation()
     image = manipulation.edge_detection(img.copy())
     image = manipulation.fill_image(image)
     image = manipulation.smooth(image)
-#    image = manipulation.getHighestCoordinate(image)
-
-    cv.imshow("Video", image)
+    image = manipulation.getHighestCoordinate(image)
+    #
+    # cv.imshow("Video", image)
     k = cv.waitKey(1)
     if k == 27:
         break
