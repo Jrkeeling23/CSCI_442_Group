@@ -50,18 +50,8 @@ class FaceDetection:
                 break
         cv.destroyAllWindows()
 
-    def talk(self):  # Method to call the robot talk function
-        # print("robot speak")
-        # IP = '10.200.9.122'
-        # PORT = 5010
-        # speak = client.ClientSocket(IP, PORT)
-        # speak.start()
-        # time.sleep(1)
-        # speak.sendData("Hello Human")
-        # print("hello human")
-                    
-
-        IP = '10.200.57.202'
+    def talk(self):  # Method to call the robot talk function                  
+        IP = '10.200.47.148'
         PORT = 5010
         speak = client.ClientSocket(IP, PORT)
         speak.sendData("hello human")
@@ -127,10 +117,7 @@ class FaceDetection:
             if self.vertical > 7500:
                 self.vertical = 1510
             self.move_head()
-            # time.sleep(1)
-           # self.search_for_face()
-        #    self.increment_Movement("head", 1510, 7500, 1996, 1996)
-        #    time.sleep(.4)
+
 
     # # Function to center head and move robot towards human.
     def center(self, x, y, face_w, face_y):
@@ -173,37 +160,10 @@ class FaceDetection:
                 self.horizontal = max
             self.move_head()  # moves the head
 
-    #     # elif self.wheels_value != 6000:
-    #     #     self.wheels_value = 6000
-    #     #     self.robot.stop()
 
     def move_head(self):  # function that moves the robot head.
         self.robot.move_head(self.horizontal, self.vertical)
 
-    # def search_for_face(self): # Searches for face back and forth.
-    #     head_inc_value = 599
-    #     head_increment_vert = 1198
-    #     head_max = 7500
-    #     head_min = 1510
-    #     self.horizontal = self.search_for_face_inc
-    #     if self.horizontal > head_max:  # Checks if head has reached farthest right value
-    #         self.search_for_face_inc = head_max
-    #         self.search_for_face_up = False  # Sets to false to head the other direction
-    #         self.horizontal = self.search_for_face_inc  # Sets the face value iin case it is greater than 7500
-    #         self.vertical += head_increment_vert  # Increments the vertical position
-    #     elif self.horizontal < head_min:  # Checks if head is in the farthest left postion
-    #         self.search_for_face_inc = head_min
-    #         self.search_for_face_up = True  # Sets true to start heading the other way.
-    #         self.horizontal = self.search_for_face_inc  # Sets incase head is less than 1519
-    #         self.vertical += head_increment_vert  # Increments the vertical postition
-    #
-    #     if self.vertical > head_max:  # Resets to bottom vertical position
-    #         self.vertical = head_min
-    #     if self.search_for_face_up:
-    #         self.search_for_face_inc += head_inc_value
-    #     else:
-    #         self.search_for_face_inc -= head_inc_value
-    #     self.move_head()
 
     def move_forward(self):
         #self.robot.move_wheels("move", self.wheels_value)
@@ -279,51 +239,7 @@ class FaceDetection:
         moves[move].__call__()
 
 
-    # def center(self, x, y, face_w, face_y):
-    #     # first four variables define what is considered outside of center of image.
-    #     left = self.image_width * .55
-    #     right = self.image_width * .45
-    #     up = self.image_height * .45
-    #     down = self.image_height * .55
-    #     center_hori = self.image_width * .5
-    #     center_vert = self.image_height * .5
-
-    #     # Get the x and y values for the center of the box surrounding the face.
-    #     x_center = x + (face_w / 2)
-    #     y_center = y + (face_y / 2)
-    #     new_x = int(6000 * (x_center / center_hori))
-    #     new_y = int(6000 * (y_center / center_vert))
-
-    #     head_inc = 200  # variable adjust how much the head moves each iteration
-    #     # Boolean for later function to decide if moving the head is needed.
-    #     move_needed = False
-
-    #     if x_center > left:  # Checks if robot needs to move head left.
-
-    #         move_needed = True
-    #         self.horizontal = new_x
-    #     elif x_center < right:  # Checks if robot needs to move head right.
-    #         move_needed = True
-    #         self.horizontal =new_x
-    #     if y_center < up:  # Checks if robot needs to move head up.
-    #         move_needed = True
-    #         self.vertical =new_y
-    #     elif y_center > down:  # Checks if robot needs to move head down.
-    #         move_needed = True
-    #         self.vertical = new_y
-    #     if move_needed:
-    #         min = 1510
-    #         max = 7500
-    #         # Verifies values are within bounds.
-    #         if self.vertical < min:
-    #             self.vertical = min
-    #         elif self.vertical > max:
-    #             self.vertical = max
-    #         if self.horizontal < min:
-    #             self.horizontal = min
-    #         elif self.horizontal > max:
-    #             self.horizontal = max
-    #         self.move_head()  # moves the head
+   
 
 
 face = FaceDetection()  # Starts the program on it's own thread.
