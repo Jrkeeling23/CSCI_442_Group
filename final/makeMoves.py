@@ -5,7 +5,7 @@ class Move:
         self.forward_val = int(height * .8)
         self.turn_left_val = int(width * 0.55)
         self.turn_right_val = int(width * 0.45)
-#        self.robot = robot_control.MoveRobot()
+        self.robot = robot_control.MoveRobot()
 
     def decide_move(self,x_val, y_val): # Method decides where the robot will move
         if x_val is not None: # Makes sure x is a value
