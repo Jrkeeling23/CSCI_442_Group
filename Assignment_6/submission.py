@@ -51,7 +51,7 @@ class FaceDetection:
         cv.destroyAllWindows()
 
     def talk(self):  # Method to call the robot talk function                  
-        IP = '10.200.57.202'
+        IP = '10.200.47.148'
         PORT = 5010
         speak = client.ClientSocket(IP, PORT)
         speak.sendData("hello human")
