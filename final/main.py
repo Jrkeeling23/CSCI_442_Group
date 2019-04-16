@@ -43,14 +43,14 @@ class Driver:
             # create image with only blue displayed (as white)
             blue_mask = cv.inRange(hsv, blue_lower, blue_upper)
             # create image with only ornage displayed (as white)
-            orange_mask = cv.inRange((hsv, orange_lower, orange_upper))
+            orange_mask = cv.inRange(hsv, orange_lower, orange_upper)
 
             # get edges of blue and orange mask to subtract later on **** may not need
             blue_edge = self.manipulation.edge_detection(blue_mask)
             orange_edge = self.manipulation.edge_detection(orange_mask)
             # TODO: add orange and blue edge together, then subtract from overall edge detection picture or add.
             blue_orange = cv.add(blue_mask, orange_mask)
-
+            blue_orange = cv.cvtColor(blue_orange, cv.COLOR_HSV2BGR)
             # self.image_height, self.image_width, _ = image.shape  # Gets the image size
             # self.detect_face(image)
             # self.height, self.width, _ = img.shape  # Gets the image size
