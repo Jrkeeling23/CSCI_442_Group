@@ -39,17 +39,17 @@ class Driver:
             img = frame.array
 
             # convert to HSV to do object detection
-            hsv = cv.cvtColor(img.copy(),cv.COLOR_BGR2HSV)
+            hsv = cv.cvtColor(img.copy(), cv.COLOR_BGR2HSV)
             # create image with only blue displayed (as white)
             blue_mask = cv.inRange(hsv, blue_lower, blue_upper)
             # create image with only ornage displayed (as white)
-            orange_mask =cv.inRange((hsv, orange_lower,orange_upper))
+            orange_mask = cv.inRange((hsv, orange_lower, orange_upper))
 
-            # get edges of blue and orange mask to subtract later on
+            # get edges of blue and orange mask to subtract later on **** may not need
             blue_edge = self.manipulation.edge_detection(blue_mask)
             orange_edge = self.manipulation.edge_detection(orange_mask)
-            #TODO: add orange and blue edge together, then subtract from overall edge detection picture
-
+            # TODO: add orange and blue edge together, then subtract from overall edge detection picture or add.
+            blue_orange = cv.add(blue_mask, orange_mask)
 
             # self.image_height, self.image_width, _ = image.shape  # Gets the image size
             # self.detect_face(image)
@@ -60,10 +60,12 @@ class Driver:
             image = self.manipulation.edge_detection(img.copy())
             image = self.manipulation.fill_image(image)
             image = self.manipulation.smooth(image)
+            image = cv.add(blue_orange, image) # add the white space of orange and blue barriers to flood filled image
             image, x_coordinate, y_coordinate = self.manipulation.getHighestCoordinate(
                 image, int(self.width / 2), self.height)
             # self.move.decide_move(x_coordinate, y_coordinate)
             # Overlays the path on the original image
+
             overlayed = cv.addWeighted(img, .7, image, 0.4, 0)
             cv.imshow("Path", overlayed)
 
