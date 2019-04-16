@@ -37,6 +37,20 @@ class Driver:
     def run(self):
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
             img = frame.array
+
+            # convert to HSV to do object detection
+            hsv = cv.cvtColor(img.copy(),cv.COLOR_BGR2HSV)
+            # create image with only blue displayed (as white)
+            blue_mask = cv.inRange(hsv, blue_lower, blue_upper)
+            # create image with only ornage displayed (as white)
+            orange_mask =cv.inRange((hsv, orange_lower,orange_upper))
+
+            # get edges of blue and orange mask to subtract later on
+            blue_edge = self.manipulation.edge_detection(blue_mask)
+            orange_edge = self.manipulation.edge_detection(orange_mask)
+            #TODO: add orange and blue edge together, then subtract from overall edge detection picture
+
+
             # self.image_height, self.image_width, _ = image.shape  # Gets the image size
             # self.detect_face(image)
             # self.height, self.width, _ = img.shape  # Gets the image size
