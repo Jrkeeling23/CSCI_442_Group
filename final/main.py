@@ -13,11 +13,11 @@ import socket
 import time
 import queue
 
-blue_lower = np.array([80,0, 180])
-blue_upper = np.array([120, 40, 230])
+blue_lower = np.array([20,20, 180])
+blue_upper = np.array([130, 60, 255])
 
-orange_lower = np.array([10, 0, 150])
-orange_upper = np.array([50, 50, 230])
+orange_lower = np.array([0, 50,225])
+orange_upper = np.array([30,255,255])
 
 
 class Driver:
@@ -50,8 +50,7 @@ class Driver:
             orange_edge = self.manipulation.edge_detection(orange_mask)
             # TODO: add orange and blue edge together, then subtract from overall edge detection picture or add.
             blue_orange = cv.add(blue_mask, orange_mask)
-
-            cv.imshow(blue_orange, "test")
+            cv.imshow("test",blue_orange)
             # self.image_height, self.image_width, _ = image.shape  # Gets the image size
             # self.detect_face(image)
             # self.height, self.width, _ = img.shape  # Gets the image size
@@ -61,7 +60,7 @@ class Driver:
             image = self.manipulation.edge_detection(img.copy())
             image = self.manipulation.fill_image(image)
             image = self.manipulation.smooth(image)
-            #image = cv.add(blue_orange, image) # add the white space of orange and blue barriers to flood filled image
+            image = cv.add(blue_orange, image) # add the white space of orange and blue barriers to flood filled image
             image, x_coordinate, y_coordinate = self.manipulation.getHighestCoordinate(
                 image, int(self.width / 2), self.height)
             # self.move.decide_move(x_coordinate, y_coordinate)
