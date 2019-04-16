@@ -50,7 +50,7 @@ class Driver:
             orange_edge = self.manipulation.edge_detection(orange_mask)
             # TODO: add orange and blue edge together, then subtract from overall edge detection picture or add.
             blue_orange = cv.add(blue_mask, orange_mask)
-            res = cv.bitwise_and(img,img,blue_orange)
+            res = cv.bitwise_and(blue_mask,orange_mask,blue_orange)
             cv.imshow(res, "test")
             # self.image_height, self.image_width, _ = image.shape  # Gets the image size
             # self.detect_face(image)
