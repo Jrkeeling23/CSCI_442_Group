@@ -1,8 +1,9 @@
 import cv2 as cv
+import numpy as np
 import imageManipulation
 import makeMoves
 import robot_control
-#import client
+# import client
 import cv2 as cv
 import time
 from picamera.array import PiRGBArray
@@ -11,6 +12,12 @@ import threading
 import socket
 import time
 import queue
+
+blue_lower = np.array([80.0, 180])
+blue_upper = np.array([120, 40, 230])
+
+orange_lower = np.array([10, 0, 150])
+orange_upper = np.array([50, 50, 230])
 
 
 class Driver:
@@ -26,7 +33,6 @@ class Driver:
         self.width = 640
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
-
 
     def run(self):
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
@@ -47,7 +53,7 @@ class Driver:
             overlayed = cv.addWeighted(img, .7, image, 0.4, 0)
             cv.imshow("Path", overlayed)
 
-            #cv.imshow('Face Detection', image)
+            # cv.imshow('Face Detection', image)
             self.rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
             if k == ord('q'):
