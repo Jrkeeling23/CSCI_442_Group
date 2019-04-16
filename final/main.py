@@ -13,7 +13,7 @@ import socket
 import time
 import queue
 
-blue_lower = np.array([80.0, 180])
+blue_lower = np.array([80,0, 180])
 blue_upper = np.array([120, 40, 230])
 
 orange_lower = np.array([10, 0, 150])
