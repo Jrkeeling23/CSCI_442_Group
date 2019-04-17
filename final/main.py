@@ -38,6 +38,8 @@ class Frame:
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
 
+        self.robot = Robot(goal = "l")
+
     def run(self):
         """
         A function to get frames and run the program.
@@ -308,31 +310,31 @@ class Robot:
 
         moves[move].__call__()
 
-    def get_path(self):
-        """
-        TODO: get path from Frame class.
-        :return:
-        """
+    # def get_path(self):
+    #     """
+    #     TODO: get path from Frame class.
+    #     :return:
+    #     """
 
 
-class Driver:
-    """
-    Driver runs program and keeps it running.
-    """
-
-    def __init__(self):
-
-        robot = Robot(goal="l")  # create robot instance
-        robot.orientate()  # robot must find where it is at
-        # TODO: turn around do a 360 now. Robot orientates based off of bins.
-
-        while robot.finsihed is False:  # continue this routine until robot has finished
-
-            if robot.mine:  # is robot is needs to mine, needs to get path to mine
-                robot.get_path()
-
-            elif robot.deliver:  # if robot needs to deliver, call function.
-                robot.deliver_ice()
+# class Driver:
+#     """
+#     Driver runs program and keeps it running.
+#     """
+#
+#     def __init__(self):
+#
+#         robot = Robot(goal="l")  # create robot instance
+#         robot.orientate()  # robot must find where it is at
+#         # TODO: turn around do a 360 now. Robot orientates based off of bins.
+#
+#         while robot.finsihed is False:  # continue this routine until robot has finished
+#
+#             if robot.mine:  # is robot is needs to mine, needs to get path to mine
+#                 robot.get_path()
+#
+#             elif robot.deliver:  # if robot needs to deliver, call function.
+#                 robot.deliver_ice()
 
 
 driver = Driver()
