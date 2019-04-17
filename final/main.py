@@ -13,6 +13,10 @@ import socket
 import time
 import queue
 
+"""
+TODO: find ranges for ice/goal colors.
+"""
+
 
 class Driver:
     def __init__(self):
@@ -20,8 +24,8 @@ class Driver:
         TODO: Maybe add states to keep track of what the robot needs to do (go to mining area) and to keep track of
         where the robot is located (for speaking purposes).
         Maybe have booleans such as mine (go to mining area), deliver (has ice and needs to deliver) for actions
-        Have booleans start and mining_area to keep track where the robot is (for talking purposes)
-        And a variable called goal which correlates with big, medium, and small to know what color our ice is.
+        Have booleans start and mining_area to keep track where the robot is (for talking purposes),
+        and a variable called goal which correlates with big, medium, and small to know what color our ice is.
         """
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/V$
         self.camera = PiCamera()
