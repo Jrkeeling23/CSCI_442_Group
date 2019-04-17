@@ -139,8 +139,9 @@ class Robot:
         self.mine = True
         self.deliver = False
 
-        # variable to track robots goal. String that is either S, M, or L.
-        self.goal = goal
+        self.goal = goal  # variable to track robots goal. String that is either S, M, or L
+
+        self.frame = Frame()  # variable to contain instance of Frame class
 
     @staticmethod
     def robot_talk(what_to_speak):
@@ -166,30 +167,47 @@ class Robot:
         area (where arm will be) to detect if ice is in robot hands.
         :return:
         """
+        self.move_arm()
+        # TODO: Look down.
+        if self.frame.detect_ice():
+            # Squeeze Hand
 
     def deliver_ice(self):
         """
         TODO: Create function to deliver ice in correct box. Entails robot arm movement to drop ice.
         :return:
         """
+        self.orientate()  # squares up with box
+
+        while True:
+            if True:  # TODO: Some statement that determines if it is at bin (probably method).
+                self.deliver = False  # robot has delivered
+            # TODO: Drop ice in bin
+            self.get_path()
 
     def orientate(self):
         """
         TODO: Create a function for robot to orientate itself (if it is not facing the correct direction).
-        Maybe by finding the color of its goal (it is on the boxes). Once found square up with box???
+        Maybe by finding the color of its goal (it is on the boxes). Once found square up with box, and turn around???
+        :return:
+        """
+
+    def robot_center(self):
+        """
+        TODO: Function to center robot. Uses Frame's center function
         :return:
         """
 
     def move_head(self):  # function that moves the robot head.
         """
-        Function to operate head movements
+        Function to operate head movements.
         :return:
         """
         self.robot.move_head(self.horizontal, self.vertical)
 
     def move_forward(self):
         """
-        Function to mvoe robot forwards
+        Function to mvoe robot forwards.
         :return:
         """
         # self.robot.move_wheels("move", self.wheels_value)
@@ -198,7 +216,7 @@ class Robot:
 
     def move_back(self):
         """
-        Function to move robot backwards
+        Function to move robot backwards.
         :return:
         """
         # self.robot.move_wheels("move", self.wheels_value)
@@ -207,7 +225,7 @@ class Robot:
 
     def turn_right(self):
         """
-        Function to turn robot right
+        Function to turn robot right.
         :return:
         """
         self.robot.turn_right()
@@ -222,6 +240,12 @@ class Robot:
         self.robot.turn_left()
         # self.robot.move_wheels("turn", self.turn_value)
         print("turn wheels")
+
+    def move_arm(self):
+        """
+        TODO: Figure out fixed position to move arm when ready to grab.
+        :return:
+        """
 
     def increment_Movement(self, move, min, max, inc1, inc2):
         """
@@ -283,6 +307,32 @@ class Robot:
                 self.turn_value = min
 
         moves[move].__call__()
+
+    def get_path(self):
+        """
+        TODO: get path from Frame class.
+        :return:
+        """
+
+
+class Driver:
+    """
+    Driver runs program and keeps it running.
+    """
+
+    def __init__(self):
+
+        robot = Robot(goal="l")  # create robot instance
+        robot.orientate()  # robot must find where it is at
+        # TODO: turn around do a 360 now. Robot orientates based off of bins.
+
+        while robot.finsihed is False:  # continue this routine until robot has finished
+
+            if robot.mine:  # is robot is needs to mine, needs to get path to mine
+                robot.get_path()
+
+            elif robot.deliver:  # if robot needs to deliver, call function.
+                robot.deliver_ice()
 
 
 driver = Driver()
