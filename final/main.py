@@ -178,11 +178,7 @@ class Robot:
         area (where arm will be) to detect if ice is in robot hands.
         :return:
         """
-        self.move_arm()
-        # TODO: Look down.
-        if self.frame.detect_ice():
-            self.deliver = True
-            # TODO: Squeeze Hand
+        # TODO: Squeeze Hand
 
     def deliver_ice(self):
         """
