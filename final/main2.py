@@ -34,14 +34,6 @@ class Frame:
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
             img = frame.array
 
-            self.robot.orientate()  # robot must find where it is at
-
-            if self.robot.mine:  # is robot is needs to mine, needs to get path to mine
-                self.robot.get_path()
-
-            elif self.robot.deliver:  # if robot needs to deliver, call function.
-                self.robot.deliver_ice()
-
             overlay = self.create_furthest_path(img.copy())  # create furthest non obstructed path
             cv.imshow("Overlay", overlay)
 
