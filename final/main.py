@@ -3,7 +3,7 @@ import numpy as np
 import imageManipulation
 import makeMoves
 import robot_control
-# import client
+import client
 import cv2 as cv
 import time
 from picamera.array import PiRGBArray
@@ -14,19 +14,18 @@ import time
 import queue
 
 """
-TODO: find ranges for ice/goal colors.
+TODO: 
+Find ranges for ice/goal colors.
+Give robot class Driver instance.
 """
 
 
-class Driver:
+class Frame:
+    """
+    Frame class creates camera and creates grabs frames. It is used to use frames and manipulate frames for robot.
+    """
+
     def __init__(self):
-        """
-        TODO: Maybe add states to keep track of what the robot needs to do (go to mining area) and to keep track of
-        where the robot is located (for speaking purposes).
-        Maybe have booleans such as mine (go to mining area), deliver (has ice and needs to deliver) for actions
-        Have booleans start and mining_area to keep track where the robot is (for talking purposes),
-        and a variable called goal which correlates with big, medium, and small to know what color our ice is.
-        """
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/V$
         self.camera = PiCamera()
         # camera.resolution = (640, 480)
@@ -40,6 +39,10 @@ class Driver:
         self.move = makeMoves.Move(self.width, self.height)
 
     def run(self):
+        """
+        A function to get frames and run the program.
+        :return:
+        """
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
             img = frame.array
 
@@ -91,13 +94,65 @@ class Driver:
         # create image with furthest possible path with original added
         return cv.addWeighted(img, .7, image, 0.4, 0)
 
-    def robot_talk(self, what_to_speak):
+    def face_detection(self):
         """
-        TODO: similar to assignment 6, create function for robot to speak when it finds a human, crosses over boundaries
-        (mining area etc.).
-        :param what_to_speak: This gives the robot the correct response.
+        TODO: Create a function that detects face. Robot will use this from find_human function.
         :return:
         """
+
+    def center(self):
+        """
+        TODO: Create function to center robot to path found. Will be called when robot finds a path
+        :return:
+        """
+
+    def detect_ice(self, goal):
+        """
+        TODO: Create function to find blob within hand region of robot
+        :param goal: Gives robot understanding of what ice to be detecting
+        :return:
+        """
+
+    def detect_bin(self, goal):
+        """
+        TODO: Create function to find bin that corresponds to ice color
+        :param goal: Gives robot understanding of what color of bin to be detecting
+        :return:
+        """
+
+
+class Robot:
+    """
+    Robot class is used to control robot movements and commands. It uses Frame class heavily.
+    """
+
+    def __init__(self, goal):
+        # variable to determine is robot has completed its task
+        self.finsihed = False
+
+        # variables to track robots location
+        self.start = True
+        self.mining_area = False
+        self.rock_field = False
+
+        # variables to track robots actions
+        self.mine = True
+        self.deliver = False
+
+        # variable to track robots goal. String that is either S, M, or L.
+        self.goal = goal
+
+    @staticmethod
+    def robot_talk(what_to_speak):
+        """
+        A function that allows the robot to speak a given string.
+        :param what_to_speak: String, this gives the robot the correct response.
+        :return:
+        """
+        IP = '10.200.47.148'  # value needs to be updated to phone in use
+        PORT = 5010
+        speak = client.ClientSocket(IP, PORT)
+        speak.sendData(what_to_speak)
 
     def find_human(self):
         """
@@ -112,7 +167,7 @@ class Driver:
         :return:
         """
 
-    def deiliver_ice(self):
+    def deliver_ice(self):
         """
         TODO: Create function to deliver ice in correct box. Entails robot arm movement to drop ice.
         :return:
@@ -124,6 +179,110 @@ class Driver:
         Maybe by finding the color of its goal (it is on the boxes). Once found square up with box???
         :return:
         """
+
+    def move_head(self):  # function that moves the robot head.
+        """
+        Function to operate head movements
+        :return:
+        """
+        self.robot.move_head(self.horizontal, self.vertical)
+
+    def move_forward(self):
+        """
+        Function to mvoe robot forwards
+        :return:
+        """
+        # self.robot.move_wheels("move", self.wheels_value)
+        self.robot.wheels_forward()
+        print("move wheels")
+
+    def move_back(self):
+        """
+        Function to move robot backwards
+        :return:
+        """
+        # self.robot.move_wheels("move", self.wheels_value)
+        self.robot.wheels_forward()
+        print("move wheels")
+
+    def turn_right(self):
+        """
+        Function to turn robot right
+        :return:
+        """
+        self.robot.turn_right()
+        # self.robot.move_wheels("turn", self.turn_value)
+        print("turn wheels")
+
+    def turn_left(self):
+        """
+        Function to turn robot left
+        :return:
+        """
+        self.robot.turn_left()
+        # self.robot.move_wheels("turn", self.turn_value)
+        print("turn wheels")
+
+    def increment_Movement(self, move, min, max, inc1, inc2):
+        """
+        TODO: This is copy and pasted from Assignment 6, will need to adjust for this program...
+        :param move: String for robot movement command.
+        :param min: ?
+        :param max: ?
+        :param inc1: ?
+        :param inc2: ?
+        :return:
+        """
+        moves = {"head": self.move_head, "forward": self.move_forward, "backward": self.move_back,
+                 "left": self.turn_left, "right": self.turn_right}
+
+        if move == "head":
+            self.horizontal = self.search_for_face_inc
+            if self.horizontal > max:  # Checks if head has reached farthest right value
+                self.search_for_face_inc = max
+                self.search_for_face_up = False  # Sets to false to head the other direction
+                # Sets the face value iin case it is greater than 7500
+                self.horizontal = self.search_for_face_inc
+                self.vertical += inc2  # Increments the vertical position
+            elif self.horizontal < min:  # Checks if head is in the farthest left postion
+                self.search_for_face_inc = min
+                # Sets true to start heading the other way.
+                self.search_for_face_up = True
+                self.horizontal = self.search_for_face_inc  # Sets incase head is less than 1519
+                self.vertical += inc2  # Increments the vertical postition
+
+            if self.vertical > max:  # Resets to bottom vertical position
+                self.vertical = min
+            if self.search_for_face_up:
+                self.search_for_face_inc += inc1
+            else:
+                self.search_for_face_inc -= inc1
+        elif move == "forward":
+            self.wheels_value -= inc1
+            if self.wheels_value > max:
+                self.wheels_value = max
+            elif self.wheels_value < min:
+                self.wheels_value = min
+        elif move == "backward":
+            self.wheels_value += inc1
+            if self.wheels_value > max:
+                self.wheels_value = max
+            elif self.wheels_value < min:
+                self.wheels_value = min
+        elif move == "right":
+            self.turn_value -= inc1
+            if self.turn_value > max:  # Checks if head has reached farthest lef value
+                self.turn_value = max
+            elif self.turn_value < min:  # Checks if head is in the farthest right postion
+                self.turn_value = min
+        elif move == "left":
+            self.turn_value += inc1
+            if self.turn_value > max:  # Checks if head has reached farthest left value
+                self.turn_value = max
+            elif self.turn_value < min:  # Checks if head is in the farthest right postion
+                self.turn_value = min
+
+        moves[move].__call__()
 
 
 driver = Driver()
