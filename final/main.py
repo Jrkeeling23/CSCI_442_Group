@@ -38,7 +38,7 @@ class Frame:
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
 
-        self.robot = Robot(goal = "l")
+        self.robot = Robot(goal="l")
 
     def run(self):
         """
@@ -49,15 +49,13 @@ class Frame:
             img = frame.array
 
             self.robot.orientate()  # robot must find where it is at
-                    # TODO: turn around do a 360 now. Robot orientates based off of bins.
-
+            # TODO: turn around do a 360 now. Robot orientates based off of bins.
 
             if self.robot.mine:  # is robot is needs to mine, needs to get path to mine
                 self.robot.get_path()
 
             elif self.robot.deliver:  # if robot needs to deliver, call function.
                 self.robot.deliver_ice()
-
 
             overlay = self.create_furthest_path(img.copy())  # create furthest non obstructed path
             cv.imshow("Overlay", overlay)
@@ -176,14 +174,15 @@ class Robot:
 
     def grab_ice(self):
         """
-        TODO: Create function to grab ice. This entails robot arm movement (maybe its own function), and blob detection
+        Function that controls robot movement to grab ice.
         area (where arm will be) to detect if ice is in robot hands.
         :return:
         """
         self.move_arm()
         # TODO: Look down.
         if self.frame.detect_ice():
-            # Squeeze Hand
+            self.deliver = True
+            # TODO: Squeeze Hand
 
     def deliver_ice(self):
         """
@@ -321,34 +320,8 @@ class Robot:
 
         moves[move].__call__()
 
-    # def get_path(self):
-    #     """
-    #     TODO: get path from Frame class.
-    #     :return:
-    #     """
 
-
-# class Driver:
-#     """
-#     Driver runs program and keeps it running.
-#     """
-#
-#     def __init__(self):
-#
-#         robot = Robot(goal="l")  # create robot instance
-#         robot.orientate()  # robot must find where it is at
-#         # TODO: turn around do a 360 now. Robot orientates based off of bins.
-#
-#         while robot.finsihed is False:  # continue this routine until robot has finished
-#
-#             if robot.mine:  # is robot is needs to mine, needs to get path to mine
-#                 robot.get_path()
-#
-#             elif robot.deliver:  # if robot needs to deliver, call function.
-#                 robot.deliver_ice()
-
-
-driver = Driver()
+driver = Frame()
 driver.run()
 
 #     def __init__(self):
