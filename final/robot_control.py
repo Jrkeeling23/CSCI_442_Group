@@ -102,38 +102,38 @@ class MoveRobot:
         print("turn left")
 
     def move_head(self, h_val, v_val):  # method to move the robot head
-        self.headTilt = self.check_value(v_val)
-        self.headTurn = self.check_value(h_val)
+        self.headTilt = self.check_motor_value(v_val, 1510, 7900)
+        self.headTurn = self.check_motor_value(h_val, 1510, 7900)
         self.tango.setTarget(HEADTURN, self.headTurn)
         self.tango.setTarget(HEADTILT, self.headTilt)
         # time.sleep(.5)
 
     def move_wheels(self, move, value):  # Method to move the wheels of the robot
         if move == "turn":
-            self.turn = self.check_value_turn(value)
+            self.turn = self.check_value_turn(value, 2110, 7400)
             self.tango.setTarget(TURN, self.turn)
         elif move == "move":
-            self.motors = self.check_value(value)
+            self.motors = self.check_motor_value(value, 1510, 7900)
             self.tango.setTarget(MOTORS, self.motors)
         time.sleep(1)
         threading.Thread(target=self.stop())
 
-    # Methods to check value boundaries of servos
-    def check_value(self, val):
-        if val > 7900:
-            return 7900
-        elif val < 1510:
-            return 1510
-        else:
-            return val
-
-    def check_value_turn(self, val):
-        if val > 7400:
-            return 7400
-        elif val < 2110:
-            return 2110
-        else:
-            return val
+    # # Methods to check value boundaries of servos
+    # def check_value(self, val):
+    #     if val > 7900:
+    #         return 7900
+    #     elif val < 1510:
+    #         return 1510
+    #     else:
+    #         return val
+    #
+    # def check_value_turn(self, val):
+    #     if val > 7400:
+    #         return 7400
+    #     elif val < 2110:
+    #         return 2110
+    #     else:
+    #         return val
 
     def check_motor_value(self, val, min, max):
         if val > max:
