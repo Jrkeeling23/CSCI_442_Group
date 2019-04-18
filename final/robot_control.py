@@ -67,7 +67,7 @@ class MoveRobot:
         self.motors -= 800
         self.forward_back_limit()
         self.tango.setTarget(MOTORS, self.motors)
-        time.sleep(1.4)
+        time.sleep(1)
         self.stop()
 
     def wheels_backward(self):  # Moves the wheels backwards
@@ -106,7 +106,7 @@ class MoveRobot:
         self.headTurn = self.check_motor_value(h_val, 1510, 7900)
         self.tango.setTarget(HEADTURN, self.headTurn)
         self.tango.setTarget(HEADTILT, self.headTilt)
-        # time.sleep(.5)
+        time.sleep(.1)
 
     def move_wheels(self, move, value):  # Method to move the wheels of the robot
         if move == "turn":
@@ -143,15 +143,15 @@ class MoveRobot:
         else:
             return val
 
-    def get_inc(self, val, body_part): # Gets increment value for moving part
+    def get_inc(self, val, body_part):  # Gets increment value for moving part
         inc_value = 150
         if body_part < val:
             return inc_value
         else:
             return inc_value * -1
 
-    def move_shoulder(self, val): # Method to move shoulder
-        val = self.check_motor_value(val, 3900, 6100)    # Lower value = higher shoulder 6000-4000
+    def move_shoulder(self, val):  # Method to move shoulder
+        val = self.check_motor_value(val, 3900, 6100)  # Lower value = higher shoulder 6000-4000
         inc = self.get_inc(val, self.shoulder)
         for i in range(self.shoulder, val, inc):
             self.shoulder = i
@@ -159,7 +159,7 @@ class MoveRobot:
             time.sleep(.1)
 
     def move_elbow(self, val):  # Method to move elbow
-        val = self.check_motor_value(val, 3900, 7100) # Lower value = higher shoulder 7000-4000
+        val = self.check_motor_value(val, 3900, 7100)  # Lower value = higher shoulder 7000-4000
         inc = self.get_inc(val, self.elbow)
         for i in range(self.elbow, val, inc):
             self.elbow = i
@@ -167,9 +167,10 @@ class MoveRobot:
             time.sleep(.1)
 
     def move_hand(self, val):  # Method to move hand
-        val = self.check_motor_value(val, 3900, 8100)# Lower value = higher shoulder 8000-4000
+        val = self.check_motor_value(val, 3900, 8100)  # Lower value = higher shoulder 8000-4000
         inc = self.get_inc(val, self.hand)
         for i in range(self.hand, val, inc):
             self.hand = i
             self.tango.setTarget(HAND, self.hand)
             time.sleep(.1)
+
