@@ -135,23 +135,41 @@ class MoveRobot:
         else:
             return val
 
-    # Lower value = higher shoulder 6000-4000
-    def move_shoulder_vertically(self, val):
-        if self.shoulder < val:
-            inc = 150
+    def check_motor_value(self, val, min, max):
+        if val > max:
+            return max
+        elif val < min:
+            return min
         else:
-            inc = -150
+            return val
+
+    def get_inc(self, val, body_part): # Gets increment value for moving part
+        inc_value = 150
+        if body_part < val:
+            return inc_value
+        else:
+            return inc_value * -1
+
+    def move_shoulder(self, val): # Method to move shoulder
+        val = self.check_motor_value(val, 3900, 6100)    # Lower value = higher shoulder 6000-4000
+        inc = self.get_inc(val, self.shoulder)
         for i in range(self.shoulder, val, inc):
             self.shoulder = i
             self.tango.setTarget(SHOULDER, self.shoulder)
             time.sleep(.1)
 
-    def move_elbow(self, val):  # Lower value = higher shoulder 7000-4000
-        self.elbow = val
-        self.tango.setTarget(ELBOW, self.elbow)
-        time.sleep(.1)
+    def move_elbow(self, val):  # Method to move elbow
+        val = self.check_motor_value(val, 3900, 7100) # Lower value = higher shoulder 7000-4000
+        inc = self.get_inc(val, self.elbow)
+        for i in range(self.elbow, val, inc):
+            self.elbow = i
+            self.tango.setTarget(ELBOW, self.elbow)
+            time.sleep(.1)
 
-    def move_hand(self, val):  # Lower value = higher shoulder 7000-4000
-        self.hand = val
-        self.tango.setTarget(HAND, self.hand)
-        time.sleep(.1)
+    def move_hand(self, val):  # Method to move hand
+        val = self.check_motor_value(val, 3900, 8100)# Lower value = higher shoulder 8000-4000
+        inc = self.get_inc(val, self.hand)
+        for i in range(self.hand, val, inc):
+            self.hand = i
+            self.tango.setTarget(HAND, self.hand)
+            time.sleep(.1)
