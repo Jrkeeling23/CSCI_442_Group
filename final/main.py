@@ -131,6 +131,13 @@ class Frame:
         :return:
         """
 
+    def orientate(self):
+        """
+        TODO: Create a function for robot to orientate itself (if it is not facing the correct direction).
+        Maybe by finding the color of its goal (it is on the boxes). Once found square up with box, and turn around???
+        :return:
+        """
+
 
 class Robot:
     """
@@ -154,25 +161,20 @@ class Robot:
 
         self.frame = Frame()  # variable to contain instance of Frame class
 
-    @staticmethod
-    def robot_talk(what_to_speak):
-        """
-        A function that allows the robot to speak a given string.
-        :param what_to_speak: String, this gives the robot the correct response.
-        :return:
-        """
-        IP = '10.200.47.148'  # value needs to be updated to phone in use
-        PORT = 5010
-        speak = client.ClientSocket(IP, PORT)
-        speak.sendData(what_to_speak)
+    # @staticmethod
+    # def robot_talk(what_to_speak):
+    #     """
+    #     A function that allows the robot to speak a given string.
+    #     :param what_to_speak: String, this gives the robot the correct response.
+    #     :return:
+    #     """
+    #     IP = '10.200.47.148'  # value needs to be updated to phone in use
+    #     PORT = 5010
+    #     speak = client.ClientSocket(IP, PORT)
+    #     speak.sendData(what_to_speak)
 
-    def find_human(self):
-        """
-        TODO: create function to find human (once in mining area).
-        :return:
-        """
 
-    def grab_ice(self):
+    def grab(self):
         """
         Function that controls robot movement to grab ice.
         area (where arm will be) to detect if ice is in robot hands.
@@ -193,12 +195,7 @@ class Robot:
             # TODO: Drop ice in bin
             self.get_path()
 
-    def orientate(self):
-        """
-        TODO: Create a function for robot to orientate itself (if it is not facing the correct direction).
-        Maybe by finding the color of its goal (it is on the boxes). Once found square up with box, and turn around???
-        :return:
-        """
+
 
     def robot_center(self):
         """
@@ -215,7 +212,7 @@ class Robot:
 
     def move_forward(self):
         """
-        Function to mvoe robot forwards.
+        Function to move robot forwards.
         :return:
         """
         # self.robot.move_wheels("move", self.wheels_value)

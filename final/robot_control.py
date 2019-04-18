@@ -9,6 +9,10 @@ TURN = 2
 BODY = 0
 HEADTILT = 4
 HEADTURN = 3
+# for left arm
+SHOULDER = 12
+ELBOW = 14
+HAND = 17
 
 
 class MoveRobot:
@@ -22,6 +26,9 @@ class MoveRobot:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
+        self.shoulder = 6000
+        self.elbow = 6000
+        self.hand = 6000
         self.center_robot()
 
     def stop(self):  # Stops the robot from moving or turning
@@ -41,10 +48,13 @@ class MoveRobot:
         self.tango.setTarget(TURN, self.turn)
         time.sleep(.5)
 
-    def center_robot(self):  # Ctenters the robot and tilts the head down
+    def center_robot(self):  # Centers the robot and tilts the head down
         self.tango.setTarget(HEADTURN, self.headTurn)
         self.tango.setTarget(HEADTILT, 1510)
         self.tango.setTarget(BODY, self.body)
+        self.tango.setTarget(HAND,self.hand)
+        self.tango.setTarget(ELBOW, self.elbow)
+        self.tango.setTarget(SHOULDER, self.shoulder)
 
     def forward_back_limit(self):  # Checks the limit for the wheels moving forward and backwards
         if self.motors < 1510:
@@ -73,10 +83,10 @@ class MoveRobot:
             self.turn = 7400
 
     def turn_right(self):  # Turns robot right
-        self.turn -=1500
+        self.turn -= 1500
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
-    #    time.sleep(.2)
+        #    time.sleep(.2)
         time.sleep(.15)
         self.stop()
         print("turn right")
@@ -85,7 +95,7 @@ class MoveRobot:
         self.turn += 1500
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
-        #time.sleep(.2)
+        # time.sleep(.2)
         time.sleep(.15)
         self.stop()
         print("turn left")
@@ -95,7 +105,7 @@ class MoveRobot:
         self.headTurn = self.check_value(h_val)
         self.tango.setTarget(HEADTURN, self.headTurn)
         self.tango.setTarget(HEADTILT, self.headTilt)
-        #time.sleep(.5)
+        # time.sleep(.5)
 
     def move_wheels(self, move, value):  # Method to move the wheels of the robot
         if move == "turn":
@@ -123,3 +133,9 @@ class MoveRobot:
             return 2110
         else:
             return val
+
+    def move_shoulder_vertically(self, val):
+        self.shoulder = self.check_value(val)
+        self.tango.setTarget(SHOULDER, self.shoulder)
+        time.sleep(1)
+        #  print("move shoulder")
