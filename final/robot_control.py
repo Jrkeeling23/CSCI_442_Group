@@ -52,11 +52,12 @@ class MoveRobot:
         self.tango.setTarget(HEADTURN, self.headTurn)
         self.tango.setTarget(HEADTILT, 1510)
         self.tango.setTarget(BODY, self.body)
-        self.tango.setTarget(HAND,self.hand)
+        self.tango.setTarget(HAND, self.hand)
         self.tango.setTarget(ELBOW, self.elbow)
         self.tango.setTarget(SHOULDER, self.shoulder)
 
-    def forward_back_limit(self):  # Checks the limit for the wheels moving forward and backwards
+    # Checks the limit for the wheels moving forward and backwards
+    def forward_back_limit(self):
         if self.motors < 1510:
             self.motors = 1510
         elif self.motors > 7900:
@@ -134,8 +135,23 @@ class MoveRobot:
         else:
             return val
 
+    # Lower value = higher shoulder 6000-4000
     def move_shoulder_vertically(self, val):
-        self.shoulder = self.check_value(val)
-        self.tango.setTarget(SHOULDER, self.shoulder)
-        time.sleep(1)
-        #  print("move shoulder")
+        if self.shoulder < val:
+            inc = 150
+        else:
+            inc = -150
+        for i in range(self.shoulder, val, inc):
+            self.shoulder = i
+            self.tango.setTarget(SHOULDER, self.shoulder)
+            time.sleep(.1)
+
+    def move_elbow(self, val):  # Lower value = higher shoulder 7000-4000
+        self.elbow = val
+        self.tango.setTarget(ELBOW, self.elbow)
+        time.sleep(.1)
+
+    def move_hand(self, val):  # Lower value = higher shoulder 7000-4000
+        self.hand = val
+        self.tango.setTarget(HAND, self.hand)
+        time.sleep(.1)
