@@ -117,12 +117,35 @@ class Frame:
         :return:
         """
 
-    def detect_ice(self, goal):
+    def detect_ice(self, goal_low, goal_up, x1, y1, x2, y2, frame):
         """
         TODO: Create function to find blob within hand region of robot
-        :param goal: Gives robot understanding of what ice to be detecting
+        This function uses blob detection and only considers location of hand.
+        :param goal_color: color to detect.
+        Create rectangle from below coordinates
+        :param x1:
+        :param y1:
+        :param x2:
+        :param y2:
+
+        :param frame: current frame in consideration.
         :return:
         """
+        self.robot.move_arm()  # get arm into position
+
+        # create view within coordinates
+        rectangle = cv.rectangle(frame, (x1, y1), (x2, y2), (255, 255, 255), cv.FILLED)  # create white rect over aoi
+        _, rectangle = cv.threshold(rectangle, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
+        view = cv.bitwise_and(frame, frame, mask=rectangle)  # adds contents from the frame into white space.
+
+        # search for goal color in view
+        hsv = cv.cvtColor(view, cv.COLOR_BGR2HSV)
+        goal_mask = cv.inRange(hsv, goal_low, goal_up)  # have mask of goal color.
+
+        # TODO: determine if color is detected in mask. May have to do nested for loop.
+
+        time.sleep(5)  # wait 5 seconds
+        self.robot.grab()
 
     def detect_bin(self, goal):
         """
@@ -173,7 +196,6 @@ class Robot:
     #     speak = client.ClientSocket(IP, PORT)
     #     speak.sendData(what_to_speak)
 
-
     def grab(self):
         """
         Function that controls robot movement to grab ice.
@@ -194,8 +216,6 @@ class Robot:
                 self.deliver = False  # robot has delivered
             # TODO: Drop ice in bin
             self.get_path()
-
-
 
     def robot_center(self):
         """
