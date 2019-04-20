@@ -121,7 +121,8 @@ class Frame:
         """
         TODO: Create function to find blob within hand region of robot
         This function uses blob detection and only considers location of hand.
-        :param goal_color: color to detect.
+        :param goal_low: color's lower bound
+        :param goal_up: color's upper bound
         Create rectangle from below coordinates
         :param x1:
         :param y1:
@@ -142,17 +143,26 @@ class Frame:
         hsv = cv.cvtColor(view, cv.COLOR_BGR2HSV)
         goal_mask = cv.inRange(hsv, goal_low, goal_up)  # have mask of goal color.
 
-        # TODO: determine if color is detected in mask. May have to do nested for loop.
+        # TODO: use blob detection.
 
         time.sleep(5)  # wait 5 seconds
         self.robot.grab()
 
-    def detect_bin(self, goal):
+    def detect_bin(self, goal_low, goal_up, frame):
         """
+        This function uses
         TODO: Create function to find bin that corresponds to ice color
-        :param goal: Gives robot understanding of what color of bin to be detecting
+        :param frame: current frame.
+        :param goal_low: color's lower range.
+        :param goal_up: color's upper range
         :return:
         """
+        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+
+        if self.robot.start:
+            # TODO: SPEAK
+            mask_bin = cv.inRange(hsv, goal_low, goal_up)  # finds correct bin based off color
+            # TODO: blob detection, move closer to box, drop ice.
 
     def orientate(self):
         """
