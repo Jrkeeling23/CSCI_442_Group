@@ -17,7 +17,10 @@ from facedetection import FaceDetection
 """
 TODO: 
 Find ranges for ice/goal colors.
-Give robot class Driver instance.
+Blob detection
+Orientation
+Talking when it needs to
+Change state of robot in correct spots
 """
 
 
