@@ -111,115 +111,15 @@ class Frame:
 
     def face_detection(self, frame):
         """
-        TODO: Create a function that detects face. Robot will use this from find_human function.
+        Detects face (from assignment 6)
         :return:
         """
         face = FaceDetection()
         face.detect_face(frame)
-    #     horizontal = 1500
-    #     vertical = 1500
-    #     face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
-    #     head_increment_horizontal = 1497
-    #     search_for_face_inc = 1510
-    #     search_for_face_up = True
-    #     time_since_talk = 16.
-    #     time_start = False
-    #     turn_inc = 50
-    #     turn_value = 6000
-    #
-    #     time_for_human = 10.0  # Variable setting the time between detecting a new human
-    #     gray = cv.cvtColor(frame.copy(), cv.COLOR_BGR2GRAY)
-    #     faces = face_cascade.detectMultiScale(gray, 1.09, 10)
-    #     if len(faces) > 0:  # Enters if a face is found
-    #         if (
-    #                 time.time() - time_since_talk) > time_for_human or not time_start:  # Enters if a human is found the first time running a program, or a human hasn't been found for the chosen amount of time.
-    #             time_start = True  # Tracks the first time a human is found running the program
-    #             # self.talk()
-    #             robot_centered = False
-    #         for (x, y, w, h) in faces:  # Loops over faces (should be only one)
-    #             time.sleep(.4)
-    #             time_since_talk = time.time()  # resets the clock since a human has been found.
-    #             cv.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-    #             # TODO: self.center(x, y, w, h)  # Calls the function to center the face.
-    #             if not robot_control:
-    #                 if horizontal < 5800:  # Makes robot face the human.
-    #                     self.increment_Movement("left", 2110, 7400, turn_inc, 0)
-    #                 elif horizontal > 6200:
-    #                     self.increment_Movement("right", 2110, 7400, turn_inc, 0)
-    #                 else:
-    #                     self.robot.stop()
-    #                     robot_centered = True
-    #     else:
-    #         # Adjust head increments to find a face.
-    #         # self.horizontal += self.head_increment_horizontal
-    #         # if self.horizontal > 7500:
-    #         #     self.horizontal = 1510
-    #         #     self.vertical += self.head_increment_vert
-    #         # if self.vertical > 7500:
-    #         #     self.vertical = 1510
-    #         # self.move_head()
-    #         # self.search_for_face()
-    #         self.increment_Movement("head", 1510, 7500, 599, 1497)
-    #
-    # def center(self):
-    #     """
-    #     TODO: Create function to center robot to path found. Will be called when robot finds a path
-    #     :return:
-    #     """
-    #
-    # def increment_Movement(self, move, min, max, inc1, inc2):  # iteratively moves robot.
-    #     moves = {"head": self.move_head, "forward": self.move_wheels, "backward": self.move_wheels,
-    #              "left": self.turn_wheels, "right": self.turn_wheels}
-    #
-    #     if move == "head":
-    #         self.horizontal = self.search_for_face_inc
-    #         if self.horizontal > max:  # Checks if head has reached farthest right value
-    #             self.search_for_face_inc = max
-    #             self.search_for_face_up = False  # Sets to false to head the other direction
-    #             self.horizontal = self.search_for_face_inc  # Sets the face value iin case it is greater than 7500
-    #             self.vertical += inc2  # Increments the vertical position
-    #         elif self.horizontal < min:  # Checks if head is in the farthest left postion
-    #             self.search_for_face_inc = min
-    #             self.search_for_face_up = True  # Sets true to start heading the other way.
-    #             self.horizontal = self.search_for_face_inc  # Sets incase head is less than 1519
-    #             self.vertical += inc2  # Increments the vertical postition
-    #
-    #         if self.vertical > max:  # Resets to bottom vertical position
-    #             self.vertical = min
-    #         if self.search_for_face_up:
-    #             self.search_for_face_inc += inc1
-    #         else:
-    #             self.search_for_face_inc -= inc1
-    #     elif move == "forward":
-    #         self.wheels_value -= inc1
-    #         if self.wheels_value > max:
-    #             self.wheels_value = max
-    #         elif self.wheels_value < min:
-    #             self.wheels_value = min
-    #     elif move == "backward":
-    #         self.wheels_value += inc1
-    #         if self.wheels_value > max:
-    #             self.wheels_value = max
-    #         elif self.wheels_value < min:
-    #             self.wheels_value = min
-    #     elif move == "right":
-    #         self.turn_value -= inc1
-    #         if self.turn_value > max:  # Checks if head has reached farthest lef value
-    #             self.turn_value = max
-    #         elif self.turn_value < min:  # Checks if head is in the farthest right postion
-    #             self.turn_value = min
-    #     elif move == "left":
-    #         self.turn_value += inc1
-    #         if self.turn_value > max:  # Checks if head has reached farthest left value
-    #             self.turn_value = max
-    #         elif self.turn_value < min:  # Checks if head is in the farthest right postion
-    #             self.turn_value = min
-    #
-    #     moves[move].__call__()
+
 
     def detect_ice(self, goal_low, goal_up, x1, y1, x2, y2, frame):
         """
-        TODO: Create function to find blob within hand region of robot
         This function uses blob detection and only considers location of hand.
         :param goal_low: color's lower bound
         :param goal_up: color's upper bound
@@ -250,8 +150,7 @@ class Frame:
 
     def detect_bin(self, goal_low, goal_up, frame):
         """
-        This function uses
-        TODO: Create function to find bin that corresponds to ice color
+        This function detects the correct bins by blob detection.
         :param frame: current frame.
         :param goal_low: color's lower range.
         :param goal_up: color's upper range
