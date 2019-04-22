@@ -28,22 +28,20 @@ def show_hsv(image):
     cv.setMouseCallback("HSV", show_hsv_values, param)  # Passes in HSV image during mouse click
 
 
-
 def show_cam():
     # Screen capture code provided by Hunter Lloyd https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/View
     capture = cv.VideoCapture(0)
     while True:
-        # status, image = capture.read()  # Reads in the capture
-       # image = cv.imread("imagesWOvideo/one.jpg")
-        image = cv.imread("imagesWOvideo/pastel_screenshot_01.03.2019.png")
+        status, image = capture.read()  # Reads in the capture
+        #image = cv.imread("imagesWOvideo/one.jpg")
+        # image = cv.imread("imagesWOvideo/pastel_screenshot_01.03.2019.png")
         show_unfiltered(image)
-        #create_trackbar(image)
+        # create_trackbar(image)
         show_hsv(image)
 
         k = cv.waitKey(1)
         if k == 27:
             break
-
 
 
 # TODO Using Sliders create scalers for the min and max values you want to tracka Scalar will be a numpy array (np.array) that takes 3 values for minH, minS, and minV.......then a second scalar to catch the other three Max values create 3 trackbars, createTrackbar with callback methods to set your six variables
@@ -54,14 +52,14 @@ def show_cam():
 def set_trackbar_values(val):
     pass
 
+
 ### Creates trackbar for hsv values to detect object
 def create_trackbar(hsv):
     cv.namedWindow("HSV")
 
-    #cv.135Window("HSV", 0, 663)  # move window to a desirable spot
+    # cv.135Window("HSV", 0, 663)  # move window to a desirable spot
 
     # cv.moveWindow("HSV", 0, 663)
-
 
     # trackbars for max and mins for each hsv channel
     # cv.createTrackbar('Hue Min', "HSV", 0, 180,
@@ -88,9 +86,6 @@ def create_trackbar(hsv):
     cv.createTrackbar('Value Max', "HSV", 0, 255,
                       set_trackbar_values)
 
-
-
-
     # obtain the min and max positions of the sliders
     hue_min = cv.getTrackbarPos('Hue Min', "HSV")
     hue_max = cv.getTrackbarPos('Hue Max', "HSV")
@@ -104,9 +99,8 @@ def create_trackbar(hsv):
     maxS = np.array([hue_max, saturation_max, value_max])
     mask = cv.inRange(hsv, minS, maxS)
     mask = cv.dilate(mask, kernel, iterations=1)
-   # cv.imshow('HSV', hsv)  # Shows the image
+    # cv.imshow('HSV', hsv)  # Shows the image
     cv.imshow("Mask", mask)
-
 
 
 # TODO Us the OpenCV inRange method to find the values between the scalars from HSV image and the result will go to a grayscale image (make it a binary image, white/black).
