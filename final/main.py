@@ -162,6 +162,8 @@ class Frame:
             # TODO: SPEAK
             mask_bin = cv.inRange(hsv, goal_low, goal_up)  # finds correct bin based off color
             # TODO: blob detection, move closer to box, drop ice.
+            detector = cv.SimpleBlobDetector()
+            keypoints = detector.detect()
 
     def orientate(self):
         """
