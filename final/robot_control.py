@@ -151,7 +151,7 @@ class MoveRobot:
         self.tango.setTarget(ELBOW, self.elbow)
         time.sleep(.1)
 
-    def move_hand(self, val):  # Lower value = higher shoulder 7000-4000
+    def move_hand(self, val):  # Lower value = higher shoulder 8100-4000
         self.hand = val
         self.tango.setTarget(HAND, self.hand)
         time.sleep(.1)
