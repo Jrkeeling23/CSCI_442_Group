@@ -12,11 +12,15 @@ import threading
 import socket
 import time
 import queue
+from facedetection import FaceDetection
 
 """
 TODO: 
 Find ranges for ice/goal colors.
-Give robot class Driver instance.
+Blob detection
+Orientation
+Talking when it needs to
+Change state of robot in correct spots
 """
 
 
@@ -105,31 +109,119 @@ class Frame:
         # create image with furthest possible path with original added
         return cv.addWeighted(img, .7, image, 0.4, 0)
 
-    def face_detection(self):
+    def face_detection(self, frame):
         """
-        TODO: Create a function that detects face. Robot will use this from find_human function.
+        Detects face (from assignment 6)
+        :return:
+        """
+        face = FaceDetection()
+        face.detect_face(frame)
+
+
+    def detect_ice(self, goal_low, goal_up, x1, y1, x2, y2, frame):
+        """
+        This function uses blob detection and only considers location of hand.
+        :param goal_low: color's lower bound
+        :param goal_up: color's upper bound
+        Create rectangle from below coordinates
+        :param x1:
+        :param y1:
+        :param x2:
+        :param y2:
+
+        :param frame: current frame in consideration.
+        :return:
+        """
+        self.robot.move_arm()  # get arm into position
+
+        # create view within coordinates
+        rectangle = cv.rectangle(frame, (x1, y1), (x2, y2), (255, 255, 255), cv.FILLED)  # create white rect over aoi
+        _, rectangle = cv.threshold(rectangle, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
+        view = cv.bitwise_and(frame, frame, mask=rectangle)  # adds contents from the frame into white space.
+
+        # search for goal color in view
+        hsv = cv.cvtColor(view, cv.COLOR_BGR2HSV)
+        goal_mask = cv.inRange(hsv, goal_low, goal_up)  # have mask of goal color.
+        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
+
+        params = cv.SimpleBlobDetector_Params()
+        params.maxThreshold = 255
+        params.minThreshold = 200
+        params.filterByArea = True
+        params.minArea = 1500
+        params.maxArea = 50000
+        params.filterByInertia = False
+        params.filterByConvexity = False
+
+        ver = (cv.__version__).split('.')
+        if int(ver[0]) < 3:
+            detector = cv.SimpleBlobDetector(params)
+        else:
+            detector = cv.SimpleBlobDetector_create(params)
+
+        keypoints = detector.detect(thresh)
+
+        if len(keypoints) is not 0:
+            for i in range(len(keypoints)):
+                x = keypoints[0].pt[0]
+                y = keypoints[0].pt[1]
+                # values for center of circle
+                print(x)
+                print(y)
+                # TODO: Move towards points
+
+        img_with_keypoints = cv.drawKeypoints(thresh, keypoints, outImage=np.array([]), color=(0, 0, 255),
+                                              flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+        time.sleep(5)  # wait 5 seconds
+        self.robot.grab()
+
+    def detect_bin(self, goal_low, goal_up, frame):
+        """
+        This function detects the correct bins by blob detection.
+        :param frame: current frame.
+        :param goal_low: color's lower range.
+        :param goal_up: color's upper range
         :return:
         """
 
-    def center(self):
-        """
-        TODO: Create function to center robot to path found. Will be called when robot finds a path
-        :return:
-        """
+        if self.robot.start:
+            hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+            # TODO: blob detection, move closer to box, drop ice.
+            goal_mask = cv.inRange(hsv, goal_low, goal_up)  # have mask of goal color.
+            _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
 
-    def detect_ice(self, goal):
-        """
-        TODO: Create function to find blob within hand region of robot
-        :param goal: Gives robot understanding of what ice to be detecting
-        :return:
-        """
+            params = cv.SimpleBlobDetector_Params()
+            params.maxThreshold = 255
+            params.minThreshold = 200
+            params.filterByArea = True
+            params.minArea = 1500
+            params.maxArea = 50000
+            params.filterByInertia = False
+            params.filterByConvexity = False
 
-    def detect_bin(self, goal):
-        """
-        TODO: Create function to find bin that corresponds to ice color
-        :param goal: Gives robot understanding of what color of bin to be detecting
-        :return:
-        """
+            ver = (cv.__version__).split('.')
+            if int(ver[0]) < 3:
+                detector = cv.SimpleBlobDetector(params)
+            else:
+                detector = cv.SimpleBlobDetector_create(params)
+
+            keypoints = detector.detect(thresh)
+
+            if len(keypoints) is not 0:
+                for i in range(len(keypoints)):
+                    x = keypoints[0].pt[0]
+                    y = keypoints[0].pt[1]
+                    # values for center of circle
+                    print(x)
+                    print(y)
+                # TODO: Move towards points
+
+            img_with_keypoints = cv.drawKeypoints(thresh, keypoints, outImage=np.array([]), color=(0, 0, 255),
+                                                  flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+            # TODO: Drop in bin.
+            self.drop()
 
     def orientate(self):
         """
@@ -173,7 +265,6 @@ class Robot:
     #     speak = client.ClientSocket(IP, PORT)
     #     speak.sendData(what_to_speak)
 
-
     def grab(self):
         """
         Function that controls robot movement to grab ice.
@@ -181,6 +272,13 @@ class Robot:
         :return:
         """
         self.robot.move_hand(8100)
+
+    def drop(self):
+        """
+        Function to drop ice in bin
+        :return:
+        """
+        # TODO: Drop ice in bin
 
     def deliver_ice(self):
         """
@@ -194,8 +292,6 @@ class Robot:
                 self.deliver = False  # robot has delivered
             # TODO: Drop ice in bin
             self.get_path()
-
-
 
     def robot_center(self):
         """
