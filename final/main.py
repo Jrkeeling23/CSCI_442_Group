@@ -142,8 +142,36 @@ class Frame:
         # search for goal color in view
         hsv = cv.cvtColor(view, cv.COLOR_BGR2HSV)
         goal_mask = cv.inRange(hsv, goal_low, goal_up)  # have mask of goal color.
+        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
 
-        # TODO: use blob detection.
+        params = cv.SimpleBlobDetector_Params()
+        params.maxThreshold = 255
+        params.minThreshold = 200
+        params.filterByArea = True
+        params.minArea = 1500
+        params.maxArea = 50000
+        params.filterByInertia = False
+        params.filterByConvexity = False
+
+        ver = (cv.__version__).split('.')
+        if int(ver[0]) < 3:
+            detector = cv.SimpleBlobDetector(params)
+        else:
+            detector = cv.SimpleBlobDetector_create(params)
+
+        keypoints = detector.detect(thresh)
+
+        if len(keypoints) is not 0:
+            for i in range(len(keypoints)):
+                x = keypoints[0].pt[0]
+                y = keypoints[0].pt[1]
+                # values for center of circle
+                print(x)
+                print(y)
+                # TODO: Move towards points
+
+        img_with_keypoints = cv.drawKeypoints(thresh, keypoints, outImage=np.array([]), color=(0, 0, 255),
+                                              flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
         time.sleep(5)  # wait 5 seconds
         self.robot.grab()
@@ -156,14 +184,44 @@ class Frame:
         :param goal_up: color's upper range
         :return:
         """
-        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
         if self.robot.start:
-            # TODO: SPEAK
-            mask_bin = cv.inRange(hsv, goal_low, goal_up)  # finds correct bin based off color
+            hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
             # TODO: blob detection, move closer to box, drop ice.
-            detector = cv.SimpleBlobDetector()
-            keypoints = detector.detect()
+            goal_mask = cv.inRange(hsv, goal_low, goal_up)  # have mask of goal color.
+            _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
+
+            params = cv.SimpleBlobDetector_Params()
+            params.maxThreshold = 255
+            params.minThreshold = 200
+            params.filterByArea = True
+            params.minArea = 1500
+            params.maxArea = 50000
+            params.filterByInertia = False
+            params.filterByConvexity = False
+
+            ver = (cv.__version__).split('.')
+            if int(ver[0]) < 3:
+                detector = cv.SimpleBlobDetector(params)
+            else:
+                detector = cv.SimpleBlobDetector_create(params)
+
+            keypoints = detector.detect(thresh)
+
+            if len(keypoints) is not 0:
+                for i in range(len(keypoints)):
+                    x = keypoints[0].pt[0]
+                    y = keypoints[0].pt[1]
+                    # values for center of circle
+                    print(x)
+                    print(y)
+                # TODO: Move towards points
+
+            img_with_keypoints = cv.drawKeypoints(thresh, keypoints, outImage=np.array([]), color=(0, 0, 255),
+                                                  flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+            # TODO: Drop in bin.
+            self.drop()
 
     def orientate(self):
         """
@@ -214,6 +272,13 @@ class Robot:
         :return:
         """
         # TODO: Squeeze Hand
+
+    def drop(self):
+        """
+        Function to drop ice in bin
+        :return:
+        """
+        # TODO: Drop ice in bin
 
     def deliver_ice(self):
         """
