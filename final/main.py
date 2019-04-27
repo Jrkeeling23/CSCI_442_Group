@@ -13,6 +13,7 @@ import socket
 import time
 import queue
 from facedetection import FaceDetection
+from bin_ice_detection import Goal
 
 """
 TODO: 
