@@ -145,7 +145,7 @@ class Frame:
         # TODO: Move towards points
         # TODO: Drop in bin if size of bin is .... (will probably need to be done in bin_ice_detection)
         # TODO: If size < ... then move towards box ... else drop...
-        self.drop()
+            self.drop()
 
     def orientate(self):
         """
@@ -175,7 +175,7 @@ class Robot:
 
         self.goal = Goal("large")  # variable to track robots goal. String that is either S, M, or L
 
-        self.frame = Frame()  # variable to contain instance of Frame class
+        # self.frame = Frame()  # variable to contain instance of Frame class
 
     # @staticmethod
     # def robot_talk(what_to_speak):
