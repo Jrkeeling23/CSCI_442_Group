@@ -5,24 +5,25 @@ import cv2 as cv
 class Goal:
     def __init__(self):
         # Dictionaries for goals, lower thresh : upper thresh
-        self.large = {np.array([0, 0, 0]), np.array([0, 0, 0])}
-        self.medium = {np.array([0, 0, 0]), np.array([0, 0, 0])}
-        self.small = {np.array([0, 0, 0]), np.array([0, 0, 0])}
+        self.large = {"large": [np.array([0, 0, 0]), np.array([0, 0, 0])]}
+        self.medium = {"medium": [np.array([0, 0, 0]), np.array([0, 0, 0])]}
+        self.small = {"small": [np.array([0, 0, 0]), np.array([0, 0, 0])]}
 
 
 def detect_ice(frame, goal):
     """
     This function detects ice in frame by using blob detection.
     :param frame: Current frame.
-    :param goal: Dictionary {lower : upper} thresholds.
+    :param goal: Dictionary { "goal": [lower, upper]} thresholds.
     :return: True if there is a blob and false if there is not.
     """
     image = cv.GaussianBlur(frame.copy(), (5, 5), 0)
     roi = image[400:600, 100:600]
     hsv = cv.cvtColor(roi.copy(), cv.COLOR_BGR2HSV)
 
-    lower_thresh = goal[0]
-    upper_thresh = goal[lower_thresh]
+    thresholds = next(iter(goal.keys()))
+    lower_thresh = thresholds[0]
+    upper_thresh = thresholds[1]
 
     goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
     _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
@@ -34,7 +35,7 @@ def detect_bin(frame, goal):
     """
     Detects the bin using blob detection. Will be called in the main/driver to determine where robot needs to move.
     :param frame: Current frame.
-    :param goal: Dictionary {lower : upper} thresholds.
+    :param goal: Dictionary { "goal": [lower, upper]} thresholds.
     :return: True if there is a blob and false if there is not.
     """
     image = cv.GaussianBlur(frame.copy(), (5, 5), 0)
