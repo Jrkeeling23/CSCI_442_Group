@@ -135,10 +135,12 @@ class Frame:
         self.robot.move_arm()  # get arm into position
 
         # create view within coordinates
-        rectangle = cv.rectangle(frame, (x1, y1), (x2, y2), (255, 255, 255), cv.FILLED)  # create white rect over aoi
-        _, rectangle = cv.threshold(rectangle, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
-        view = cv.bitwise_and(frame, frame, mask=rectangle)  # adds contents from the frame into white space.
+        rectangle = cv.rectangle(frame, (x1,y1), (x2, y2), (255, 255, 255),
+                                 cv.FILLED)  # create white rect over aoi
+        ranged = cv.inRange(rectangle, np.array([255, 255, 255]), np.array([255, 255, 255]))
+        _, thresh = cv.threshold(ranged, 0, 250, cv.THRESH_BINARY_INV)
 
+        view = cv.bitwise_and(frame, frame, mask=ranged)  # adds contents from the frame into white space.
         # search for goal color in view
         hsv = cv.cvtColor(view, cv.COLOR_BGR2HSV)
         goal_mask = cv.inRange(hsv, goal_low, goal_up)  # have mask of goal color.
