@@ -252,7 +252,7 @@ class Robot:
         self.mine = True
         self.deliver = False
 
-        self.goal = goal  # variable to track robots goal. String that is either S, M, or L
+        self.goal = Goal("large")  # variable to track robots goal. String that is either S, M, or L
 
         self.frame = Frame()  # variable to contain instance of Frame class
 
