@@ -273,7 +273,7 @@ class Robot:
         area (where arm will be) to detect if ice is in robot hands.
         :return:
         """
-        # TODO: Squeeze Hand
+        self.robot.move_hand(8100)
 
     def drop(self):
         """
