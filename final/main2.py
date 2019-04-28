@@ -19,6 +19,9 @@ blue_upper = np.array([130, 60, 255])
 orange_lower = np.array([0, 50,225])
 orange_upper = np.array([30,255,255])
 
+pink_neon_lower = np.array([140,45, 230])
+pink_neon_upper = np.array([160,60, 2255])
+
 
 class Driver:
     def __init__(self):
@@ -40,6 +43,8 @@ class Driver:
             img = cv.blur(img,(5,5))
             # convert to HSV to do object detection
             hsv = cv.cvtColor(img.copy(), cv.COLOR_BGR2HSV)
+            pink_mask = cv.inRange(hsv.copy(), pink_neon_lower, pink_neon_upper)
+            cv.imshow("", pink_mask)
             # create image with only blue displayed (as white)
             blue_mask = cv.inRange(hsv, blue_lower, blue_upper)
             # create image with only ornage displayed (as white)
@@ -75,7 +80,7 @@ class Driver:
             # Overlays the path on the original image
 
             overlayed = cv.addWeighted(img, .7, image, 0.4, 0)
-            cv.imshow("Path", overlayed)
+            #  cv.imshow("Path", overlayed)
 
             # cv.imshow('Face Detection', image)
             self.rawCapture.truncate(0)
