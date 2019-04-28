@@ -15,7 +15,6 @@ import queue
 
 blue_lower = np.array([20,20, 180])
 blue_upper = np.array([130, 60, 255])
-
 orange_lower = np.array([0, 50,225])
 orange_upper = np.array([30,255,255])
 
@@ -33,8 +32,14 @@ class Driver:
         self.width = 640
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
+        self.robot = robot_control.MoveRobot()
+
 
     def run(self):
+        self.robot.lower_arm()
+        time.sleep(3)
+        self.robot.arm_in_cam_view()
+
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
             img = frame.array
             img = cv.blur(img,(5,5))

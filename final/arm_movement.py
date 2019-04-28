@@ -1,9 +1,9 @@
 import robot_control
 
 robot = robot_control.MoveRobot()
-robot.move_shoulder_vertically(4000)
+# robot.arm_in_cam_view()
 
 
-# for i in range(4000, 8100, 150):
-#     robot.move_hand(i)
-#     print(i)
+for i in range(0, 12000, 150):
+    robot.move_elbow(i)
+    print(i)
