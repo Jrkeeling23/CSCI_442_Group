@@ -19,9 +19,9 @@ blue_upper = np.array([130, 60, 255])
 orange_lower = np.array([0, 50,225])
 orange_upper = np.array([30,255,255])
 
-pink_neon_lower = np.array([140,45, 230])
-pink_neon_upper = np.array([160,60, 2255])
-
+# Pink works if it is perpendicular to ground...
+pink_neon_lower = np.array([140,30,165])  #([100,25, 170]) 
+pink_neon_upper = np.array([210, 210, 255])  #([200,120, 255])
 
 class Driver:
     def __init__(self):
