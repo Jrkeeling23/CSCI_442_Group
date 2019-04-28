@@ -14,7 +14,7 @@ import time
 import queue
 from facedetection import FaceDetection
 from bin_ice_detection import Goal
-image = none
+image = None
 trackbar_values = {'Red Min': 0, 'Red Max': 0, 'Blue Min': 0, 'Blue Max': 0, 'Green Min': 0,
                    'Green Max': 0}  # RBG Min/Max
 
@@ -41,35 +41,15 @@ def show_hsv(image):
 
 
 def show_cam():
-    # # Screen capture code provided by Hunter Lloyd https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/View
-    # capture = cv.VideoCapture(0)
-    # while True:
-    #     status, image = capture.read()  # Reads in the capture
-    #     #image = cv.imread("imagesWOvideo/one.jpg")
-    #     # image = cv.imread("imagesWOvideo/pastel_screenshot_01.03.2019.png")
-    #     show_unfiltered(image)
-    #     # create_trackbar(image)
-    #     show_hsv(image)
-    #
-    #     k = cv.waitKey(1)
-    #     if k == 27:
-    #         break
-    # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/V$
     camera = PiCamera()
-    # camera.resolution = (640, 480)
-
     camera.resolution = (640, 480)
     camera.framerate = 32
     rawCapture = PiRGBArray(camera, size=(640, 480))
-    manipulation = imageManipulation.ImageManipulation()
-    width = 640
-    height = 480
 
     for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         img = frame.array
         show_hsv(img)
 
-        # cv.imshow("", )
 
         rawCapture.truncate(0)
         k = cv.waitKey(1) & 0xFF
@@ -77,10 +57,6 @@ def show_cam():
             break
     cv.destroyAllWindows()
 
-
-# TODO Using Sliders create scalers for the min and max values you want to tracka Scalar will be a numpy array (np.array) that takes 3 values for minH, minS, and minV.......then a second scalar to catch the other three Max values create 3 trackbars, createTrackbar with callback methods to set your six variables
-# def set_slider_value(position):
-#     values[position]
 
 
 def set_trackbar_values(val):
@@ -135,13 +111,6 @@ def create_trackbar(hsv):
     mask = cv.dilate(mask, kernel, iterations=1)
     # cv.imshow('HSV', hsv)  # Shows the image
     cv.imshow("Mask", mask)
-
-
-# TODO Us the OpenCV inRange method to find the values between the scalars from HSV image and the result will go to a grayscale image (make it a binary image, white/black).
-
-# TODO Dilate, erode the grayscale image to get a better representation of the object you are tracking.
-
-# TODO Display the original image and the binary image where everything is black except for the object you are tracking. The tracked object will be white.
 
 
 show_cam()
