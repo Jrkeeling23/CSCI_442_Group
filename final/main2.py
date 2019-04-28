@@ -23,6 +23,9 @@ orange_upper = np.array([30,255,255])
 pink_neon_lower = np.array([140,30,165])  #([100,25, 170]) 
 pink_neon_upper = np.array([210, 210, 255])  #([200,120, 255])
 
+green_neon_lower = np.array([30,80,65])
+green_neon_upper = np.array([80,200, 255])
+
 class Driver:
     def __init__(self):
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3826523/V$
