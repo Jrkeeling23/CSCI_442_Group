@@ -1,19 +1,11 @@
-import cv2 as cv
+
 import numpy as np
-import imageManipulation
-import makeMoves
-import robot_control
-import client
+
 import cv2 as cv
 import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-import threading
-import socket
-import time
-import queue
-from facedetection import FaceDetection
-from bin_ice_detection import Goal
+
 image = None
 trackbar_values = {'Red Min': 0, 'Red Max': 0, 'Blue Min': 0, 'Blue Max': 0, 'Green Min': 0,
                    'Green Max': 0}  # RBG Min/Max
