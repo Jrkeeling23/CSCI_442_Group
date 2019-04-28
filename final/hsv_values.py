@@ -67,9 +67,9 @@ def show_cam():
 
     for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         img = frame.array
+        show_hsv(img)
 
-
-        cv.imshow("", )
+        # cv.imshow("", )
 
         rawCapture.truncate(0)
         k = cv.waitKey(1) & 0xFF
