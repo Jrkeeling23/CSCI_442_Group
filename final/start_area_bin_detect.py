@@ -58,17 +58,10 @@ class Frame:
             if self.robot.finished is True:  # End Program!
                 break
 
-            if self.robot.mining_area and self.robot.mine:  # grab ice
-                if self.status is False:
-                    status, image = self.robot.face.detect_face(img)
-                    if status is True:
-                        self.status = True
-                        # TODO: "Hello Human"
-                else:
-                    # TODO: Ask for color of ice.
-                    self.detect_ice(img)
-
-
+            if self.robot.start and self.robot.deliver:
+                # TODO: edge detect white. Find if highest white is left or right. Turn towards highest white...
+                white_lower = np.array([250, 250, 250])
+                white_upper = np.array([255, 255, 255])
 
             self.rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
@@ -76,48 +69,26 @@ class Frame:
                 break
         cv.destroyAllWindows()
 
-    def create_furthest_path(self, img):
+    def detect_bin(self, frame):
         """
-        This function detects a path in which the robot can travel without hitting obstacles.
-        :param img: original frame that is to be manipulated
-        :return: furthest path with original image
-        """
-        # values for boundary colors
-        orange_lower = np.array([0, 50, 225])
-        orange_upper = np.array([30, 255, 255])
-
-        img = cv.blur(img, (5, 5))  # blur initial frame for edge detection
-        hsv = cv.cvtColor(img.copy(), cv.COLOR_BGR2HSV)  # convert to HSV to do object detection
-
-        orange_mask = cv.inRange(hsv, orange_lower, orange_upper)  # detect orange
-
-        # create orange and blue edges to subtract from overall picture
-        kernel = np.ones((5, 5), np.uint8)
-        blue_edge = self.manipulation.edge_detection(blue_mask)
-        blue_edge = cv.dilate(blue_edge, kernel, iterations=1)
-        orange_edge = self.manipulation.edge_detection(orange_mask)
-        orange_edge = cv.dilate(orange_edge, kernel, iterations=1)
-
-        # subtract the edges from the overall edge detection image
-        image = self.manipulation.edge_detection(img.copy())
-        image = cv.subtract(image, blue_edge)
-        image = cv.subtract(image, orange_edge)
-
-        # fill edges from bottom up until no solid connection
-        image = self.manipulation.fill_image(image.copy())
-        image = self.manipulation.smooth(image.copy())
-        image, x_coordinate, y_coordinate = self.manipulation.getHighestCoordinate(
-            image, int(self.width / 2), self.height)
-
-        # create image with furthest possible path with original added
-        return cv.addWeighted(img, .7, image, 0.4, 0)
-
-    def detect_ice(self, frame):
-        """
-        This function uses blob detection and only considers location of hand.
-        :param frame: current frame in consideration.
+        This function detects the correct bins by blob detection.
+        :param frame: current frame.
         :return:
         """
+        is_bin, bin_image = self.robot.goal.detect_bin(frame)
+        if is_bin is False:  # turn 90 degrees
+            self.robot.move.turn_right_90()
+            is_bin, bin_image = self.robot.goal.detect_bin(frame)
+
+            if is_bin is False:  # Turn back 180 degrees
+                self.robot.move.turn_left_90()
+                self.robot.move.turn_left_90()
+        else:
+            # TODO: Move toward box and drop in
+            cnt = cv.findContours(bin_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)[0]
+            mask = np.zeros(frame.shape[:2], np.uint8)
+            cv.drawContours(mask, cnt, -1, 255, -1)
+
         self.robot.move.arm_in_cam_view()  # get arm into position
         if self.robot.goal.detect_ice(frame) is True:
             time.sleep(1)  # wait 5 seconds
@@ -149,8 +120,8 @@ class Robot:
         self.rock_field = False
 
         # variables to track robots actions
-        self.mine = True
-        self.deliver = False
+        self.mine = False
+        self.deliver = True
 
         self.face = FaceDetection()
         self.move = robot_control.MoveRobot()

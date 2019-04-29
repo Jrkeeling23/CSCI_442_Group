@@ -6,7 +6,7 @@ class Goal:
     def __init__(self, string_name):
         # Dictionaries for goals, lower thresh : upper thresh
         self.name = string_name
-        self.goal = {"pink": [np.array([150, 115, 0]), np.array([170, 145, 255])],
+        self.goal = {"pink": [np.array([130, 130, 100]), np.array([190, 230, 235])],
                      "green": [np.array([40, 155, 0]), np.array([60, 185, 255])]}
         # "large": [np.array([0, 0, 0]), np.array([0, 0, 0])]}
 
@@ -17,7 +17,7 @@ class Goal:
         :return: True if there is a blob and false if there is not.
         """
         image = cv.GaussianBlur(frame.copy(), (5, 5), 0)
-        roi = image[400:600, 100:600]
+        roi = image[150:480, 100:600]
         hsv = cv.cvtColor(roi.copy(), cv.COLOR_BGR2HSV)
 
         thresholds = self.goal[self.name]  # get thresholds by name
@@ -26,6 +26,7 @@ class Goal:
 
         goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
         _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
+        # cv.imshow("roi", thresh)
 
         return self.blob_detector(thresh)
 
@@ -57,9 +58,9 @@ class Goal:
         params = cv.SimpleBlobDetector_Params()
         params.maxThreshold = 255
         params.minThreshold = 200
-        params.filterByArea = True
-        params.minArea = 1500
-        params.maxArea = 50000
+        params.filterByArea = False
+        # params.minArea = 1500
+        # params.maxArea = 50000
         params.filterByInertia = False
         params.filterByConvexity = False
 
@@ -70,15 +71,17 @@ class Goal:
         else:
             detector = cv.SimpleBlobDetector_create(params)
         keypoints = detector.detect(frame)
+        img_with_keypoints = cv.drawKeypoints(thresh, keypoints, outImage=np.array([]), color=(0, 0, 255),
+                                              flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         if len(keypoints) is not 0:
             for i in range(len(keypoints)):
                 x = keypoints[0].pt[0]
                 y = keypoints[0].pt[1]
 
                 # Lets us know if we are getting enough blobs in frame
-                return True
+                return True, img_with_keypoints
         else:
-            return False
+            return False, img_with_keypoints
 
     @staticmethod
     def line_detection(edge_frame, color_low, color_high):

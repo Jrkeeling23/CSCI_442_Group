@@ -4,29 +4,28 @@ import threading
 import time
 import maestro
 
-
-
-
 MOTORS = 1
 TURN = 2
 BODY = 0
 HEADTILT = 4
 HEADTURN = 3
 # # for left arm
-# SHOULDER = 12
-# ARM_0 = 13
-# ELBOW = 14
-# ARM_2 = 15
-# ARM_3 = 16
-# HAND = 17
+SHOULDER = 6
+ARM_0 = 7
+ELBOW = 8
+ARM_2 = 9
+HAND = 11
+ROTATE_HAND = 10
+
+
 # right arm
-#robot #26
-SHOULDER = 5
-ARM_0 = 6
-ELBOW = 7
-ARM_2 = 8
-ROTATE_HAND = 9
-HAND = 10
+# robot #26
+# SHOULDER = 5
+# ARM_0 = 6
+# ELBOW = 7
+# ARM_2 = 8
+# ROTATE_HAND = 9
+# HAND = 10
 
 
 class MoveRobot:
@@ -70,11 +69,12 @@ class MoveRobot:
         self.tango.setTarget(HEADTURN, self.headTurn)
         self.tango.setTarget(HEADTILT, self.headTilt)
         self.tango.setTarget(BODY, self.body)
-        self.tango.setTarget(HAND, self.hand)
-        self.tango.setTarget(ELBOW, self.elbow)
-        self.tango.setTarget(SHOULDER, self.shoulder)
-        self.tango.setTarget(ARM_0, self.arm_0)
-        self.tango.setTarget(ARM_2, self.arm_2)
+        # self.tango.setTarget(HAND, self.hand)
+        # self.tango.setTarget(ELBOW, self.elbow)
+        # self.tango.setTarget(SHOULDER, self.shoulder)
+        # self.tango.setTarget(ARM_0, self.arm_0)
+        # self.tango.setTarget(ARM_2, self.arm_2)
+        self.lower_arm()
 
     # Checks the limit for the wheels moving forward and backwards
 
@@ -173,7 +173,7 @@ class MoveRobot:
 
     def move_shoulder(self, val):  # Method to move shoulder
         # Lower value = higher shoulder 6000-4000
-        self.shoulder = self.check_motor_value(val, 3900, 6100)
+        self.shoulder = self.check_motor_value(val, 5000, 8100)
         self.tango.setTarget(SHOULDER, self.shoulder)
         # val = self.check_motor_value(val, 3900, 6100)
         # inc = self.get_inc(val, self.shoulder)
@@ -245,12 +245,12 @@ class MoveRobot:
 
     def arm_in_cam_view(self):
         self.open_hand()
-        threading.Thread(target=self.move_elbow(6000)).start()
-        threading.Thread(target=self.move_shoulder(3000)).start()
-        time.sleep(.1)
-        threading.Thread(target=self.move_arm_0(7300)).start()
+        threading.Thread(target=self.move_shoulder(10000)).start()
+        time.sleep(.2)
+        threading.Thread(target=self.move_elbow(4800)).start()
+        threading.Thread(target=self.move_arm_0(4000)).start()
         threading.Thread(target=self.move_arm_2(6200)).start()
-        threading.Thread(target=self.rotate_hand_fun(10000)).start()
+        threading.Thread(target=self.rotate_hand_fun(2000)).start()
 
     def drop(self):
         threading.Thread(target=self.rotate_hand_fun(6000)).start()
@@ -259,9 +259,46 @@ class MoveRobot:
         time.sleep(2)
         self.lower_arm()
 
-
     def lower_arm(self):
-        threading.Thread(target=self.move_shoulder(8000)).start()
         threading.Thread(target=self.move_arm_0(6000)).start()
+        time.sleep(0.5)
+        threading.Thread(target=self.move_shoulder(2000)).start()
+        time.sleep(0.5)
         threading.Thread(target=self.move_elbow(4000)).start()
+        time.sleep(0.5)
         threading.Thread(target=self.move_arm_2(6000)).start()
+
+    def turn_around(self):
+        self.turn -= 1500
+        self.turn_limit()
+        self.tango.setTarget(TURN, self.turn)
+        #    time.sleep(.2)
+        time.sleep(1.2)
+        self.stop()
+
+    def turn_left_90(self):
+        self.turn += 1500
+        self.turn_limit()
+        self.tango.setTarget(TURN, self.turn)
+        # time.sleep(.2)
+        time.sleep(.6)
+        self.stop()
+
+    def turn_right_90(self):
+
+        self.turn -= 1500
+        self.turn_limit()
+        self.tango.setTarget(TURN, self.turn)
+        #    time.sleep(.2)
+        time.sleep(.6)
+        self.stop()
+
+
+    def turn_fourty_five(self):
+
+        self.turn -= 1500
+        self.turn_limit()
+        self.tango.setTarget(TURN, self.turn)
+        #    time.sleep(.2)
+        time.sleep(.4)
+        self.stop()

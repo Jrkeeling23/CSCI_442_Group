@@ -56,18 +56,32 @@ class Frame:
             self.rawCapture.truncate(0)
             img = frame.array
             orange_found = self.area.find_orange_lines(img)
+            in_mining_area = False
             if self.start:
                 if orange_found:
                     self.start = False
                 else:
                     self.robot.move.turn_fourty_five()
+            if not orange_found and not self.start:
+                if self.robot.deliver:
+                    # self.robot.robot_talk("Entering start area.")
+                    pass
+                elif not in_mining_area:
+                    # self.robot.robot_talk("Entering mining area.")
+                    pass                    
+                    in_mining_area = True
+            # elif orange_found and not self.start:
+
 
             if self.robot.finished is True:  # End Program!
                 break
 
             if (self.robot.start or self.robot.rock_field) and self.robot.mine:  # move through rock field
-                flood_fill_image = self.create_furthest_path(img)
+                flood_fill_image, x_coordinate = self.create_furthest_path(img)
+            
                 # TODO: robot movements based off of above image.
+                if x_coordinate:
+                    self.move_bot(x_coordinate)
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
                 if self.status is False:
@@ -84,14 +98,18 @@ class Frame:
                     # TODO: spin until it finds a bin.
                     waste = None  # just to bypass error
                 else:
-                    flood_fill_image = self.create_furthest_path(img)
+                    flood_fill_image, x_coordinate = self.create_furthest_path(img)
+                    if x_coordinate:
+                        self.move_bot(x_coordinate)
+
+
                     # TODO: robot movements based off of above image.
 
             if self.robot.start and self.robot.deliver:  # Find bin
                 self.detect_bin(img)
 
-            overlay = self.create_furthest_path(img.copy())  # create furthest non obstructed path
-            # cv.imshow("Overlay", overlay)
+            overlay, x_coordinate = self.create_furthest_path(img.copy())  # create furthest non obstructed path
+            cv.imshow("Overlay", overlay)
 
             self.rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
@@ -134,7 +152,7 @@ class Frame:
             image, int(self.width / 2), self.height)
 
         # create image with furthest possible path with original added
-        return cv.addWeighted(img, .7, image, 0.4, 0)
+        return cv.addWeighted(img, .7, image, 0.4, 0), x_coordinate
 
     def determine_location(self, rock_edge, mine_edge):
         if self.robot.goal.line_detection(rock_edge) and self.robot.goal.line_detection(mine_edge):
@@ -213,6 +231,15 @@ class Frame:
             else:
                 return False
 
+    def move_bot(self, x_coordinate):
+        right = self.width * .6
+        left = self.width * .4
+        if x_coordinate > right:
+            self.robot.move.turn_right()
+        elif x_coordinate < left:
+            self.robot.move.turn_left()
+        else:
+            self.robot.move.wheels_forward()
 
 class Robot:
     """
@@ -240,17 +267,17 @@ class Robot:
         # self.frame = Frame()  # variable to contain instance of Frame class
 
     # @staticmethod
-    # def robot_talk(what_to_speak):
-    #     """
-    #     A function that allows the robot to speak a given string.
-    #     :param what_to_speak: String, this gives the robot the correct response.
-    #     :return:
-    #     """
-    #     IP = '10.200.47.148'  # value needs to be updated to phone in use
-    #     PORT = 5010
-    #     speak = client.ClientSocket(IP, PORT)
-    #     speak.sendData(what_to_speak)
-
+    def robot_talk(what_to_speak):
+        # """
+        # A function that allows the robot to speak a given string.
+        # :param what_to_speak: String, this gives the robot the correct response.
+        # :return:
+        # """
+        # IP = '10.200.47.148'  # value needs to be updated to phone in use
+        # PORT = 5010
+        # speak = client.ClientSocket(IP, PORT)
+        # speak.sendData(what_to_speak)
+        pass
 
 class Area():
     def find_orange_lines(self, image):
