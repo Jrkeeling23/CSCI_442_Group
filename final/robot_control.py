@@ -252,7 +252,7 @@ class MoveRobot:
         threading.Thread(target=self.move_arm_2(6200)).start()
         threading.Thread(target=self.rotate_hand_fun(10000)).start()
 
-    def drop_ice(self):
+    def drop(self):
         threading.Thread(target=self.rotate_hand_fun(6000)).start()
         time.sleep(1)
         threading.Thread(target=self.open_hand()).start()
