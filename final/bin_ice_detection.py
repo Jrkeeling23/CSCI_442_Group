@@ -3,12 +3,14 @@ import cv2 as cv
 
 
 class Goal:
+
     def __init__(self, string_name):
         # Dictionaries for goals, lower thresh : upper thresh
         self.name = string_name
         self.goal = {"pink": [np.array([130, 130, 100]), np.array([190, 230, 235])],
                      "green": [np.array([40, 155, 0]), np.array([60, 185, 255])]}
-        # "large": [np.array([0, 0, 0]), np.array([0, 0, 0])]}
+        self.current_x = 0
+        self.current_y = 0
 
     def detect_ice(self, frame):
         """
@@ -112,7 +114,6 @@ class Goal:
         else:
             return False
 
-
     def bin_area(self, frame):
         hsv = cv.cvtColor(frame.copy(), cv.COLOR_BGR2HSV)
 
@@ -127,6 +128,12 @@ class Goal:
             cnt = contours[0]
             # print(cv.contourArea(cnt))
             # cv.drawContours(image, contours, -1, (0, 255, 0), 3)
-            return True
-        return False
+            # when x is 0 (from top down is the axis), its left side of screen
+            # when y is 0, its (from left to right), its top
+            self.current_x = cnt[0][0][0]
+            self.current_y = cnt[0][0][1]
 
+            return True
+        self.current_y = 0
+        self.current_x = 0
+        return False

@@ -59,9 +59,13 @@ class Frame:
                 break
 
             if self.robot.start and self.robot.deliver:
-                # TODO: edge detect white. Find if highest white is left or right. Turn towards highest white...
-                white_lower = np.array([250, 250, 250])
-                white_upper = np.array([255, 255, 255])
+                if self.robot.goal.bin_area() is False and self.robot.found_bin:  # Bin is out of view, but is found
+                    self.robot.move.wheels_forward()  # get a little closer, if need be....
+                    self.robot.move.drop()  # drop into box
+
+                else:  # If it has not found the bin or it is still in view keep calling function to move robot
+                    self.detect_bin()
+                    self.robot.finished = True  # terminate program
 
             self.rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
@@ -82,9 +86,13 @@ class Frame:
                 self.robot.move.turn_left_90()
                 self.robot.move.turn_left_90()
         else:
-
-            # TODO: Square up and Move toward box and drop in
-
+            self.robot.found_bin = True
+            if self.robot.goal.current_x >= (self.width / 2 + self.width / 3 - 15):
+                self.robot.move.turn_left()
+            elif self.robot.goal.current_x <= (self.width / 3 + 15):
+                self.robot.move.turn_right()
+            else:
+                self.robot.move.wheels_forward()
 
 
 class Robot:
@@ -107,6 +115,8 @@ class Robot:
 
         self.face = FaceDetection()
         self.move = robot_control.MoveRobot()
+
+        self.found_bin = False
 
         self.goal = Goal(goal)  # variable to track robots goal. String that is either Pink, Green, or Orange.
 
