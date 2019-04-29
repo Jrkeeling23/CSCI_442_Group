@@ -219,7 +219,7 @@ class Robot:
         self.face = FaceDetection()
         self.move = robot_control.MoveRobot()
 
-        self.goal = Goal("large")  # variable to track robots goal. String that is either S, M, or L
+        self.goal = Goal(goal)  # variable to track robots goal. String that is either S, M, or L
 
         # self.frame = Frame()  # variable to contain instance of Frame class
 
