@@ -165,11 +165,19 @@ class Frame:
         :param frame: current frame in consideration.
         :return:
         """
+<<<<<<< HEAD
         self.robot.move.arm_in_cam_view()  # get arm into position
         if self.robot.goal.detect_ice(frame) is True:
             time.sleep(5)  # wait 5 seconds
             if self.robot.goal.detect_ice(frame) is True:
                 self.robot.move.close_hand()
+=======
+        self.robot.arm_in_cam_view()  # get arm into position
+        if self.robot.goal.detect_ice(frame) is True:
+            time.sleep(5)  # wait 5 seconds
+            if self.robot.goal.detect_ice(frame) is True:
+                self.robot.close_hand()
+>>>>>>> Alex
                 self.robot.deliver = True  # Prompts robot to deliver ice
                 self.robot.mine = False
 
