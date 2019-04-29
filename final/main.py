@@ -13,6 +13,7 @@ import socket
 import time
 import queue
 from facedetection import FaceDetection
+from bin_ice_detection import Goal
 
 """
 TODO: 
@@ -117,110 +118,33 @@ class Frame:
         face = FaceDetection()
         face.detect_face(frame)
 
-
-    def detect_ice(self, goal_low, goal_up, x1, y1, x2, y2, frame):
+    def detect_ice(self, frame):
         """
         This function uses blob detection and only considers location of hand.
-        :param goal_low: color's lower bound
-        :param goal_up: color's upper bound
-        Create rectangle from below coordinates
-        :param x1:
-        :param y1:
-        :param x2:
-        :param y2:
-
         :param frame: current frame in consideration.
         :return:
         """
         self.robot.move_arm()  # get arm into position
 
-        # create view within coordinates
-        rectangle = cv.rectangle(frame, (x1, y1), (x2, y2), (255, 255, 255), cv.FILLED)  # create white rect over aoi
-        _, rectangle = cv.threshold(rectangle, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
-        view = cv.bitwise_and(frame, frame, mask=rectangle)  # adds contents from the frame into white space.
+        # TODO: Face detection should handle movements towards human, so just 'grab' is needed by robot here.
+        # TODO: May need to add into FaceDetection a Boolean method of size to either move closer or detect ice here...
+        if self.robot.goal.detect_ice(frame) is True:
+            time.sleep(5)  # wait 5 seconds
+            if self.robot.goal.detect_ice(frame) is True:
+                self.robot.grab()
+                self.robot.deliver = True  # Prompts robot to deliver ice
+                self.robot.mine = False
 
-        # search for goal color in view
-        hsv = cv.cvtColor(view, cv.COLOR_BGR2HSV)
-        goal_mask = cv.inRange(hsv, goal_low, goal_up)  # have mask of goal color.
-        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
-
-        params = cv.SimpleBlobDetector_Params()
-        params.maxThreshold = 255
-        params.minThreshold = 200
-        params.filterByArea = True
-        params.minArea = 1500
-        params.maxArea = 50000
-        params.filterByInertia = False
-        params.filterByConvexity = False
-
-        ver = (cv.__version__).split('.')
-        if int(ver[0]) < 3:
-            detector = cv.SimpleBlobDetector(params)
-        else:
-            detector = cv.SimpleBlobDetector_create(params)
-
-        keypoints = detector.detect(thresh)
-
-        if len(keypoints) is not 0:
-            for i in range(len(keypoints)):
-                x = keypoints[0].pt[0]
-                y = keypoints[0].pt[1]
-                # values for center of circle
-                print(x)
-                print(y)
-                # TODO: Move towards points
-
-        img_with_keypoints = cv.drawKeypoints(thresh, keypoints, outImage=np.array([]), color=(0, 0, 255),
-                                              flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-        time.sleep(5)  # wait 5 seconds
-        self.robot.grab()
-
-    def detect_bin(self, goal_low, goal_up, frame):
+    def detect_bin(self, frame):
         """
         This function detects the correct bins by blob detection.
         :param frame: current frame.
-        :param goal_low: color's lower range.
-        :param goal_up: color's upper range
         :return:
         """
-
-        if self.robot.start:
-            hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-            # TODO: blob detection, move closer to box, drop ice.
-            goal_mask = cv.inRange(hsv, goal_low, goal_up)  # have mask of goal color.
-            _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
-
-            params = cv.SimpleBlobDetector_Params()
-            params.maxThreshold = 255
-            params.minThreshold = 200
-            params.filterByArea = True
-            params.minArea = 1500
-            params.maxArea = 50000
-            params.filterByInertia = False
-            params.filterByConvexity = False
-
-            ver = (cv.__version__).split('.')
-            if int(ver[0]) < 3:
-                detector = cv.SimpleBlobDetector(params)
-            else:
-                detector = cv.SimpleBlobDetector_create(params)
-
-            keypoints = detector.detect(thresh)
-
-            if len(keypoints) is not 0:
-                for i in range(len(keypoints)):
-                    x = keypoints[0].pt[0]
-                    y = keypoints[0].pt[1]
-                    # values for center of circle
-                    print(x)
-                    print(y)
-                # TODO: Move towards points
-
-            img_with_keypoints = cv.drawKeypoints(thresh, keypoints, outImage=np.array([]), color=(0, 0, 255),
-                                                  flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-            # TODO: Drop in bin.
+        if self.robot.goal.detect_bin(frame):
+        # TODO: Move towards points
+        # TODO: Drop in bin if size of bin is .... (will probably need to be done in bin_ice_detection)
+        # TODO: If size < ... then move towards box ... else drop...
             self.drop()
 
     def orientate(self):
@@ -249,9 +173,9 @@ class Robot:
         self.mine = True
         self.deliver = False
 
-        self.goal = goal  # variable to track robots goal. String that is either S, M, or L
+        self.goal = Goal("large")  # variable to track robots goal. String that is either S, M, or L
 
-        self.frame = Frame()  # variable to contain instance of Frame class
+        # self.frame = Frame()  # variable to contain instance of Frame class
 
     # @staticmethod
     # def robot_talk(what_to_speak):

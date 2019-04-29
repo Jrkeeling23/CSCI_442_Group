@@ -255,3 +255,15 @@ class MoveRobot:
         threading.Thread(target=self.move_elbow(6000)).start()
         threading.Thread(target=self.move_arm_2(6000)).start()
         threading.Thread(target=self.move_arm_3(6000)).start()
+        val = self.check_motor_value(val, 3900, 8100)  # Lower value = higher shoulder 8000-4000
+        inc = self.get_inc(val, self.hand)
+        for i in range(self.hand, val, inc):
+            self.hand = i
+            self.tango.setTarget(HAND, self.hand)
+            time.sleep(.1)
+
+    def move_hand(self, val):  # Lower value = higher shoulder 8100-4000
+        self.hand = val
+        self.tango.setTarget(HAND, self.hand)
+        time.sleep(.1)
+
