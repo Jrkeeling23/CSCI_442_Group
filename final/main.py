@@ -3,7 +3,7 @@ import numpy as np
 import imageManipulation
 import makeMoves
 import robot_control
-import client
+# import client
 import cv2 as cv
 import time
 from picamera.array import PiRGBArray
@@ -121,6 +121,39 @@ class Frame:
 
         # create image with furthest possible path with original added
         return cv.addWeighted(img, .7, image, 0.4, 0)
+
+    def determine_location(self, rock_edge, mine_edge):
+        if self.robot.goal.line_detection(rock_edge) and self.robot.goal.line_detection(mine_edge):
+            if self.robot.start is not True:
+                waste = None
+                # TODO: talk
+            self.robot.start = True
+            self.robot.rock_field = False
+            self.robot.mining_area = False
+
+        elif not self.robot.goal.line_detection(rock_edge) and self.robot.goal.line_detection(mine_edge):
+            if self.robot.rock_field is not True:
+                waste = None
+                # TODO: talk
+            self.robot.start = False
+            self.robot.rock_field = True
+            self.robot.mining_area = False
+
+        elif not self.robot.goal.line_detection(mine_edge) and self.robot.goal.line_detection(rock_edge):
+            if self.robot.rock_field is not True:
+                waste = None
+                # TODO: talk
+            self.robot.start = False
+            self.robot.rock_field = True
+            self.robot.mining_area = False
+
+        else:
+            if self.robot.mining_area is not True:
+                waste = None
+                # TODO: talk
+            self.robot.start = False
+            self.robot.rock_field = False
+            self.robot.mining_area = True
 
     def robot_mining(self, frame):
         """

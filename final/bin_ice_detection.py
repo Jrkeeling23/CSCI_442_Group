@@ -6,9 +6,9 @@ class Goal:
     def __init__(self, string_name):
         # Dictionaries for goals, lower thresh : upper thresh
         self.name = string_name
-        self.goal = {"small": [np.array([0, 0, 0]), np.array([0, 0, 0])],
-                     "medium": [np.array([0, 0, 0]), np.array([0, 0, 0])],
-                     "large": [np.array([0, 0, 0]), np.array([0, 0, 0])]}
+        self.goal = {"pink": [np.array([150, 115, 0]), np.array([170, 145, 255])],
+                     "green": [np.array([40, 155, 0]), np.array([60, 185, 255])]}
+        # "large": [np.array([0, 0, 0]), np.array([0, 0, 0])]}
 
     def detect_ice(self, frame):
         """
@@ -71,6 +71,35 @@ class Goal:
             detector = cv.SimpleBlobDetector_create(params)
 
         keypoints = detector.detect(frame)
+        if len(keypoints) is not 0:
+            for i in range(len(keypoints)):
+                x = keypoints[0].pt[0]
+                y = keypoints[0].pt[1]
+                # Lets us know if we are getting enough blobs in frame
+                return True
+        else:
+            return False
+
+    @staticmethod
+    def line_detection(edge_frame, color_low, color_high):
+        # detect blobs with these specifications
+        params = cv.SimpleBlobDetector_Params()
+        params.maxThreshold = 255
+        params.minThreshold = 200
+        params.filterByArea = True
+        params.minArea = 1500
+        params.maxArea = 50000
+        params.filterByInertia = False
+        params.filterByConvexity = False
+
+        # detect the blobs (version differences require this to compile without error)
+        ver = (cv.__version__).split('.')
+        if int(ver[0]) < 3:
+            detector = cv.SimpleBlobDetector(params)
+        else:
+            detector = cv.SimpleBlobDetector_create(params)
+
+        keypoints = detector.detect(edge_frame)
         if len(keypoints) is not 0:
             for i in range(len(keypoints)):
                 x = keypoints[0].pt[0]
