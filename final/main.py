@@ -55,7 +55,7 @@ class Frame:
             self.rawCapture.truncate(0)
             img = frame.array
 
-            if self.robot.finsihed is True:  # End Program!
+            if self.robot.finished is True:  # End Program!
                 break
 
             if (self.robot.start or self.robot.rock_field) and self.robot.mine:  # move through rock field
