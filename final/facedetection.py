@@ -1,10 +1,9 @@
 import robot_control
-#import client
+# import client
 import cv2 as cv
 import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-
 
 
 class FaceDetection:
@@ -52,7 +51,9 @@ class FaceDetection:
         # time.sleep(1)
         # speak.sendData("Hello Human")
         print("hello human")
+
     robot_centered = False
+
     def detect_face(self, img):  # Method to detect the human face
         # Sourced from https://ecat.montana.edu/d2l/le/content/524639/viewContent/3947225/View
         time_for_human = 10.0  # Variable setting the time between detecting a new human
@@ -70,7 +71,7 @@ class FaceDetection:
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 self.center(x, y, w, h)  # Calls the function to center the face.
                 if not robot_control:
-                    if self.horizontal < 5800: # Makes robot face the human.
+                    if self.horizontal < 5800:  # Makes robot face the human.
                         self.increment_Movement("left", 2110, 7400, self.turn_inc, 0)
                     elif self.horizontal > 6200:
                         self.increment_Movement("right", 2110, 7400, self.turn_inc, 0)
@@ -87,7 +88,7 @@ class FaceDetection:
             # if self.vertical > 7500:
             #     self.vertical = 1510
             # self.move_head()
-           # self.search_for_face()
+            # self.search_for_face()
             self.increment_Movement("head", 1510, 7500, 599, 1497)
         return False
 
@@ -127,11 +128,11 @@ class FaceDetection:
                 self.horizontal = min
             elif self.horizontal > max:
                 self.horizontal = max
-            threading.Thread(target=self.move_head).start()  # moves the head
+            # threading.Thread(target=self.move_head).start()  # moves the head
 
         if face_w < 75:  # 75 is the value to decide if the robot needs to move forward or not.
             print("move forward")
-            #threading.Thread(target=self.robot.move_wheels("move", 7000)).start()
+            # threading.Thread(target=self.robot.move_wheels("move", 7000)).start()
         elif face_w > 250:
             self.increment_Movement("backward", 1510, 500, self.wheels_inc, 0)
         elif self.wheels_value != 6000:
@@ -167,11 +168,13 @@ class FaceDetection:
     #     self.move_head()
 
     def move_wheels(self):
-        #self.robot.move_wheels("move", self.wheels_value)
+        # self.robot.move_wheels("move", self.wheels_value)
         print("move wheels")
+
     def turn_wheels(self):
-        #self.robot.move_wheels("turn", self.turn_value)
+        # self.robot.move_wheels("turn", self.turn_value)
         print("turn wheels")
+
     def increment_Movement(self, move, min, max, inc1, inc2):  # iteratively moves robot.
         moves = {"head": self.move_head, "forward": self.move_wheels, "backward": self.move_wheels,
                  "left": self.turn_wheels, "right": self.turn_wheels}
