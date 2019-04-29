@@ -175,7 +175,7 @@ class MoveRobot:
 
     def move_shoulder(self, val):  # Method to move shoulder
         # Lower value = higher shoulder 6000-4000
-        self.shoulder = self.check_motor_value(val, 4100, 8100)
+        self.shoulder = self.check_motor_value(val, 5000, 8100)
         self.tango.setTarget(SHOULDER, self.shoulder)
         # val = self.check_motor_value(val, 3900, 6100)
         # inc = self.get_inc(val, self.shoulder)
@@ -264,7 +264,17 @@ class MoveRobot:
 
     def lower_arm(self):
         threading.Thread(target=self.move_arm_0(6000)).start()
-        time.sleep(0.1)
+        time.sleep(0.5)
         threading.Thread(target=self.move_shoulder(2000)).start()
+        time.sleep(0.5)
         threading.Thread(target=self.move_elbow(4000)).start()
+        time.sleep(0.5)
         threading.Thread(target=self.move_arm_2(6000)).start()
+
+    def turn_around(self):
+        self.turn -= 1500
+        self.turn_limit()
+        self.tango.setTarget(TURN, self.turn)
+        #    time.sleep(.2)
+        time.sleep(1.2)
+        self.stop()

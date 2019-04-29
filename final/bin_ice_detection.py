@@ -6,7 +6,7 @@ class Goal:
     def __init__(self, string_name):
         # Dictionaries for goals, lower thresh : upper thresh
         self.name = string_name
-        self.goal = {"pink": [np.array([150, 115, 0]), np.array([170, 145, 255])],
+        self.goal = {"pink": [np.array([130, 130, 100]), np.array([190, 230, 235])],
                      "green": [np.array([40, 155, 0]), np.array([60, 185, 255])]}
         # "large": [np.array([0, 0, 0]), np.array([0, 0, 0])]}
 
@@ -17,7 +17,7 @@ class Goal:
         :return: True if there is a blob and false if there is not.
         """
         image = cv.GaussianBlur(frame.copy(), (5, 5), 0)
-        roi = image[400:600, 100:600]
+        roi = image[150:480, 100:600]
         hsv = cv.cvtColor(roi.copy(), cv.COLOR_BGR2HSV)
 
         thresholds = self.goal[self.name]  # get thresholds by name
@@ -26,6 +26,7 @@ class Goal:
 
         goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
         _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
+        # cv.imshow("roi", thresh)
 
         return self.blob_detector(thresh)
 
@@ -57,9 +58,9 @@ class Goal:
         params = cv.SimpleBlobDetector_Params()
         params.maxThreshold = 255
         params.minThreshold = 200
-        params.filterByArea = True
-        params.minArea = 1500
-        params.maxArea = 50000
+        params.filterByArea = False
+        # params.minArea = 1500
+        # params.maxArea = 50000
         params.filterByInertia = False
         params.filterByConvexity = False
 
