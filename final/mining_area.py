@@ -41,20 +41,18 @@ class TestMine:
     
             self.rawCapture.truncate(0)
             img = frame.array
-            cv.imshow("image", img)
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
-                status, image = self.robot.face.detect_face(img)
+                if self.status is False:
+                    status, image = self.robot.face.detect_face(img)
+                    if status is True:
+                        self.status = True
+                        # TODO: "Hello Human"
+                else:
+                    # TODO: Ask for color of ice.
+                    self.detect_ice(img)
 
                 cv.imshow("image", image)
-
-                # TODO: Ask for color of ice.
-                # cv.imshow("image", image)
-                if status is True or self.status is True:
-                    self.status = True
-                    self.detect_ice(img)
-                else:
-                    continue  # Allows robot to keep calling face detection rather than
 
             k = cv.waitKey(1) & 0xFF
             if k == ord('q'):
