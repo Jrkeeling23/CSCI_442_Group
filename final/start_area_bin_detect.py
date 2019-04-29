@@ -75,16 +75,19 @@ class Frame:
         :param frame: current frame.
         :return:
         """
-        white_lower = np.array([250, 250, 250])
-        white_upper = np.array([255, 255, 255])
-        white_range = cv.inRange(frame, white_lower, white_upper)
+        is_bin, bin_image = self.robot.goal.detect_bin(frame)
+        if is_bin is False:  # turn 90 degrees
+            self.robot.move.turn_right_90()
+            is_bin, bin_image = self.robot.goal.detect_bin(frame)
 
-        if self.robot.goal.detect_bin(frame) is False:  # Must turn to find bin...
-            # TODO: Turn 90 degrees right!
-            # TODO: Turn 180 degrees left!
-            # todo: This allows a full span
-
-
+            if is_bin is False:  # Turn back 180 degrees
+                self.robot.move.turn_left_90()
+                self.robot.move.turn_left_90()
+        else:
+            # TODO: Move toward box and drop in
+            cnt = cv.findContours(bin_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)[0]
+            mask = np.zeros(frame.shape[:2], np.uint8)
+            cv.drawContours(mask, cnt, -1, 255, -1)
 
         self.robot.move.arm_in_cam_view()  # get arm into position
         if self.robot.goal.detect_ice(frame) is True:

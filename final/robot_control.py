@@ -4,9 +4,6 @@ import threading
 import time
 import maestro
 
-
-
-
 MOTORS = 1
 TURN = 2
 BODY = 0
@@ -20,8 +17,9 @@ ARM_2 = 9
 HAND = 11
 ROTATE_HAND = 10
 
+
 # right arm
-#robot #26
+# robot #26
 # SHOULDER = 5
 # ARM_0 = 6
 # ELBOW = 7
@@ -261,7 +259,6 @@ class MoveRobot:
         time.sleep(2)
         self.lower_arm()
 
-
     def lower_arm(self):
         threading.Thread(target=self.move_arm_0(6000)).start()
         time.sleep(0.5)
@@ -278,3 +275,22 @@ class MoveRobot:
         #    time.sleep(.2)
         time.sleep(1.2)
         self.stop()
+
+    def turn_left_90(self):
+        self.turn += 1500
+        self.turn_limit()
+        self.tango.setTarget(TURN, self.turn)
+        # time.sleep(.2)
+        time.sleep(.5)
+        self.stop()
+        print("turn left")
+
+    def turn_right_90(self):
+
+        self.turn -= 1500
+        self.turn_limit()
+        self.tango.setTarget(TURN, self.turn)
+        #    time.sleep(.2)
+        time.sleep(.5)
+        self.stop()
+        print("turn right")

@@ -71,15 +71,17 @@ class Goal:
         else:
             detector = cv.SimpleBlobDetector_create(params)
         keypoints = detector.detect(frame)
+        img_with_keypoints = cv.drawKeypoints(thresh, keypoints, outImage=np.array([]), color=(0, 0, 255),
+                                              flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         if len(keypoints) is not 0:
             for i in range(len(keypoints)):
                 x = keypoints[0].pt[0]
                 y = keypoints[0].pt[1]
 
                 # Lets us know if we are getting enough blobs in frame
-                return True
+                return True, img_with_keypoints
         else:
-            return False
+            return False, img_with_keypoints
 
     @staticmethod
     def line_detection(edge_frame, color_low, color_high):
