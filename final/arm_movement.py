@@ -1,9 +1,10 @@
 import robot_control
-
+import time
 robot = robot_control.MoveRobot()
-# robot.arm_in_cam_view()
+robot.arm_in_cam_view()
 
+time.sleep(3)
+robot.close_hand()
+time.sleep(3)
 
-for i in range(0, 12000, 150):
-    robot.move_elbow(i)
-    print(i)
+robot.drop_ice()

@@ -4,25 +4,30 @@ import threading
 import time
 import maestro
 
+
+
+
 MOTORS = 1
 TURN = 2
 BODY = 0
 HEADTILT = 4
 HEADTURN = 3
 # # for left arm
-SHOULDER = 12
-ARM_0 = 13
-ELBOW = 14
-ARM_2 = 15
-ARM_3 = 16
-HAND = 17
-#right arm
-# SHOULDER = 6
-# ARM_0 = 7
-# ELBOW = 8
-# ARM_2 = 9
-# ARM_3 = 10
-# HAND = 11
+# SHOULDER = 12
+# ARM_0 = 13
+# ELBOW = 14
+# ARM_2 = 15
+# ARM_3 = 16
+# HAND = 17
+# right arm
+#robot #26
+SHOULDER = 5
+ARM_0 = 6
+ELBOW = 7
+ARM_2 = 8
+ROTATE_HAND = 9
+HAND = 10
+
 
 class MoveRobot:
 
@@ -41,6 +46,7 @@ class MoveRobot:
         self.arm_3 = 6000
         self.elbow = 6000
         self.hand = 6000
+        self.rotate_hand = 6000
         self.center_robot()
 
     def stop(self):  # Stops the robot from moving or turning
@@ -69,11 +75,9 @@ class MoveRobot:
         self.tango.setTarget(SHOULDER, self.shoulder)
         self.tango.setTarget(ARM_0, self.arm_0)
         self.tango.setTarget(ARM_2, self.arm_2)
-        self.tango.setTarget(ARM_3, self.arm_3)
-
-
 
     # Checks the limit for the wheels moving forward and backwards
+
     def forward_back_limit(self):
         if self.motors < 1510:
             self.motors = 1510
@@ -169,7 +173,7 @@ class MoveRobot:
 
     def move_shoulder(self, val):  # Method to move shoulder
         # Lower value = higher shoulder 6000-4000
-        self.shoulder= self.check_motor_value(val, 3900, 6100)
+        self.shoulder = self.check_motor_value(val, 3900, 6100)
         self.tango.setTarget(SHOULDER, self.shoulder)
         # val = self.check_motor_value(val, 3900, 6100)
         # inc = self.get_inc(val, self.shoulder)
@@ -200,18 +204,6 @@ class MoveRobot:
         #     self.tango.setTarget(ARM_2, self.arm_2)
         #     time.sleep(.1)
 
-    def move_arm_3(self, val):  # Method to move arm
-        # Lower value = higher arm 6000-4000
-        # val = self.check_motor_value(val, 3900, 6100)
-        self.arm_3 = self.check_motor_value(val, 3900, 6100)
-        self.tango.setTarget(ARM_3, self.arm_3)
-        # inc = self.get_inc(val, self.arm_3)
-        # for i in range(self.arm_3, val, inc):
-        #     self.arm_3 = i
-        #     self.tango.setTarget(ARM_3, self.arm_3)
-        #     time.sleep(.1)
-
-
     def move_elbow(self, val):  # Method to move elbow
         # Lower value = higher shoulder 7000-4000
         self.elbow = self.check_motor_value(val, 3900, 8100)
@@ -234,6 +226,16 @@ class MoveRobot:
         #     self.tango.setTarget(HAND, self.hand)
         #     time.sleep(.1)
 
+    def rotate_hand_fun(self, val):  # Method to move hand
+        # Lower value = higher 8000-4000
+        self.rotate_hand = self.check_motor_value(val, 3900, 8100)
+        self.tango.setTarget(ROTATE_HAND, self.rotate_hand)
+        # val = self.check_motor_value(val, 3900, 8100)
+        # inc = self.get_inc(val, self.hand)
+        # for i in range(self.hand, val, inc):
+        #     self.hand = i
+        #     self.tango.setTarget(HAND, self.hand)
+        #     time.sleep(.1)
 
     def close_hand(self):
         self.move_hand(8300)
@@ -241,29 +243,25 @@ class MoveRobot:
     def open_hand(self):
         self.move_hand(4000)
 
-
     def arm_in_cam_view(self):
-        threading.Thread(target=self.move_shoulder(3900)).start()
-        threading.Thread(target=self.move_arm_0(7900)).start()
-        threading.Thread(target=self.move_elbow(8200)).start()
+        self.open_hand()
+        threading.Thread(target=self.move_elbow(6000)).start()
+        threading.Thread(target=self.move_shoulder(3000)).start()
+        time.sleep(.1)
+        threading.Thread(target=self.move_arm_0(7300)).start()
         threading.Thread(target=self.move_arm_2(6200)).start()
-        threading.Thread(target=self.move_arm_3(2000)).start()
+        threading.Thread(target=self.rotate_hand_fun(10000)).start()
+
+    def drop_ice(self):
+        threading.Thread(target=self.rotate_hand_fun(6000)).start()
+        time.sleep(1)
+        threading.Thread(target=self.open_hand()).start()
+        time.sleep(2)
+        self.lower_arm()
+
 
     def lower_arm(self):
-        threading.Thread(target=self.move_shoulder(6000)).start()
+        threading.Thread(target=self.move_shoulder(8000)).start()
         threading.Thread(target=self.move_arm_0(6000)).start()
-        threading.Thread(target=self.move_elbow(6000)).start()
+        threading.Thread(target=self.move_elbow(4000)).start()
         threading.Thread(target=self.move_arm_2(6000)).start()
-        threading.Thread(target=self.move_arm_3(6000)).start()
-        val = self.check_motor_value(val, 3900, 8100)  # Lower value = higher shoulder 8000-4000
-        inc = self.get_inc(val, self.hand)
-        for i in range(self.hand, val, inc):
-            self.hand = i
-            self.tango.setTarget(HAND, self.hand)
-            time.sleep(.1)
-
-    def move_hand(self, val):  # Lower value = higher shoulder 8100-4000
-        self.hand = val
-        self.tango.setTarget(HAND, self.hand)
-        time.sleep(.1)
-
