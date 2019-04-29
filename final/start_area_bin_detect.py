@@ -75,34 +75,16 @@ class Frame:
         :param frame: current frame.
         :return:
         """
-        is_bin, bin_image = self.robot.goal.detect_bin(frame)
-        if is_bin is False:  # turn 90 degrees
+        if self.robot.goal.bin_area() is False:  # turn 90 degrees
             self.robot.move.turn_right_90()
-            is_bin, bin_image = self.robot.goal.detect_bin(frame)
 
-            if is_bin is False:  # Turn back 180 degrees
+            if self.robot.goal.bin_area() is False:  # Turn back 180 degrees
                 self.robot.move.turn_left_90()
                 self.robot.move.turn_left_90()
         else:
-            # TODO: Move toward box and drop in
-            cnt = cv.findContours(bin_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)[0]
-            mask = np.zeros(frame.shape[:2], np.uint8)
-            cv.drawContours(mask, cnt, -1, 255, -1)
 
-        self.robot.move.arm_in_cam_view()  # get arm into position
-        if self.robot.goal.detect_ice(frame) is True:
-            time.sleep(1)  # wait 5 seconds
-            self.robot.move.close_hand()
-            # change states of robot to fit accordingly
-            self.robot.mine = False
-            self.robot.deliver = True
-            time.sleep(4)  # wait 5 seconds
-            self.robot.move.turn_around()
-            time.sleep(1)  # wait 5 seconds
-            self.robot.move.lower_arm()
-        else:
-            waste = None
-            # TODO: Rejects ice with talk
+            # TODO: Square up and Move toward box and drop in
+
 
 
 class Robot:
