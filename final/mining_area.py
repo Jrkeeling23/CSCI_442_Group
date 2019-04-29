@@ -38,16 +38,19 @@ class TestMine:
         :return:
         """
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
+    
+            self.rawCapture.truncate(0)
             img = frame.array
+            cv.imshow("image", img)
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
-                status = self.robot.face.detect_face(img)
+                status, image = self.robot.face.detect_face(img)
+                # cv.imshow("image", image)
                 if status is True:
                     self.detect_ice()
                 else:
                     continue  # Allows robot to keep calling face detection rather than
 
-            self.rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
             if k == ord('q'):
                 break
@@ -105,3 +108,6 @@ class Robot:
     #     speak = client.ClientSocket(IP, PORT)
     #     speak.sendData(what_to_speak)
 
+
+test = TestMine()
+test.run()

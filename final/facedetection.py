@@ -59,6 +59,8 @@ class FaceDetection:
         time_for_human = 10.0  # Variable setting the time between detecting a new human
         gray = cv.cvtColor(img.copy(), cv.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(gray, 1.09, 10)
+        cv.imshow("test", img)
+
         if len(faces) > 0:  # Enters if a face is found
             if (
                     time.time() - self.time_since_talk) > time_for_human or not self.time_start:  # Enters if a human is found the first time running a program, or a human hasn't been found for the chosen amount of time.
@@ -78,7 +80,7 @@ class FaceDetection:
                     else:
                         self.robot.stop()
                         self.robot_centered = True
-                        return True  # return to status variable to detect ice.
+                        return True, img  # return to status variable to detect ice.
         else:
             # Adjust head increments to find a face.
             # self.horizontal += self.head_increment_horizontal
@@ -90,7 +92,7 @@ class FaceDetection:
             # self.move_head()
             # self.search_for_face()
             self.increment_Movement("head", 1510, 7500, 599, 1497)
-        return False
+        return False, img
 
     def center(self, x, y, face_w, face_y):  # Function to center head and move robot towards human.
         # first four variables define what is considered outside of center of image.
