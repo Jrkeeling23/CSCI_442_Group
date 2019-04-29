@@ -59,7 +59,7 @@ class FaceDetection:
         time_for_human = 10.0  # Variable setting the time between detecting a new human
         gray = cv.cvtColor(img.copy(), cv.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(gray, 1.09, 10)
-        cv.imshow("test", img)
+        # cv.imshow("test", img)
 
         if len(faces) > 0:  # Enters if a face is found
             if (

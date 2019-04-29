@@ -44,15 +44,17 @@ class TestMine:
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
                 if self.status is False:
-                    status, image = self.robot.face.detect_face(img)
+                    status, img = self.robot.face.detect_face(img)
                     if status is True:
                         self.status = True
                         # TODO: "Hello Human"
+                        self.robot.move.center_robot()
+
                 else:
                     # TODO: Ask for color of ice.
                     self.detect_ice(img)
 
-                cv.imshow("image", image)
+                cv.imshow("image", img)
 
             k = cv.waitKey(1) & 0xFF
             if k == ord('q'):
@@ -67,7 +69,14 @@ class TestMine:
         """
         self.robot.move.arm_in_cam_view()  # get arm into position
         if self.robot.goal.detect_ice(frame) is True:
-            time.sleep(5)  # wait 5 seconds
+            time.sleep(1)  # wait 5 seconds
+            self.robot.move.close_hand()
+            self.robot.mine = False
+            self.robot.deliver = True 
+            time.sleep(4)  # wait 5 seconds
+            self.robot.move.turn_around()
+            time.sleep(1)  # wait 5 seconds
+            self.robot.move.lower_arm()
         else:
             waste = None
             # TODO: Rejects ice with talk
