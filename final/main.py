@@ -46,6 +46,9 @@ class Frame:
         self.status = False
         self.robot = Robot(goal="pink")
         self.start = True
+        self.mine = False
+        self.in_mining_area = False
+        self.deliver = False
 
     def run(self):
         """
@@ -56,7 +59,6 @@ class Frame:
             self.rawCapture.truncate(0)
             img = frame.array
             orange_found = self.area.find_orange_lines(img)
-            in_mining_area = False
             if self.start:
                 if orange_found:
                     self.start = False
@@ -66,10 +68,10 @@ class Frame:
                 if self.robot.deliver:
                     # self.robot.robot_talk("Entering start area.")
                     pass
-                elif not in_mining_area:
+                elif not self.in_mining_area:
                     # self.robot.robot_talk("Entering mining area.")
                     pass                    
-                    in_mining_area = True
+                    self.in_mining_area = True
             # elif orange_found and not self.start:
 
 
@@ -103,8 +105,8 @@ class Frame:
                         self.move_bot(x_coordinate)
 
 
-                    # TODO: robot movements based off of above image.
-
+            #         # TODO: robot movements based off of above image.
+            self.make_decision(img)
             if self.robot.start and self.robot.deliver:  # Find bin
                 self.detect_bin(img)
 
@@ -116,6 +118,35 @@ class Frame:
             if k == ord('q'):
                 break
         cv.destroyAllWindows()
+
+    # def make_decision(self, image):
+    #     orange_found = self.area.find_orange_lines(img)
+    #     if self.start:
+    #         if not orange_found:
+    #             self.robot.move.turn_fourty_five()
+    #         else:
+    #             flood_fill_image, x_coordinate = self.create_furthest_path(img)
+    #             if x_coordinate:
+    #                 self.move_bot(x_coordinate)
+    #                 self.start = False
+    #                 self.mine = True
+
+    #     elif self.mine:
+    #         if not orange_found:
+    #             self.mine = False
+    #             self.deliver = True
+    #         else:
+    #             flood_fill_image, x_coordinate = self.create_furthest_path(img)
+    #             if x_coordinate:
+    #                 self.move_bot(x_coordinate)
+    #     elif self.deliver:
+    #         if not orange_found:
+    #             self.mine = False
+    #             self.deliver = True
+    #         else:
+    #             flood_fill_image, x_coordinate = self.create_furthest_path(img)
+    #             if x_coordinate:
+    #                 self.move_bot(x_coordinate)
 
     def create_furthest_path(self, img):
         """
