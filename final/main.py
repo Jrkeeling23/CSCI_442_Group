@@ -172,7 +172,14 @@ class Frame:
         """
         self.robot.move.arm_in_cam_view()  # get arm into position
         if self.robot.goal.detect_ice(frame) is True:
-            time.sleep(5)  # wait 5 seconds
+            time.sleep(1)  # wait 5 seconds
+            self.robot.move.close_hand()
+            self.robot.mine = False
+            self.robot.deliver = True
+            time.sleep(4)  # wait 5 seconds
+            self.robot.move.turn_around()
+            time.sleep(1)  # wait 5 seconds
+            self.robot.move.lower_arm()
         else:
             waste = None
             # TODO: Rejects ice with talk
