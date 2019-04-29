@@ -3,7 +3,7 @@ import numpy as np
 import imageManipulation
 import makeMoves
 import robot_control
-import client
+# import client
 import cv2 as cv
 import time
 from picamera.array import PiRGBArray
@@ -42,7 +42,7 @@ class Frame:
         self.width = 640
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
-
+        self.human_close = False
         self.robot = Robot(goal="l")
 
     def run(self):
@@ -53,14 +53,30 @@ class Frame:
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
             img = frame.array
 
-            self.robot.orientate()  # robot must find where it is at
-            # TODO: turn around do a 360 now. Robot orientates based off of bins.
+            if self.robot.finsihed is True:  # End Program!
+                break
 
-            if self.robot.mine:  # is robot is needs to mine, needs to get path to mine
-                self.robot.get_path()
+            if (self.robot.start or self.robot.rock_field) and self.robot.mine:  # move through rock field
+                flood_fill_image = self.create_furthest_path()
+                # TODO: robot movements based off of above image.
 
-            elif self.robot.deliver:  # if robot needs to deliver, call function.
-                self.robot.deliver_ice()
+            if self.robot.mining_area and self.robot.mine:  # grab ice
+                status = self.robot.face.detect_face(img)
+                if status is True:
+                    self.detect_ice()
+                else:
+                    continue  # Allows robot to keep calling face detection rather than
+
+            if (self.robot.rock_field or self.robot.mining_area) and self.robot.deliver:  # must deliver
+                if self.orientate() is False:
+                    # TODO: spin until it finds a bin.
+                    waste = None  # just to bypass error
+                else:
+                    flood_fill_image = self.create_furthest_path()
+                    # TODO: robot movements based off of above image.
+
+            if self.robot.start and self.robot.deliver:  # Find bin
+                self.detect_bin()
 
             overlay = self.create_furthest_path(img.copy())  # create furthest non obstructed path
             cv.imshow("Overlay", overlay)
@@ -110,13 +126,38 @@ class Frame:
         # create image with furthest possible path with original added
         return cv.addWeighted(img, .7, image, 0.4, 0)
 
-    def face_detection(self, frame):
-        """
-        Detects face (from assignment 6)
-        :return:
-        """
-        face = FaceDetection()
-        face.detect_face(frame)
+    def determine_location(self, rock_edge, mine_edge):
+        if self.robot.goal.line_detection(rock_edge) and self.robot.goal.line_detection(mine_edge):
+            if self.robot.start is not True:
+                waste = None
+                # TODO: talk
+            self.robot.start = True
+            self.robot.rock_field = False
+            self.robot.mining_area = False
+
+        elif not self.robot.goal.line_detection(rock_edge) and self.robot.goal.line_detection(mine_edge):
+            if self.robot.rock_field is not True:
+                waste = None
+                # TODO: talk
+            self.robot.start = False
+            self.robot.rock_field = True
+            self.robot.mining_area = False
+
+        elif not self.robot.goal.line_detection(mine_edge) and self.robot.goal.line_detection(rock_edge):
+            if self.robot.rock_field is not True:
+                waste = None
+                # TODO: talk
+            self.robot.start = False
+            self.robot.rock_field = True
+            self.robot.mining_area = False
+
+        else:
+            if self.robot.mining_area is not True:
+                waste = None
+                # TODO: talk
+            self.robot.start = False
+            self.robot.rock_field = False
+            self.robot.mining_area = True
 
     def detect_ice(self, frame):
         """
@@ -125,9 +166,6 @@ class Frame:
         :return:
         """
         self.robot.move_arm()  # get arm into position
-
-        # TODO: Face detection should handle movements towards human, so just 'grab' is needed by robot here.
-        # TODO: May need to add into FaceDetection a Boolean method of size to either move closer or detect ice here...
         if self.robot.goal.detect_ice(frame) is True:
             time.sleep(5)  # wait 5 seconds
             if self.robot.goal.detect_ice(frame) is True:
@@ -142,10 +180,10 @@ class Frame:
         :return:
         """
         if self.robot.goal.detect_bin(frame):
-        # TODO: Move towards points
-        # TODO: Drop in bin if size of bin is .... (will probably need to be done in bin_ice_detection)
-        # TODO: If size < ... then move towards box ... else drop...
-            self.drop()
+            # TODO: Move towards points
+            # TODO: Drop in bin if size of bin is .... (will probably need to be done in bin_ice_detection)
+            # TODO: If size < ... then move towards box ... else drop...
+            self.robot.drop()
 
     def orientate(self):
         """
@@ -153,6 +191,11 @@ class Frame:
         Maybe by finding the color of its goal (it is on the boxes). Once found square up with box, and turn around???
         :return:
         """
+        if self.robot.mining_area:  # finds where start is if in mining area by bins.
+            if self.robot.goal.detect_bin():
+                return True
+            else:
+                return False
 
 
 class Robot:
@@ -173,7 +216,10 @@ class Robot:
         self.mine = True
         self.deliver = False
 
-        self.goal = Goal("large")  # variable to track robots goal. String that is either S, M, or L
+        self.face = FaceDetection()
+        self.move = robot_control.MoveRobot()
+
+        self.goal = Goal(goal)  # variable to track robots goal. String that is either S, M, or L
 
         # self.frame = Frame()  # variable to contain instance of Frame class
 
@@ -189,178 +235,7 @@ class Robot:
     #     speak = client.ClientSocket(IP, PORT)
     #     speak.sendData(what_to_speak)
 
-    def grab(self):
-        """
-        Function that controls robot movement to grab ice.
-        area (where arm will be) to detect if ice is in robot hands.
-        :return:
-        """
-        self.robot.move_hand(8100)
-
-    def drop(self):
-        """
-        Function to drop ice in bin
-        :return:
-        """
-        # TODO: Drop ice in bin
-
-    def deliver_ice(self):
-        """
-        TODO: Create function to deliver ice in correct box. Entails robot arm movement to drop ice.
-        :return:
-        """
-        self.orientate()  # squares up with box
-
-        while True:
-            if True:  # TODO: Some statement that determines if it is at bin (probably method).
-                self.deliver = False  # robot has delivered
-            # TODO: Drop ice in bin
-            self.get_path()
-
-    def robot_center(self):
-        """
-        TODO: Function to center robot. Uses Frame's center function
-        :return:
-        """
-
-    def move_head(self):  # function that moves the robot head.
-        """
-        Function to operate head movements.
-        :return:
-        """
-        self.robot.move_head(self.horizontal, self.vertical)
-
-    def move_forward(self):
-        """
-        Function to move robot forwards.
-        :return:
-        """
-        # self.robot.move_wheels("move", self.wheels_value)
-        self.robot.wheels_forward()
-        print("move wheels")
-
-    def move_back(self):
-        """
-        Function to move robot backwards.
-        :return:
-        """
-        # self.robot.move_wheels("move", self.wheels_value)
-        self.robot.wheels_forward()
-        print("move wheels")
-
-    def turn_right(self):
-        """
-        Function to turn robot right.
-        :return:
-        """
-        self.robot.turn_right()
-        # self.robot.move_wheels("turn", self.turn_value)
-        print("turn wheels")
-
-    def turn_left(self):
-        """
-        Function to turn robot left
-        :return:
-        """
-        self.robot.turn_left()
-        # self.robot.move_wheels("turn", self.turn_value)
-        print("turn wheels")
-
-    def move_arm(self):
-        """
-        TODO: Figure out fixed position to move arm when ready to grab.
-        :return:
-        """
-
-    def increment_Movement(self, move, min, max, inc1, inc2):
-        """
-        TODO: This is copy and pasted from Assignment 6, will need to adjust for this program...
-        :param move: String for robot movement command.
-        :param min: ?
-        :param max: ?
-        :param inc1: ?
-        :param inc2: ?
-        :return:
-        """
-        moves = {"head": self.move_head, "forward": self.move_forward, "backward": self.move_back,
-                 "left": self.turn_left, "right": self.turn_right}
-
-        if move == "head":
-            self.horizontal = self.search_for_face_inc
-            if self.horizontal > max:  # Checks if head has reached farthest right value
-                self.search_for_face_inc = max
-                self.search_for_face_up = False  # Sets to false to head the other direction
-                # Sets the face value iin case it is greater than 7500
-                self.horizontal = self.search_for_face_inc
-                self.vertical += inc2  # Increments the vertical position
-            elif self.horizontal < min:  # Checks if head is in the farthest left postion
-                self.search_for_face_inc = min
-                # Sets true to start heading the other way.
-                self.search_for_face_up = True
-                self.horizontal = self.search_for_face_inc  # Sets incase head is less than 1519
-                self.vertical += inc2  # Increments the vertical postition
-
-            if self.vertical > max:  # Resets to bottom vertical position
-                self.vertical = min
-            if self.search_for_face_up:
-                self.search_for_face_inc += inc1
-            else:
-                self.search_for_face_inc -= inc1
-        elif move == "forward":
-            self.wheels_value -= inc1
-            if self.wheels_value > max:
-                self.wheels_value = max
-            elif self.wheels_value < min:
-                self.wheels_value = min
-        elif move == "backward":
-            self.wheels_value += inc1
-            if self.wheels_value > max:
-                self.wheels_value = max
-            elif self.wheels_value < min:
-                self.wheels_value = min
-        elif move == "right":
-            self.turn_value -= inc1
-            if self.turn_value > max:  # Checks if head has reached farthest lef value
-                self.turn_value = max
-            elif self.turn_value < min:  # Checks if head is in the farthest right postion
-                self.turn_value = min
-        elif move == "left":
-            self.turn_value += inc1
-            if self.turn_value > max:  # Checks if head has reached farthest left value
-                self.turn_value = max
-            elif self.turn_value < min:  # Checks if head is in the farthest right postion
-                self.turn_value = min
-
-        moves[move].__call__()
-
 
 driver = Frame()
 driver.run()
 
-#     def __init__(self):
-#         self.manipulation = imageManipulation.ImageManipulation()
-#         self.cap = cv.VideoCapture(0)
-#         status, img = self.cap.read()
-#         #img = cv.imread('im2.jpg')
-#
-#         self.height, self.width, _ = img.shape
-#         self.move = makeMoves.Move(self.width, self.height)
-#
-#     def run(self):
-#         while True:
-#             status, img = self.cap.read()
-#             #img = cv.imread('im2.jpg')
-#             image = self.manipulation.edge_detection(img.copy())
-#             image = self.manipulation.fill_image(image)
-#             image = self.manipulation.smooth(image)
-#             image, x_coordinate, y_coordinate = self.manipulation.getHighestCoordinate(image, int(self.width / 2), self.height)
-#             # self.move.decide_move(x_coordinate, y_coordinate)
-#             overlayed = cv.addWeighted(img, .7, image, 0.4, 0)  # Overlays the path on the original image
-#             cv.imshow("Path", overlayed)
-#             k = cv.waitKey(1)
-#             if k == 27:
-#                 break
-#         cv.destroyAllWindows()
-#
-#
-#
