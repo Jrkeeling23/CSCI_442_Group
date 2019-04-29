@@ -42,8 +42,9 @@ class Frame:
         self.width = 640
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
-        self.human_close = False
-        self.robot = Robot(goal="l")
+
+        self.status = False
+        self.robot = Robot(goal="pink")
 
     def run(self):
         """
@@ -51,6 +52,7 @@ class Frame:
         :return:
         """
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
+            self.rawCapture.truncate(0)
             img = frame.array
 
             if self.robot.finsihed is True:  # End Program!
@@ -61,11 +63,14 @@ class Frame:
                 # TODO: robot movements based off of above image.
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
-                status = self.robot.face.detect_face(img)
-                if status is True:
-                    self.detect_ice()
+                if self.status is False:
+                    status, image = self.robot.face.detect_face(img)
+                    if status is True:
+                        self.status = True
+                        # TODO: "Hello Human"
                 else:
-                    continue  # Allows robot to keep calling face detection rather than
+                    # TODO: Ask for color of ice.
+                    self.detect_ice(img)
 
             if (self.robot.rock_field or self.robot.mining_area) and self.robot.deliver:  # must deliver
                 if self.orientate() is False:
@@ -165,12 +170,12 @@ class Frame:
         :param frame: current frame in consideration.
         :return:
         """
-
-        self.robot.arm_in_cam_view()  # get arm into position
+        self.robot.move.arm_in_cam_view()  # get arm into position
         if self.robot.goal.detect_ice(frame) is True:
             time.sleep(5)  # wait 5 seconds
-            self.robot.deliver = True  # Prompts robot to deliver ice
-            self.robot.mine = False
+        else:
+            waste = None
+            # TODO: Rejects ice with talk
 
     def detect_bin(self, frame):
         """
@@ -204,7 +209,7 @@ class Robot:
 
     def __init__(self, goal):
         # variable to determine is robot has completed its task
-        self.finsihed = False
+        self.finished = False
 
         # variables to track robots location
         self.start = True

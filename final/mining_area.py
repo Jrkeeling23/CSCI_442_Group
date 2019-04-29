@@ -30,7 +30,7 @@ class TestMine:
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
         self.status = False
-        self.robot = Robot(goal="l")
+        self.robot = Robot(goal="pink")
 
     def run(self):
         """
