@@ -71,11 +71,12 @@ class MoveRobot:
         self.tango.setTarget(HEADTURN, self.headTurn)
         self.tango.setTarget(HEADTILT, self.headTilt)
         self.tango.setTarget(BODY, self.body)
-        self.tango.setTarget(HAND, self.hand)
-        self.tango.setTarget(ELBOW, self.elbow)
-        self.tango.setTarget(SHOULDER, self.shoulder)
-        self.tango.setTarget(ARM_0, self.arm_0)
-        self.tango.setTarget(ARM_2, self.arm_2)
+        # self.tango.setTarget(HAND, self.hand)
+        # self.tango.setTarget(ELBOW, self.elbow)
+        # self.tango.setTarget(SHOULDER, self.shoulder)
+        # self.tango.setTarget(ARM_0, self.arm_0)
+        # self.tango.setTarget(ARM_2, self.arm_2)
+        self.lower_arm()
 
     # Checks the limit for the wheels moving forward and backwards
 
@@ -174,7 +175,7 @@ class MoveRobot:
 
     def move_shoulder(self, val):  # Method to move shoulder
         # Lower value = higher shoulder 6000-4000
-        self.shoulder = self.check_motor_value(val, 3900, 8100)
+        self.shoulder = self.check_motor_value(val, 4100, 8100)
         self.tango.setTarget(SHOULDER, self.shoulder)
         # val = self.check_motor_value(val, 3900, 6100)
         # inc = self.get_inc(val, self.shoulder)
@@ -246,10 +247,10 @@ class MoveRobot:
 
     def arm_in_cam_view(self):
         self.open_hand()
-        threading.Thread(target=self.move_shoulder(9000)).start()
+        threading.Thread(target=self.move_shoulder(10000)).start()
         time.sleep(.2)
         threading.Thread(target=self.move_elbow(4800)).start()
-        threading.Thread(target=self.move_arm_0(3000)).start()
+        threading.Thread(target=self.move_arm_0(4000)).start()
         threading.Thread(target=self.move_arm_2(6200)).start()
         threading.Thread(target=self.rotate_hand_fun(2000)).start()
 

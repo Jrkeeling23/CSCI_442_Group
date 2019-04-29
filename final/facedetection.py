@@ -68,7 +68,7 @@ class FaceDetection:
                 self.talk()
                 self.robot_centered = False
             for (x, y, w, h) in faces:  # Loops over faces (should be only one)
-                time.sleep(.4)
+                # time.sleep(.4)
                 self.time_since_talk = time.time()  # resets the clock since a human has been found.
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 self.center(x, y, w, h)  # Calls the function to center the face.
@@ -80,7 +80,7 @@ class FaceDetection:
                     else:
                         self.robot.stop()
                         self.robot_centered = True
-                        return True, img  # return to status variable to detect ice.
+            return True, img  # return to status variable to detect ice.
         else:
             # Adjust head increments to find a face.
             # self.horizontal += self.head_increment_horizontal
