@@ -45,17 +45,14 @@ class TestMine:
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
                 status, image = self.robot.face.detect_face(img)
-<<<<<<< HEAD
+
                 cv.imshow("image", image)
-                if status is True:
-                    self.detect_ice(img)
-=======
+
                 # TODO: Ask for color of ice.
                 # cv.imshow("image", image)
                 if status is True or self.status is True:
                     self.status = True
-                    self.detect_ice()
->>>>>>> a03442aae70eb1badc0f9b4d13609a59ee03e290
+                    self.detect_ice(img)
                 else:
                     continue  # Allows robot to keep calling face detection rather than
 
@@ -70,12 +67,12 @@ class TestMine:
         :param frame: current frame in consideration.
         :return:
         """
-        self.robot.move.center_robot()
         self.robot.move.arm_in_cam_view()  # get arm into position
-        time.sleep(5)  # wait 5 seconds
-        self.robot.move.close_hand()
-        self.robot.deliver = True  # Prompts robot to deliver ice
-        self.robot.mine = False
+        if self.robot.goal.detect_ice(frame) is True:
+            time.sleep(5)  # wait 5 seconds
+        else:
+            waste = None
+            # TODO: Rejects ice with talk
 
 
 class Robot:
