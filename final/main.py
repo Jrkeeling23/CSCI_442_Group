@@ -42,7 +42,7 @@ class Frame:
         self.width = 640
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
-
+        self.human_close = False
         self.robot = Robot(goal="l")
 
     def run(self):
@@ -56,13 +56,27 @@ class Frame:
             if self.robot.finsihed is True:  # End Program!
                 break
 
-            if (self.robot.start or self.robot.mining_area) and self.robot.mine:  # move through rock field
+            if (self.robot.start or self.robot.rock_field) and self.robot.mine:  # move through rock field
                 flood_fill_image = self.create_furthest_path()
                 # TODO: robot movements based off of above image.
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
-                self.face_detection()  # TODO: May need to adjust file to have robot move closer to human, and the
+
+                # TODO: Need to adjust file to have robot move closer to human, and the
                 # todo: return value must be boolean to move onto grab function.
+
+                if self.human_close:  # If close enough to human, grab.
+                    self.detect_ice()
+                else:  # else, get closer
+                    self.human_close = self.face_detection()  # will return true if close enough to human
+
+            if (self.robot.rock_field or self.robot.mining_area) and self.robot.deliver:  # must deliver
+                # TODO: find bins to reference start.
+                flood_fill_image = self.create_furthest_path()
+                # TODO: robot movements based off of above image.
+
+            if self.robot.start and self.robot.deliver:  # Find bin
+                self.detect_bin()
 
             self.robot.orientate()  # robot must find where it is at
             # TODO: turn around do a 360 now. Robot orientates based off of bins.
@@ -126,7 +140,7 @@ class Frame:
         Detects face (from assignment 6)
         :return:
         """
-        self.robot.face.detect_face(frame)
+        return self.robot.face.detect_face(frame)
 
     def detect_ice(self, frame):
         """
