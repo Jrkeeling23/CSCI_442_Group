@@ -29,7 +29,7 @@ class TestMine:
         self.width = 640
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
-        self.human_close = False
+        self.status = False
         self.robot = Robot(goal="l")
 
     def run(self):
@@ -45,8 +45,10 @@ class TestMine:
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
                 status, image = self.robot.face.detect_face(img)
+                # TODO: Ask for color of ice.
                 # cv.imshow("image", image)
-                if status is True:
+                if status is True or self.status is True:
+                    self.status = True
                     self.detect_ice()
                 else:
                     continue  # Allows robot to keep calling face detection rather than
