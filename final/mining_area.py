@@ -104,3 +104,4 @@ class Robot:
     #     PORT = 5010
     #     speak = client.ClientSocket(IP, PORT)
     #     speak.sendData(what_to_speak)
+
