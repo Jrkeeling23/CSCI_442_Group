@@ -42,8 +42,10 @@ class Frame:
         self.width = 640
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
-        self.human_close = False
-        self.robot = Robot(goal="l")
+        self.area = Area()
+        self.status = False
+        self.robot = Robot(goal="pink")
+        self.start = True
 
     def run(self):
         """
@@ -51,35 +53,45 @@ class Frame:
         :return:
         """
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
+            self.rawCapture.truncate(0)
             img = frame.array
+            orange_found = self.area.find_orange_lines(img)
+            if self.start:
+                if orange_found:
+                    self.start = False
+                else:
+                    self.robot.move.turn_fourty_five()
 
-            if self.robot.finsihed is True:  # End Program!
+            if self.robot.finished is True:  # End Program!
                 break
 
             if (self.robot.start or self.robot.rock_field) and self.robot.mine:  # move through rock field
-                flood_fill_image = self.create_furthest_path()
+                flood_fill_image = self.create_furthest_path(img)
                 # TODO: robot movements based off of above image.
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
-                status = self.robot.face.detect_face(img)
-                if status is True:
-                    self.detect_ice()
+                if self.status is False:
+                    status, image = self.robot.face.detect_face(img)
+                    if status is True:
+                        self.status = True
+                        # TODO: "Hello Human"
                 else:
-                    continue  # Allows robot to keep calling face detection rather than
+                    # TODO: Ask for color of ice.
+                    self.detect_ice(img)
 
             if (self.robot.rock_field or self.robot.mining_area) and self.robot.deliver:  # must deliver
                 if self.orientate() is False:
                     # TODO: spin until it finds a bin.
                     waste = None  # just to bypass error
                 else:
-                    flood_fill_image = self.create_furthest_path()
+                    flood_fill_image = self.create_furthest_path(img)
                     # TODO: robot movements based off of above image.
 
             if self.robot.start and self.robot.deliver:  # Find bin
-                self.detect_bin()
+                self.detect_bin(img)
 
             overlay = self.create_furthest_path(img.copy())  # create furthest non obstructed path
-            cv.imshow("Overlay", overlay)
+            # cv.imshow("Overlay", overlay)
 
             self.rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
@@ -111,12 +123,10 @@ class Frame:
         blue_edge = cv.dilate(blue_edge, kernel, iterations=1)
         orange_edge = self.manipulation.edge_detection(orange_mask)
         orange_edge = cv.dilate(orange_edge, kernel, iterations=1)
-
         # subtract the edges from the overall edge detection image
         image = self.manipulation.edge_detection(img.copy())
         image = cv.subtract(image, blue_edge)
         image = cv.subtract(image, orange_edge)
-
         # fill edges from bottom up until no solid connection
         image = self.manipulation.fill_image(image.copy())
         image = self.manipulation.smooth(image.copy())
@@ -165,13 +175,19 @@ class Frame:
         :param frame: current frame in consideration.
         :return:
         """
-        self.robot.arm_in_cam_view()  # get arm into position
+        self.robot.move.arm_in_cam_view()  # get arm into position
         if self.robot.goal.detect_ice(frame) is True:
-            time.sleep(5)  # wait 5 seconds
-            if self.robot.goal.detect_ice(frame) is True:
-                self.robot.close_hand()
-                self.robot.deliver = True  # Prompts robot to deliver ice
-                self.robot.mine = False
+            time.sleep(1)  # wait 5 seconds
+            self.robot.move.close_hand()
+            self.robot.mine = False
+            self.robot.deliver = True
+            time.sleep(4)  # wait 5 seconds
+            self.robot.move.turn_around()
+            time.sleep(1)  # wait 5 seconds
+            self.robot.move.lower_arm()
+        else:
+            waste = None
+            # TODO: Rejects ice with talk
 
     def detect_bin(self, frame):
         """
@@ -205,7 +221,7 @@ class Robot:
 
     def __init__(self, goal):
         # variable to determine is robot has completed its task
-        self.finsihed = False
+        self.finished = False
 
         # variables to track robots location
         self.start = True
@@ -234,6 +250,20 @@ class Robot:
     #     PORT = 5010
     #     speak = client.ClientSocket(IP, PORT)
     #     speak.sendData(what_to_speak)
+
+
+class Area():
+    def find_orange_lines(self, image):
+        # Sourced from https://stackoverflow.com/questions/48528754/what-are-recommended-color-spaces-for-detecting-orange-color-in-open-cv
+        hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+        mask = cv.inRange(hsv, (10,100,20), (25,255,255))
+        kernel = np.ones((5,5),np.uint8)
+        mask = cv.erode(mask, kernel, iterations = 1)
+        detector = cv.SimpleBlobDetector_create()
+        blobs = detector.detect(mask)
+        return np.any(cv.inRange(mask, 255,255))
+    
+        
 
 
 driver = Frame()
