@@ -61,11 +61,11 @@ class Frame:
                 # TODO: robot movements based off of above image.
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
-                status = self.robot_mining(img)
+                status = self.robot.face.detect_face(img)
                 if status is True:
                     self.detect_ice()
                 else:
-                    continue
+                    continue  # Allows robot to keep calling face detection rather than
 
             if (self.robot.rock_field or self.robot.mining_area) and self.robot.deliver:  # must deliver
                 if self.orientate() is False:
@@ -159,14 +159,6 @@ class Frame:
             self.robot.rock_field = False
             self.robot.mining_area = True
 
-    def robot_mining(self, frame):
-        """
-        Detects face (from assignment 6)
-        :return:
-        """
-        return self.robot.face.detect_face(frame)
-
-
     def detect_ice(self, frame):
         """
         This function uses blob detection and only considers location of hand.
@@ -174,9 +166,6 @@ class Frame:
         :return:
         """
         self.robot.move_arm()  # get arm into position
-
-        # TODO: Face detection should handle movements towards human, so just 'grab' is needed by robot here.
-        # TODO: May need to add into FaceDetection a Boolean method of size to either move closer or detect ice here...
         if self.robot.goal.detect_ice(frame) is True:
             time.sleep(5)  # wait 5 seconds
             if self.robot.goal.detect_ice(frame) is True:
