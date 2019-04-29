@@ -3,12 +3,14 @@ import cv2 as cv
 
 
 class Goal:
+
     def __init__(self, string_name):
         # Dictionaries for goals, lower thresh : upper thresh
         self.name = string_name
         self.goal = {"pink": [np.array([130, 130, 100]), np.array([190, 230, 235])],
                      "green": [np.array([40, 155, 0]), np.array([60, 185, 255])]}
-        # "large": [np.array([0, 0, 0]), np.array([0, 0, 0])]}
+        self.current_x = 0
+        self.current_y = 0
 
     def detect_ice(self, frame):
         """
@@ -79,9 +81,9 @@ class Goal:
                 y = keypoints[0].pt[1]
 
                 # Lets us know if we are getting enough blobs in frame
-                return True, img_with_keypoints
+                return True
         else:
-            return False, img_with_keypoints
+            return False
 
     @staticmethod
     def line_detection(edge_frame, color_low, color_high):
@@ -111,3 +113,27 @@ class Goal:
                 return True
         else:
             return False
+
+    def bin_area(self, frame):
+        hsv = cv.cvtColor(frame.copy(), cv.COLOR_BGR2HSV)
+
+        lower_thresh = goal[0]
+        upper_thresh = goal[lower_thresh]
+
+        goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
+        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
+        contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+
+        if len(contours) is not 0:
+            cnt = contours[0]
+            # print(cv.contourArea(cnt))
+            # cv.drawContours(image, contours, -1, (0, 255, 0), 3)
+            # when x is 0 (from top down is the axis), its left side of screen
+            # when y is 0, its (from left to right), its top
+            self.current_x = cnt[0][0][0]
+            self.current_y = cnt[0][0][1]
+
+            return True
+        self.current_y = 0
+        self.current_x = 0
+        return False

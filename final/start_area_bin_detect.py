@@ -59,9 +59,13 @@ class Frame:
                 break
 
             if self.robot.start and self.robot.deliver:
-                # TODO: edge detect white. Find if highest white is left or right. Turn towards highest white...
-                white_lower = np.array([250, 250, 250])
-                white_upper = np.array([255, 255, 255])
+                if self.robot.goal.bin_area() is False and self.robot.found_bin:  # Bin is out of view, but is found
+                    self.robot.move.wheels_forward()  # get a little closer, if need be....
+                    self.robot.move.drop()  # drop into box
+
+                else:  # If it has not found the bin or it is still in view keep calling function to move robot
+                    self.detect_bin()
+                    self.robot.finished = True  # terminate program
 
             self.rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
@@ -75,34 +79,20 @@ class Frame:
         :param frame: current frame.
         :return:
         """
-        is_bin, bin_image = self.robot.goal.detect_bin(frame)
-        if is_bin is False:  # turn 90 degrees
+        if self.robot.goal.bin_area() is False:  # turn 90 degrees
             self.robot.move.turn_right_90()
-            is_bin, bin_image = self.robot.goal.detect_bin(frame)
 
-            if is_bin is False:  # Turn back 180 degrees
+            if self.robot.goal.bin_area() is False:  # Turn back 180 degrees
                 self.robot.move.turn_left_90()
                 self.robot.move.turn_left_90()
         else:
-            # TODO: Move toward box and drop in
-            cnt = cv.findContours(bin_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)[0]
-            mask = np.zeros(frame.shape[:2], np.uint8)
-            cv.drawContours(mask, cnt, -1, 255, -1)
-
-        self.robot.move.arm_in_cam_view()  # get arm into position
-        if self.robot.goal.detect_ice(frame) is True:
-            time.sleep(1)  # wait 5 seconds
-            self.robot.move.close_hand()
-            # change states of robot to fit accordingly
-            self.robot.mine = False
-            self.robot.deliver = True
-            time.sleep(4)  # wait 5 seconds
-            self.robot.move.turn_around()
-            time.sleep(1)  # wait 5 seconds
-            self.robot.move.lower_arm()
-        else:
-            waste = None
-            # TODO: Rejects ice with talk
+            self.robot.found_bin = True
+            if self.robot.goal.current_x >= (self.width / 2 + self.width / 3 - 15):
+                self.robot.move.turn_left()
+            elif self.robot.goal.current_x <= (self.width / 3 + 15):
+                self.robot.move.turn_right()
+            else:
+                self.robot.move.wheels_forward()
 
 
 class Robot:
@@ -125,6 +115,8 @@ class Robot:
 
         self.face = FaceDetection()
         self.move = robot_control.MoveRobot()
+
+        self.found_bin = False
 
         self.goal = Goal(goal)  # variable to track robots goal. String that is either Pink, Green, or Orange.
 
