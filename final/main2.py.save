@@ -13,17 +13,15 @@ import socket
 import time
 import queue
 
-blue_lower = np.array([20,20, 180])
+blue_lower = np.array([120,20, 180])
 blue_upper = np.array([130, 60, 255])
+
 orange_lower = np.array([0, 50,225])
 orange_upper = np.array([30,255,255])
 
-# Pink works if it is perpendicular to ground...
-pink_neon_lower = np.array([140,30,165])  #([100,25, 170]) 
-pink_neon_upper = np.array([210, 210, 255])  #([200,120, 255])
+pink_neon_lower = np.array([130,25, 2100])
+pink_neon_upper = np.array([176,60, 255])
 
-green_neon_lower = np.array([30,80,65])
-green_neon_upper = np.array([80,200, 255])
 
 class Driver:
     def __init__(self):
@@ -38,14 +36,8 @@ class Driver:
         self.width = 640
         self.height = 480
         self.move = makeMoves.Move(self.width, self.height)
-        self.robot = robot_control.MoveRobot()
-
 
     def run(self):
-        self.robot.lower_arm()
-        time.sleep(3)
-        self.robot.arm_in_cam_view()
-
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
             img = frame.array
             img = cv.blur(img,(5,5))
