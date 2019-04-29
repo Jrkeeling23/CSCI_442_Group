@@ -61,7 +61,11 @@ class Frame:
                 # TODO: robot movements based off of above image.
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
-                self.robot_mining(img)
+                status = self.robot_mining(img)
+                if status is True:
+                    self.detect_ice()
+                else:
+                    continue
 
             if (self.robot.rock_field or self.robot.mining_area) and self.robot.deliver:  # must deliver
                 if self.orientate() is False:
@@ -160,10 +164,8 @@ class Frame:
         Detects face (from assignment 6)
         :return:
         """
-        face_detection_image = self.robot.face.detect_face(frame)
-        # TODO: Need to way to determine if human is close enough.
-        # once some way to determine if close enough...
-        self.detect_ice()  # waits for ice.
+        return self.robot.face.detect_face(frame)
+
 
     def detect_ice(self, frame):
         """

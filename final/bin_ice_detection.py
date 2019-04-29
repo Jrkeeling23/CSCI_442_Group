@@ -69,12 +69,12 @@ class Goal:
             detector = cv.SimpleBlobDetector(params)
         else:
             detector = cv.SimpleBlobDetector_create(params)
-
         keypoints = detector.detect(frame)
         if len(keypoints) is not 0:
             for i in range(len(keypoints)):
                 x = keypoints[0].pt[0]
                 y = keypoints[0].pt[1]
+
                 # Lets us know if we are getting enough blobs in frame
                 return True
         else:
