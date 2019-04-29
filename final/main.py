@@ -61,31 +61,18 @@ class Frame:
                 # TODO: robot movements based off of above image.
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
-
-                # TODO: Need to adjust file to have robot move closer to human, and the
-                # todo: return value must be boolean to move onto grab function.
-
-                if self.human_close:  # If close enough to human, grab.
-                    self.detect_ice()
-                else:  # else, get closer
-                    self.human_close = self.face_detection()  # will return true if close enough to human
+                self.robot_mining(img)
 
             if (self.robot.rock_field or self.robot.mining_area) and self.robot.deliver:  # must deliver
-                # TODO: find bins to reference start.
-                flood_fill_image = self.create_furthest_path()
-                # TODO: robot movements based off of above image.
+                if self.orientate() is False:
+                    # TODO: spin until it finds a bin.
+                    waste = None  # just to bypass error
+                else:
+                    flood_fill_image = self.create_furthest_path()
+                    # TODO: robot movements based off of above image.
 
             if self.robot.start and self.robot.deliver:  # Find bin
                 self.detect_bin()
-
-            self.robot.orientate()  # robot must find where it is at
-            # TODO: turn around do a 360 now. Robot orientates based off of bins.
-
-            if self.robot.mine:  # is robot is needs to mine, needs to get path to mine
-                self.robot.get_path()
-
-            elif self.robot.deliver:  # if robot needs to deliver, call function.
-                self.robot.deliver_ice()
 
             overlay = self.create_furthest_path(img.copy())  # create furthest non obstructed path
             cv.imshow("Overlay", overlay)
@@ -135,12 +122,15 @@ class Frame:
         # create image with furthest possible path with original added
         return cv.addWeighted(img, .7, image, 0.4, 0)
 
-    def face_detection(self, frame):
+    def robot_mining(self, frame):
         """
         Detects face (from assignment 6)
         :return:
         """
-        return self.robot.face.detect_face(frame)
+        face_detection_image = self.robot.face.detect_face(frame)
+        # TODO: Need to way to determine if human is close enough.
+        # once some way to determine if close enough...
+        self.detect_ice()  # waits for ice.
 
     def detect_ice(self, frame):
         """
@@ -169,7 +159,7 @@ class Frame:
             # TODO: Move towards points
             # TODO: Drop in bin if size of bin is .... (will probably need to be done in bin_ice_detection)
             # TODO: If size < ... then move towards box ... else drop...
-            self.drop()
+            self.robot.drop()
 
     def orientate(self):
         """
@@ -177,6 +167,11 @@ class Frame:
         Maybe by finding the color of its goal (it is on the boxes). Once found square up with box, and turn around???
         :return:
         """
+        if self.robot.mining_area:  # finds where start is if in mining area by bins.
+            if self.robot.goal.detect_bin():
+                return True
+            else:
+                return False
 
 
 class Robot:
@@ -229,19 +224,6 @@ class Robot:
         :return:
         """
         # TODO: Drop ice in bin
-
-    def deliver_ice(self):
-        """
-        TODO: Create function to deliver ice in correct box. Entails robot arm movement to drop ice.
-        :return:
-        """
-        self.orientate()  # squares up with box
-
-        while True:
-            if True:  # TODO: Some statement that determines if it is at bin (probably method).
-                self.deliver = False  # robot has delivered
-            # TODO: Drop ice in bin
-            self.get_path()
 
     def robot_center(self):
         """
