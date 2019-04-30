@@ -88,9 +88,9 @@ class Frame:
         else:
             self.robot.found_bin = True
             if self.robot.goal.current_x >= (self.width / 2 + self.width / 3 - 15):
-                self.robot.move.turn_left()
-            elif self.robot.goal.current_x <= (self.width / 3 + 15):
                 self.robot.move.turn_right()
+            elif self.robot.goal.current_x <= (self.width / 3 + 15):
+                self.robot.move.turn_left()
             else:
                 self.robot.move.wheels_forward()
 
