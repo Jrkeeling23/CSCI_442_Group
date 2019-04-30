@@ -61,6 +61,7 @@ class Frame:
             if self.robot.start and self.robot.mine:  # move through rock field
                 flood_fill_image, x = self.create_furthest_path(img)
                 orange_found = self.robot.goal.find_orange_lines(img)
+                cv.imshow("", flood_fill_image)
                 if orange_found:
                     if x > self.width * .7:
                         self.robot.move.turn_right()
@@ -130,14 +131,14 @@ class Frame:
 
         # create orange and blue edges to subtract from overall picture
         kernel = np.ones((5, 5), np.uint8)
-        blue_edge = self.manipulation.edge_detection(blue_mask)
-        blue_edge = cv.dilate(blue_edge, kernel, iterations=1)
+        # blue_edge = self.manipulation.edge_detection(blue_mask)
+        # blue_edge = cv.dilate(blue_edge, kernel, iterations=1)
         orange_edge = self.manipulation.edge_detection(orange_mask)
         orange_edge = cv.dilate(orange_edge, kernel, iterations=1)
 
         # subtract the edges from the overall edge detection image
         image = self.manipulation.edge_detection(img.copy())
-        image = cv.subtract(image, blue_edge)
+        # image = cv.subtract(image, blue_edge)
         image = cv.subtract(image, orange_edge)
 
         # fill edges from bottom up until no solid connection
@@ -213,6 +214,8 @@ class Robot:
 
         self.face = FaceDetection()
         self.move = robot_control.MoveRobot()
+
+        self.found_bin = False
 
         self.goal = Goal(goal)  # variable to track robots goal. String that is either Pink, Green, or Orange.
 
