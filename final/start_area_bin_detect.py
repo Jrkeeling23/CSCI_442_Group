@@ -64,7 +64,7 @@ class Frame:
                     self.robot.move.drop()  # drop into box
 
                 else:  # If it has not found the bin or it is still in view keep calling function to move robot
-                    self.detect_bin()
+                    self.detect_bin(frame)
                     self.robot.finished = True  # terminate program
 
             self.rawCapture.truncate(0)
