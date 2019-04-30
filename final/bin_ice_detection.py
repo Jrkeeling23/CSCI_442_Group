@@ -73,7 +73,7 @@ class Goal:
         else:
             detector = cv.SimpleBlobDetector_create(params)
         keypoints = detector.detect(frame)
-        img_with_keypoints = cv.drawKeypoints(thresh, keypoints, outImage=np.array([]), color=(0, 0, 255),
+        img_with_keypoints = cv.drawKeypoints(frame, keypoints, outImage=np.array([]), color=(0, 0, 255),
                                               flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         if len(keypoints) is not 0:
             for i in range(len(keypoints)):
