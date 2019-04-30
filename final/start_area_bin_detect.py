@@ -80,7 +80,7 @@ class Frame:
         :param frame: current frame.
         :return:
         """
-        if self.robot.goal.bin_area(frame) is False:  # turn 90 degrees
+        if self.robot.goal.bin_area(frame) is False:  # if cannot detect bin, check right
             self.robot.move.turn_right_90()
 
             if self.robot.goal.bin_area(frame) is False:  # Turn back 180 degrees
