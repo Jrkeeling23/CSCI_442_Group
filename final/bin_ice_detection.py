@@ -115,7 +115,7 @@ class Goal:
             return False
 
     def bin_area(self, frame):
-        hsv = cv.cvtColor(frame.copy, cv.COLOR_BGR2HSV)
+        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
         lower_thresh = goal[0]
         upper_thresh = goal[lower_thresh]
