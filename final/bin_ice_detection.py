@@ -122,7 +122,7 @@ class Goal:
         upper_thresh = thresholds[1]
 
         goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
-        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
+        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY)  # convert between 0-250 to black
         contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
         if len(contours) is not 0:
