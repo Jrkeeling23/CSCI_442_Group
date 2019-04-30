@@ -1,13 +1,13 @@
 import numpy as np
 import cv2 as cv
 
-
+# "pink": [np.array([130, 130, 100]), np.array([190, 230, 235])
 class Goal:
 
     def __init__(self, string_name):
         # Dictionaries for goals, lower thresh : upper thresh
         self.name = string_name
-        self.goal = {"pink": [np.array([130, 130, 100]), np.array([190, 230, 235])],
+        self.goal = {"pink": [np.array([155, 105 , 55]), np.array([175, 195, 255])],
                      "green": [np.array([40, 155, 0]), np.array([60, 185, 255])]}
         self.current_x = 0
         self.current_y = 0
