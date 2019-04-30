@@ -123,8 +123,13 @@ class Goal:
         upper_thresh = thresholds[1]
 
         goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
+<<<<<<< HEAD
         _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY)  # convert between 0-250 to b$
         kernel = np.ones((5,5), np.uint8)
+=======
+        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY)  # convert between 0-250 to black
+        kernel = np.ones((5,5), np.uint8) 
+>>>>>>> 4e09b0c13c22d7015d052dd0321b853df02fa710
         thresh = cv.erode(thresh,kernel, 20)
         thresh = cv.dilate(thresh, kernel, 5)
         contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)

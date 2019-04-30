@@ -105,7 +105,7 @@ class MoveRobot:
         self.motors -= 1200
         self.forward_back_limit()
         self.tango.setTarget(MOTORS, self.motors)
-        time.sleep(1)
+        time.sleep(.5)
         self.stop()
 
     def wheels_backward(self):  # Moves the wheels backwards
@@ -136,6 +136,7 @@ class MoveRobot:
         self.tango.setTarget(TURN, self.turn)
         # time.sleep(.2)
         time.sleep(.5)
+
         self.stop()
         # print("turn left")
 
@@ -187,7 +188,6 @@ class MoveRobot:
             return inc_value
         else:
             return inc_value * -1
-
 
     def move_shoulder(self, val):  # Method to move shoulder
         # Lower value = higher shoulder 6000-4000
@@ -244,7 +244,6 @@ class MoveRobot:
         #     self.tango.setTarget(HAND, self.hand)
         #     time.sleep(.1)
 
-
     def rotate_hand_fun(self, val):  # Method to move hand
         # Lower value = higher 8000-4000
         self.rotate_hand = self.check_motor_value(val, 3900, 8100)
@@ -271,7 +270,6 @@ class MoveRobot:
         threading.Thread(target=self.move_arm_2(6200)).start()
         threading.Thread(target=self.rotate_hand_fun(2000)).start()
 
-
     def drop(self):
         threading.Thread(target=self.rotate_hand_fun(6000)).start()
         time.sleep(1)
@@ -296,8 +294,8 @@ class MoveRobot:
         time.sleep(1.2)
         self.stop()
 
-
     def turn_left_90(self):
+
         self.turn += 1200
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
@@ -315,4 +313,3 @@ class MoveRobot:
         time.sleep(1)
         self.stop()
         print("turn right 90")
-
