@@ -59,7 +59,7 @@ class Frame:
                 break
 
             if (self.robot.start or self.robot.rock_field) and self.robot.mine:  # move through rock field
-                flood_fill_image = self.create_furthest_path()
+                flood_fill_image = self.create_furthest_path(img)
                 # TODO: robot movements based off of above image.
 
             if self.robot.mining_area and self.robot.mine:  # grab ice
