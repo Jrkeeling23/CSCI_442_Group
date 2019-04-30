@@ -62,10 +62,11 @@ class Frame:
                 if self.robot.goal.bin_area(img) is False and self.robot.found_bin:  # Bin is out of view, but is found
                     self.robot.move.wheels_forward()  # get a little closer, if need be....
                     self.robot.move.drop()  # drop into box
-
-                else:  # If it has not found the bin or it is still in view keep calling function to move robot
-                    self.detect_bin(img)
                     self.robot.finished = True  # terminate program
+
+                elif self.robot.found_bin and self.robot.goal.bin_area(
+                        img):  # If it has not found the bin or it is still in view keep calling function to move robot
+                    self.detect_bin(img)
 
             self.rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
