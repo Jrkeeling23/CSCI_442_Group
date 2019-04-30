@@ -61,6 +61,7 @@ class Frame:
             if self.robot.start and self.robot.deliver:
                 if self.robot.goal.bin_area(img) is False and self.robot.found_bin:  # Bin is out of view, but is found
                     self.robot.move.wheels_forward()  # get a little closer, if need be....
+                    self.robot.move.arm_in_cam_view()
                     self.robot.move.drop()  # drop into box
                     self.robot.finished = True  # terminate program
                 else:
@@ -88,12 +89,13 @@ class Frame:
                 self.robot.move.turn_left_90()
         else:
             self.robot.found_bin = True
-            if self.robot.goal.current_x >= (self.width / 2 + self.width / 3 - 15):
+            if self.robot.goal.current_x >= (self.width *.7):
                 self.robot.move.turn_right()
-            elif self.robot.goal.current_x <= (self.width / 3 + 15):
+            elif self.robot.goal.current_x <= (self.width *.3):
                 self.robot.move.turn_left()
             else:
                 self.robot.move.wheels_forward()
+                print("forward")
 
 
 class Robot:

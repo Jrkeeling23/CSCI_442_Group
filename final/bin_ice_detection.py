@@ -123,9 +123,12 @@ class Goal:
 
         goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
         _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY)  # convert between 0-250 to black
+        kernel = np.ones((5,5), np.uint8) 
+        thresh = cv.erode(thresh,kernel, 20)
+        thresh = cv.dilate(thresh, kernel, 5)
         contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
-        if len(contours) is not 0:
+        if contours:
             cnt = contours[0]
             cv.imshow("", thresh)
             # print(cv.contourArea(cnt))
