@@ -117,8 +117,8 @@ class Goal:
     def bin_area(self, frame):
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
-        lower_thresh = goal[0]
-        upper_thresh = goal[lower_thresh]
+        lower_thresh = self.goal[0]
+        upper_thresh = self.goal[lower_thresh]
 
         goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
         _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
