@@ -47,6 +47,9 @@ class MoveRobot:
         self.hand = 6000
         self.rotate_hand = 6000
         self.center_robot()
+        self.turning_right = False
+        self.turning_left = False
+        self.moving_forward = False
 
     def stop(self):  # Stops the robot from moving or turning
         if self.motors > 6000:  # Slows the robot down slightly before completely stopping
@@ -63,6 +66,7 @@ class MoveRobot:
         self.turn = 6000
         self.tango.setTarget(MOTORS, self.motors)  # Completely stops the robot
         self.tango.setTarget(TURN, self.turn)
+        self.moving_forward = False
         time.sleep(.5)
 
     def center_robot(self):  # Centers the robot and tilts the head down
@@ -85,7 +89,9 @@ class MoveRobot:
             self.motors = 7900
 
     def wheels_forward(self):  # Moves the wheels forward
-        self.motors -= 800
+        if not self.moving_forward:
+            self.motors -= 800
+            self.moving_forward = True
         self.forward_back_limit()
         self.tango.setTarget(MOTORS, self.motors)
         # time.sleep(1)
@@ -105,7 +111,9 @@ class MoveRobot:
             self.turn = 7400
 
     def turn_right(self):  # Turns robot right
-        self.turn -= 1500
+        if not self.turning_right:
+            self.turn -= 1500
+            self.turning_right = True
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
         #    time.sleep(.2)
@@ -296,9 +304,9 @@ class MoveRobot:
 
     def turn_fourty_five(self):
 
-        self.turn -= 1500
+        self.turn -= 2000
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
         #    time.sleep(.2)
-        time.sleep(1)
+        time.sleep(.2)
         self.stop()
