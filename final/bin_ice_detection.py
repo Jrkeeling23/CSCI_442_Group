@@ -127,7 +127,7 @@ class Goal:
 
         if len(contours) is not 0:
             cnt = contours[0]
-            cv.imshow("", contours)
+            cv.imshow("", thresh)
             # print(cv.contourArea(cnt))
             # cv.drawContours(image, contours, -1, (0, 255, 0), 3)
             # when x is 0 (from top down is the axis), its left side of screen
