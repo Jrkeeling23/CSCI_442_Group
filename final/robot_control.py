@@ -88,8 +88,8 @@ class MoveRobot:
         self.motors -= 800
         self.forward_back_limit()
         self.tango.setTarget(MOTORS, self.motors)
-        time.sleep(1)
-        self.stop()
+        # time.sleep(1)
+        # self.stop()
 
     def wheels_backward(self):  # Moves the wheels backwards
         self.motors += 800
@@ -136,8 +136,8 @@ class MoveRobot:
         elif move == "move":
             self.motors = self.check_motor_value(value, 1510, 7900)
             self.tango.setTarget(MOTORS, self.motors)
-        time.sleep(1)
-        threading.Thread(target=self.stop())
+        # time.sleep(1)
+        # threading.Thread(target=self.stop())
 
     # # Methods to check value boundaries of servos
     # def check_value(self, val):
@@ -300,5 +300,5 @@ class MoveRobot:
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
         #    time.sleep(.2)
-        time.sleep(.4)
+        time.sleep(1)
         self.stop()

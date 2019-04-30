@@ -106,7 +106,7 @@ class Frame:
 
 
             #         # TODO: robot movements based off of above image.
-            self.make_decision(img)
+            #self.make_decision(img)
             if self.robot.start and self.robot.deliver:  # Find bin
                 self.detect_bin(img)
 
@@ -266,8 +266,10 @@ class Frame:
         right = self.width * .6
         left = self.width * .4
         if x_coordinate > right:
+            self.robot.move.stop()
             self.robot.move.turn_right()
-        elif x_coordinate < left:
+        elif x_coordinate < left:            
+            self.robot.move.stop()
             self.robot.move.turn_left()
         else:
             self.robot.move.wheels_forward()
