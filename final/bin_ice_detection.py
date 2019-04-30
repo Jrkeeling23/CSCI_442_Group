@@ -1,13 +1,14 @@
 import numpy as np
 import cv2 as cv
 
+
 # "pink": [np.array([130, 130, 100]), np.array([190, 230, 235])
 class Goal:
 
     def __init__(self, string_name):
         # Dictionaries for goals, lower thresh : upper thresh
         self.name = string_name
-        self.goal = {"pink": [np.array([155, 105 , 55]), np.array([175, 195, 255])],
+        self.goal = {"pink": [np.array([155, 105, 55]), np.array([175, 195, 255])],
                      "green": [np.array([40, 155, 0]), np.array([60, 185, 255])]}
         self.current_x = 0
         self.current_y = 0
@@ -122,10 +123,13 @@ class Goal:
         upper_thresh = thresholds[1]
 
         goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
-        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY)  # convert between 0-250 to black
+        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY)  # convert between 0-250 to b$
+        kernel = np.ones((5,5), np.uint8)
+        thresh = cv.erode(thresh,kernel, 20)
+        thresh = cv.dilate(thresh, kernel, 5)
         contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
-        if len(contours) is not 0:
+        if contours:
             cnt = contours[0]
             cv.imshow("", thresh)
             # print(cv.contourArea(cnt))
@@ -139,3 +143,13 @@ class Goal:
         self.current_y = 0
         self.current_x = 0
         return False
+
+
+    def find_orange_lines(self, image):
+        hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+        mask = cv.inRange(hsv, (10, 100, 20), (25, 255, 255))
+        kernel = np.ones((5, 5), np.uint8)
+        mask = cv.erode(mask, kernel, iterations=1)
+        cv.SimpleBlobDetector_create()
+        detector = cv.detector.detect(mask)
+        return np.any(cv.inRange(mask, 255, 255))

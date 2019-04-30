@@ -58,6 +58,45 @@ class Frame:
             if self.robot.finished is True:  # End Program!
                 break
 
+            if self.robot.start and self.robot.mine:  # move through rock field
+                flood_fill_image, x = self.create_furthest_path(img)
+                orange_found = self.robot.goal.find_orange_lines(img)
+                if orange_found:
+                    if x > self.width * .7:
+                        self.robot.move.turn_right()
+                    elif x < self.width * .3:
+                        self.robot.move.turn_left()
+                    else:
+                        self.robot.move.wheels_forward()
+                else:
+                    self.move.robot.wheels_forward()
+                    self.robot.mining_area = True
+                    self.robot.start = False
+
+            if self.robot.start and self.robot.deliver:
+                if self.robot.goal.bin_area(img) is False and self.robot.found_bin:  # Bin is out o$
+                    self.robot.move.wheels_forward()  # get a little closer, if need be....
+                    self.robot.move.arm_in_cam_view()
+                    self.robot.move.drop()  # drop into box
+                    self.robot.finished = True  # terminate program
+                else:
+                    self.detect_bin(img)
+
+            if self.robot.mining_area and self.robot.deliver:
+                flood_fill_image, x = self.create_furthest_path(img)
+                orange_found = self.robot.goal.find_orange_lines(img)
+                if orange_found:
+                    if x > self.width * .7:
+                        self.robot.move.turn_right()
+                    elif x < self.width * .3:
+                        self.robot.move.turn_left()
+                    else:
+                        self.robot.move.wheels_forward()
+                else:
+                    self.move.robot.wheels_forward()
+                    self.robot.mining_area = False
+                    self.robot.start = True
+
             if self.robot.mining_area and self.robot.mine:  # grab ice
                 if self.status is False:
                     status, image = self.robot.face.detect_face(img)
@@ -67,8 +106,6 @@ class Frame:
                 else:
                     # TODO: Ask for color of ice.
                     self.detect_ice(img)
-
-
 
             self.rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
@@ -110,7 +147,7 @@ class Frame:
             image, int(self.width / 2), self.height)
 
         # create image with furthest possible path with original added
-        return cv.addWeighted(img, .7, image, 0.4, 0)
+        return cv.addWeighted(img, .7, image, 0.4, 0), x_coordinate
 
     def detect_ice(self, frame):
         """
@@ -132,6 +169,28 @@ class Frame:
         else:
             waste = None
             # TODO: Rejects ice with talk
+
+    def detect_bin(self, frame):
+        """
+               This function detects the correct bins by blob detection.
+               :param frame: current frame.
+               :return:
+               """
+        if self.robot.goal.bin_area(frame) is False:  # if cannot detect bin, check right
+            self.robot.move.turn_right_90()
+
+            if self.robot.goal.bin_area(frame) is False:  # Turn back 180 degrees
+                self.robot.move.turn_left_90()
+                self.robot.move.turn_left_90()
+        else:
+            self.robot.found_bin = True
+            if self.robot.goal.current_x >= (self.width * .7):
+                self.robot.move.turn_right()
+            elif self.robot.goal.current_x <= (self.width * .3):
+                self.robot.move.turn_left()
+            else:
+                self.robot.move.wheels_forward()
+                print("forward")
 
 
 class Robot:
