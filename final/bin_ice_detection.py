@@ -1,13 +1,13 @@
 import numpy as np
 import cv2 as cv
 
-
+# "pink": [np.array([130, 130, 100]), np.array([190, 230, 235])
 class Goal:
 
     def __init__(self, string_name):
         # Dictionaries for goals, lower thresh : upper thresh
         self.name = string_name
-        self.goal = {"pink": [np.array([130, 130, 100]), np.array([190, 230, 235])],
+        self.goal = {"pink": [np.array([155, 105 , 55]), np.array([175, 195, 255])],
                      "green": [np.array([40, 155, 0]), np.array([60, 185, 255])]}
         self.current_x = 0
         self.current_y = 0
@@ -73,7 +73,7 @@ class Goal:
         else:
             detector = cv.SimpleBlobDetector_create(params)
         keypoints = detector.detect(frame)
-        img_with_keypoints = cv.drawKeypoints(thresh, keypoints, outImage=np.array([]), color=(0, 0, 255),
+        img_with_keypoints = cv.drawKeypoints(frame, keypoints, outImage=np.array([]), color=(0, 0, 255),
                                               flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         if len(keypoints) is not 0:
             for i in range(len(keypoints)):
@@ -115,17 +115,22 @@ class Goal:
             return False
 
     def bin_area(self, frame):
-        hsv = cv.cvtColor(frame.copy(), cv.COLOR_BGR2HSV)
+        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
-        lower_thresh = goal[0]
-        upper_thresh = goal[lower_thresh]
+        thresholds = self.goal[self.name]  # get thresholds by name
+        lower_thresh = thresholds[0]  # Thresholds are an array with lower to upper
+        upper_thresh = thresholds[1]
 
         goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
-        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
+        _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY)  # convert between 0-250 to black
+        kernel = np.ones((5,5), np.uint8) 
+        thresh = cv.erode(thresh,kernel, 20)
+        thresh = cv.dilate(thresh, kernel, 5)
         contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
-        if len(contours) is not 0:
+        if contours:
             cnt = contours[0]
+            cv.imshow("", thresh)
             # print(cv.contourArea(cnt))
             # cv.drawContours(image, contours, -1, (0, 255, 0), 3)
             # when x is 0 (from top down is the axis), its left side of screen

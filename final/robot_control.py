@@ -47,9 +47,8 @@ class MoveRobot:
         self.hand = 6000
         self.rotate_hand = 6000
         self.center_robot()
-        self.turning_right = False
-        self.turning_left = False
-        self.moving_forward = False
+        self.tango.setAccel(2, 90)
+        self.tango.setAccel(1, 90)
 
     def stop(self):  # Stops the robot from moving or turning
         if self.motors > 6000:  # Slows the robot down slightly before completely stopping
@@ -89,16 +88,21 @@ class MoveRobot:
             self.motors = 7900
 
     def wheels_forward(self):  # Moves the wheels forward
-        if not self.moving_forward:
-            self.motors -= 800
-            self.moving_forward = True
+        self.motors -= 1200
         self.forward_back_limit()
         self.tango.setTarget(MOTORS, self.motors)
-        # time.sleep(1)
-        # self.stop()
+        time.sleep(.5)
+        self.stop()
+
+    def wheels_forward_fast(self):  # Moves the wheels forward
+        self.motors -= 1200
+        self.forward_back_limit()
+        self.tango.setTarget(MOTORS, self.motors)
+        time.sleep(1.35)
+        self.stop()
 
     def wheels_backward(self):  # Moves the wheels backwards
-        self.motors += 800
+        self.motors += 1000
         self.forward_back_limit()
         self.tango.setTarget(MOTORS, self.motors)
         time.sleep(1)
@@ -111,22 +115,20 @@ class MoveRobot:
             self.turn = 7400
 
     def turn_right(self):  # Turns robot right
-        if not self.turning_right:
-            self.turn -= 1500
-            self.turning_right = True
+        self.turn -= 1000
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
         #    time.sleep(.2)
-        time.sleep(.15)
+        time.sleep(.5)
         self.stop()
         print("turn right")
 
     def turn_left(self):  # Turns robot left
-        self.turn += 1500
+        self.turn += 1000
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
         # time.sleep(.2)
-        time.sleep(.15)
+        time.sleep(.9)
         self.stop()
         print("turn left")
 
@@ -148,21 +150,21 @@ class MoveRobot:
         # threading.Thread(target=self.stop())
 
     # # Methods to check value boundaries of servos
-    # def check_value(self, val):
-    #     if val > 7900:
-    #         return 7900
-    #     elif val < 1510:
-    #         return 1510
-    #     else:
-    #         return val
-    #
-    # def check_value_turn(self, val):
-    #     if val > 7400:
-    #         return 7400
-    #     elif val < 2110:
-    #         return 2110
-    #     else:
-    #         return val
+    def check_value(self, val):
+        if val > 7900:
+            return 7900
+        elif val < 1510:
+            return 1510
+        else:
+            return val
+    
+    def check_value_turn(self, val):
+        if val > 7400:
+            return 7400
+        elif val < 2110:
+            return 2110
+        else:
+            return val
 
     def check_motor_value(self, val, min, max):
         if val > max:
@@ -285,28 +287,20 @@ class MoveRobot:
         self.stop()
 
     def turn_left_90(self):
-        self.turn += 1500
+        self.turn += 1000
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
         # time.sleep(.2)
-        time.sleep(.6)
+        time.sleep(1)
         self.stop()
+        print("turn left 90")
 
     def turn_right_90(self):
 
-        self.turn -= 1500
+        self.turn -= 1000
         self.turn_limit()
         self.tango.setTarget(TURN, self.turn)
         #    time.sleep(.2)
-        time.sleep(.6)
+        time.sleep(1)
         self.stop()
-
-
-    def turn_fourty_five(self):
-
-        self.turn -= 2000
-        self.turn_limit()
-        self.tango.setTarget(TURN, self.turn)
-        #    time.sleep(.2)
-        time.sleep(.2)
-        self.stop()
+        print("turn right 90")

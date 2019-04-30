@@ -70,17 +70,15 @@ class Frame:
                     pass
                 elif not self.in_mining_area:
                     # self.robot.robot_talk("Entering mining area.")
-                    pass                    
+                    pass
                     self.in_mining_area = True
             # elif orange_found and not self.start:
-
 
             if self.robot.finished is True:  # End Program!
                 break
 
             if (self.robot.start or self.robot.rock_field) and self.robot.mine:  # move through rock field
                 flood_fill_image, x_coordinate = self.create_furthest_path(img)
-            
                 # TODO: robot movements based off of above image.
                 if x_coordinate:
                     self.move_bot(x_coordinate)
@@ -100,17 +98,18 @@ class Frame:
                     # TODO: spin until it finds a bin.
                     waste = None  # just to bypass error
                 else:
-                    flood_fill_image, x_coordinate = self.create_furthest_path(img)
+                    flood_fill_image, x_coordinate = self.create_furthest_path(
+                        img)
                     if x_coordinate:
                         self.move_bot(x_coordinate)
 
-
             #         # TODO: robot movements based off of above image.
-            #self.make_decision(img)
+            # self.make_decision(img)
             if self.robot.start and self.robot.deliver:  # Find bin
                 self.detect_bin(img)
 
-            overlay, x_coordinate = self.create_furthest_path(img.copy())  # create furthest non obstructed path
+            overlay, x_coordinate = self.create_furthest_path(
+                img.copy())  # create furthest non obstructed path
             cv.imshow("Overlay", overlay)
 
             self.rawCapture.truncate(0)
@@ -161,10 +160,12 @@ class Frame:
         orange_upper = np.array([30, 255, 255])
 
         img = cv.blur(img, (5, 5))  # blur initial frame for edge detection
-        hsv = cv.cvtColor(img.copy(), cv.COLOR_BGR2HSV)  # convert to HSV to do object detection
+        # convert to HSV to do object detection
+        hsv = cv.cvtColor(img.copy(), cv.COLOR_BGR2HSV)
 
         blue_mask = cv.inRange(hsv, blue_lower, blue_upper)  # detect blue
-        orange_mask = cv.inRange(hsv, orange_lower, orange_upper)  # detect orange
+        orange_mask = cv.inRange(
+            hsv, orange_lower, orange_upper)  # detect orange
 
         # create orange and blue edges to subtract from overall picture
         kernel = np.ones((5, 5), np.uint8)
@@ -266,13 +267,12 @@ class Frame:
         right = self.width * .6
         left = self.width * .4
         if x_coordinate > right:
-            self.robot.move.stop()
             self.robot.move.turn_right()
-        elif x_coordinate < left:            
-            self.robot.move.stop()
+        elif x_coordinate < left:
             self.robot.move.turn_left()
         else:
-            self.robot.move.wheels_forward()
+            self.robot.move.wheels_forward_fast()
+
 
 class Robot:
     """
@@ -295,7 +295,8 @@ class Robot:
         self.face = FaceDetection()
         self.move = robot_control.MoveRobot()
 
-        self.goal = Goal(goal)  # variable to track robots goal. String that is either S, M, or L
+        # variable to track robots goal. String that is either S, M, or L
+        self.goal = Goal(goal)
 
         # self.frame = Frame()  # variable to contain instance of Frame class
 
@@ -312,20 +313,18 @@ class Robot:
         # speak.sendData(what_to_speak)
         pass
 
+
 class Area():
     def find_orange_lines(self, image):
         # Sourced from https://stackoverflow.com/questions/48528754/what-are-recommended-color-spaces-for-detecting-orange-color-in-open-cv
         hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
-        mask = cv.inRange(hsv, (10,100,20), (25,255,255))
-        kernel = np.ones((5,5),np.uint8)
-        mask = cv.erode(mask, kernel, iterations = 1)
+        mask = cv.inRange(hsv, (10, 100, 20), (25, 255, 255))
+        kernel = np.ones((5, 5), np.uint8)
+        mask = cv.erode(mask, kernel, iterations=1)
         detector = cv.SimpleBlobDetector_create()
         blobs = detector.detect(mask)
-        return np.any(cv.inRange(mask, 255,255))
-    
-        
+        return np.any(cv.inRange(mask, 255, 255))
 
 
 driver = Frame()
 driver.run()
-

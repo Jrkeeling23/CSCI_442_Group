@@ -59,13 +59,15 @@ class Frame:
                 break
 
             if self.robot.start and self.robot.deliver:
-                if self.robot.goal.bin_area() is False and self.robot.found_bin:  # Bin is out of view, but is found
+                if self.robot.goal.bin_area(img) is False and self.robot.found_bin:  # Bin is out of view, but is found
                     self.robot.move.wheels_forward()  # get a little closer, if need be....
+                    self.robot.move.arm_in_cam_view()
                     self.robot.move.drop()  # drop into box
-
-                else:  # If it has not found the bin or it is still in view keep calling function to move robot
-                    self.detect_bin()
                     self.robot.finished = True  # terminate program
+                else:
+                #elif self.robot.found_bin and self.robot.goal.bin_area(img):  # If it has not found the bin or it is
+                    # still in view keep calling function to move robot
+                    self.detect_bin(img)
 
             self.rawCapture.truncate(0)
             k = cv.waitKey(1) & 0xFF
@@ -79,20 +81,21 @@ class Frame:
         :param frame: current frame.
         :return:
         """
-        if self.robot.goal.bin_area() is False:  # turn 90 degrees
+        if self.robot.goal.bin_area(frame) is False:  # if cannot detect bin, check right
             self.robot.move.turn_right_90()
 
-            if self.robot.goal.bin_area() is False:  # Turn back 180 degrees
+            if self.robot.goal.bin_area(frame) is False:  # Turn back 180 degrees
                 self.robot.move.turn_left_90()
                 self.robot.move.turn_left_90()
         else:
             self.robot.found_bin = True
-            if self.robot.goal.current_x >= (self.width / 2 + self.width / 3 - 15):
-                self.robot.move.turn_left()
-            elif self.robot.goal.current_x <= (self.width / 3 + 15):
+            if self.robot.goal.current_x >= (self.width *.7):
                 self.robot.move.turn_right()
+            elif self.robot.goal.current_x <= (self.width *.3):
+                self.robot.move.turn_left()
             else:
                 self.robot.move.wheels_forward()
+                print("forward")
 
 
 class Robot:
