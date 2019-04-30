@@ -117,7 +117,7 @@ class Goal:
     def bin_area(self, frame):
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
-        lower_thresh = self.goal[0]
+        lower_thresh = self.goal[self.name]
         upper_thresh = self.goal[lower_thresh]
 
         goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
