@@ -47,6 +47,8 @@ class MoveRobot:
         self.hand = 6000
         self.rotate_hand = 6000
         self.center_robot()
+        self.tango.setAccel(2, 90)
+        self.tango.setAccel(1, 90)
 
     def stop(self):  # Stops the robot from moving or turning
         if self.motors > 6000:  # Slows the robot down slightly before completely stopping
