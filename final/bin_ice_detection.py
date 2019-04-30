@@ -42,8 +42,8 @@ class Goal:
         image = cv.GaussianBlur(frame.copy(), (5, 5), 0)
         hsv = cv.cvtColor(image.copy(), cv.COLOR_BGR2HSV)
 
-        lower_thresh = goal[0]
-        upper_thresh = goal[lower_thresh]
+        lower_thresh = self.goal[0]
+        upper_thresh = self.goal[lower_thresh]
 
         goal_mask = cv.inRange(hsv, lower_thresh, upper_thresh)  # works so far
         _, thresh = cv.threshold(goal_mask, 0, 250, cv.THRESH_BINARY_INV)  # convert between 0-250 to black
@@ -74,8 +74,8 @@ class Goal:
         else:
             detector = cv.SimpleBlobDetector_create(params)
         keypoints = detector.detect(frame)
-        img_with_keypoints = cv.drawKeypoints(frame, keypoints, outImage=np.array([]), color=(0, 0, 255),
-                                              flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        # img_with_keypoints = cv.drawKeypoints(frame, keypoints, outImage=np.array([]), color=(0, 0, 255),
+        #                                       flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         if len(keypoints) is not 0:
             for i in range(len(keypoints)):
                 x = keypoints[0].pt[0]
@@ -150,6 +150,10 @@ class Goal:
         mask = cv.inRange(hsv, (10, 100, 20), (25, 255, 255))
         kernel = np.ones((5, 5), np.uint8)
         mask = cv.erode(mask, kernel, iterations=1)
-        cv.SimpleBlobDetector_create()
-        detector = cv.detector.detect(mask)
+        detector = cv.SimpleBlobDetector_create()
+        blobs = detector.detect(mask)
         return np.any(cv.inRange(mask, 255, 255))
+
+
+
+

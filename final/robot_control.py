@@ -4,25 +4,36 @@ import threading
 import time
 import maestro
 
-MOTORS = 2
-TURN = 1
-BODY = 0
-HEADTILT = 4
-HEADTURN = 3
-
-# MOTORS = 1
-# TURN = 2
+# MOTORS = 2
+# TURN = 1
 # BODY = 0
 # HEADTILT = 4
 # HEADTURN = 3
-# # for left arm
-SHOULDER = 6
-ARM_0 = 7
-ELBOW = 8
-ARM_2 = 9
-HAND = 11
-ROTATE_HAND = 10
 
+MOTORS = 1
+TURN = 2
+BODY = 0
+HEADTILT = 4
+HEADTURN = 3
+# # for left arm
+# SHOULDER = 6
+# ARM_0 = 7
+# ELBOW = 8
+# ARM_2 = 9
+# HAND = 11
+# ROTATE_HAND = 10
+# SHOULDER = 12
+# ARM_0 = 7
+# ELBOW = 8
+# ARM_2 = 9
+# HAND = 11
+# ROTATE_HAND = 10
+SHOULDER = 12
+ARM_0 = 13
+ELBOW = 14
+ARM_2 = 15
+HAND = 17
+ROTATE_HAND = 16
 
 # right arm
 # robot #26
@@ -35,9 +46,8 @@ ROTATE_HAND = 10
 
 
 class MoveRobot:
-    class MoveRobot:
 
-        def __init__(self):
+    def __init__(self):
             # Code help from source keyboardControl.py
             self.tango = maestro.Controller()
             # Default center values
@@ -263,10 +273,10 @@ class MoveRobot:
 
     def arm_in_cam_view(self):
         self.open_hand()
-        threading.Thread(target=self.move_shoulder(10000)).start()
+        threading.Thread(target=self.move_shoulder(2000)).start()
         time.sleep(.2)
-        threading.Thread(target=self.move_elbow(4800)).start()
-        threading.Thread(target=self.move_arm_0(4000)).start()
+        threading.Thread(target=self.move_elbow(6000)).start()
+        threading.Thread(target=self.move_arm_0(10000)).start()
         threading.Thread(target=self.move_arm_2(6200)).start()
         threading.Thread(target=self.rotate_hand_fun(2000)).start()
 
@@ -280,7 +290,7 @@ class MoveRobot:
     def lower_arm(self):
         threading.Thread(target=self.move_arm_0(6000)).start()
         time.sleep(0.5)
-        threading.Thread(target=self.move_shoulder(2000)).start()
+        threading.Thread(target=self.move_shoulder(10000)).start()
         time.sleep(0.5)
         threading.Thread(target=self.move_elbow(4000)).start()
         time.sleep(0.5)

@@ -92,6 +92,8 @@ class FaceDetection:
             # self.move_head()
             # self.search_for_face()
             self.increment_Movement("head", 1510, 7500, 599, 1497)
+        cv.imshow("face", img)
+
         return False, img
 
     def center(self, x, y, face_w, face_y):  # Function to center head and move robot towards human.

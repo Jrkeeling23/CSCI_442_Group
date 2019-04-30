@@ -63,9 +63,9 @@ class Frame:
                 orange_found = self.robot.goal.find_orange_lines(img)
                 cv.imshow("", flood_fill_image)
                 if orange_found:
-                    if x > self.width * .7:
+                    if x > self.width * .8:
                         self.robot.move.turn_right()
-                    elif x < self.width * .3:
+                    elif x < self.width * .2:
                         self.robot.move.turn_left()
                     else:
                         self.robot.move.wheels_forward()
@@ -73,6 +73,7 @@ class Frame:
                     self.move.robot.wheels_forward()
                     self.robot.mining_area = True
                     self.robot.start = False
+                    print("in mining area")
 
             if self.robot.start and self.robot.deliver:
                 if self.robot.goal.bin_area(img) is False and self.robot.found_bin:  # Bin is out o$
@@ -102,6 +103,7 @@ class Frame:
                 if self.status is False:
                     status, image = self.robot.face.detect_face(img)
                     if status is True:
+                        self.robot.move.center_robot()
                         self.status = True
                         # TODO: "Hello Human"
                 else:
@@ -158,7 +160,7 @@ class Frame:
         """
         self.robot.move.arm_in_cam_view()  # get arm into position
         if self.robot.goal.detect_ice(frame) is True:
-            time.sleep(1)  # wait 5 seconds
+            time.sleep(2)  # wait 5 seconds
             self.robot.move.close_hand()
             # change states of robot to fit accordingly
             self.robot.mine = False
