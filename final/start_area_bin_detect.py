@@ -59,7 +59,7 @@ class Frame:
                 break
 
             if self.robot.start and self.robot.deliver:
-                if self.robot.goal.bin_area() is False and self.robot.found_bin:  # Bin is out of view, but is found
+                if self.robot.goal.bin_area(frame) is False and self.robot.found_bin:  # Bin is out of view, but is found
                     self.robot.move.wheels_forward()  # get a little closer, if need be....
                     self.robot.move.drop()  # drop into box
 
@@ -79,10 +79,10 @@ class Frame:
         :param frame: current frame.
         :return:
         """
-        if self.robot.goal.bin_area() is False:  # turn 90 degrees
+        if self.robot.goal.bin_area(frame) is False:  # turn 90 degrees
             self.robot.move.turn_right_90()
 
-            if self.robot.goal.bin_area() is False:  # Turn back 180 degrees
+            if self.robot.goal.bin_area(frame) is False:  # Turn back 180 degrees
                 self.robot.move.turn_left_90()
                 self.robot.move.turn_left_90()
         else:
