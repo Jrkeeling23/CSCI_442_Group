@@ -8,4 +8,5 @@ Course Objective: Learn image processing techniques along with applications.
 
 
 # OpenCV 
-install opencv - sudo pip3 install opencv-python
+To install opencv:
+```sudo pip3 install opencv-python```
